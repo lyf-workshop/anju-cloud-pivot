@@ -1,0 +1,2 @@
+@import "styles/base.wxss";
+@import "styles/design-v11.wxss";

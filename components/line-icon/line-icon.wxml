@@ -1,0 +1,5 @@
+<image
+  src="/assets/icons/{{name}}.png"
+  style="width:{{size}}rpx;height:{{size}}rpx"
+  mode="aspectFit"
+/>

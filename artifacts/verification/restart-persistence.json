@@ -1,0 +1,8 @@
+{
+  "at": "2026-09-28T16:44:02.131Z",
+  "result": "passed",
+  "note": "Earlier tsx-server records read through compiled server after stopping and restarting the process.",
+  "reportId": "00e89ca0-50ce-4b4c-bc16-12c2b7c174e6",
+  "drillSessionId": "05c980c8-0540-4fdc-97e0-72c750389275",
+  "completedAt": "2026-09-28T16:27:56.605Z"
+}

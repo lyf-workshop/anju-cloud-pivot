@@ -1,0 +1,61 @@
+{
+  "at": "2026-09-29T04:42:25.732Z",
+  "environment": "WeChat DevTools simulator",
+  "interaction": "Real simulator rendering; Page.callMethod, custom component methods, dispatched view events and wx navigation. SDK native touch is not certified.",
+  "checks": [
+    "Unchecked consent prevents login handler",
+    "Simulator page consent/login handlers open home",
+    "Hazard list opens selected detail and wx.navigateBack returns to list",
+    "wx.switchTab opens all four tab pages and renders native tabBar",
+    "Typed report produces matching result and detail, with real local ID",
+    "Two step buttons complete a drill with dynamic duration and 2/2 summary",
+    "wx.navigateBack from completed summary returns to building",
+    "History opens matching summary; repeat creates a distinct session",
+    "Fire contact opens real demonstration dialog (no dial API in app)"
+  ],
+  "screenshots": [
+    "artifacts/visual-v11/01-login-unchecked.png",
+    "artifacts/visual-v11/02-login-checked.png",
+    "artifacts/visual-v11/03-home.png",
+    "artifacts/visual-v11/04-hazards.png",
+    "artifacts/visual-v11/05-example-detail.png",
+    "artifacts/visual-v11/06-building.png",
+    "artifacts/visual-v11/07-me.png",
+    "artifacts/visual-v11/08-report-empty.png",
+    "artifacts/visual-v11/09-report-filled.png",
+    "artifacts/visual-v11/10-report-result.png",
+    "artifacts/visual-v11/11-report-detail.png",
+    "artifacts/visual-v11/12-my-reports.png",
+    "artifacts/visual-v11/13-drill-exit.png",
+    "artifacts/visual-v11/14-assembly.png",
+    "artifacts/visual-v11/15-drill-summary.png",
+    "artifacts/visual-v11/16-drill-records.png",
+    "artifacts/visual-v11/19-devices.png",
+    "artifacts/visual-v11/17-emergency.png",
+    "artifacts/visual-v11/18-emergency-demo-dialog.png"
+  ],
+  "exceptions": [],
+  "notVerified": [
+    "Physical device",
+    "System photo picker",
+    "Physical soft keyboard",
+    "Native touch hit testing"
+  ],
+  "device": {
+    "model": "iPhone 12/13 (Pro)",
+    "windowWidth": 390,
+    "windowHeight": 753,
+    "screenWidth": 390,
+    "screenHeight": 844,
+    "safeArea": {
+      "top": 47,
+      "left": 0,
+      "right": 390,
+      "bottom": 810,
+      "width": 390,
+      "height": 763
+    },
+    "SDKVersion": "3.17.3"
+  },
+  "result": "passed"
+}

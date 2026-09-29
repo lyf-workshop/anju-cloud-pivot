@@ -1,0 +1,18 @@
+{
+  "at": "2026-09-29T04:41:16.472Z",
+  "agreed": false,
+  "loginRoute": "pages/login/login",
+  "tabRoute": "pages/login/login",
+  "device": {
+    "model": "iPhone 12/13 (Pro)",
+    "width": 390,
+    "height": 844
+  },
+  "result": "not-verified",
+  "attemptedOperations": [
+    "Element.tap checkbox",
+    "Element.tap login button",
+    "Native.switchTab building"
+  ],
+  "reason": "SDK Element.tap and Native.switchTab returned without causing the expected UI state change. These operations are not counted as passing touch checks; runtime suite uses page handlers and wx navigation."
+}

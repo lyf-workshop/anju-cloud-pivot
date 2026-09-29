@@ -1,0 +1,13 @@
+<view class="page has-actions">
+  <ui-state loading="{{loading}}" error="{{error}}" bind:retry="retry" compact/>
+  <block wx:if="{{record}}">
+    <view class="success-circle"><line-icon name="{{record.status==='completed'?'check':'drill'}}" size="48"/></view>
+    <view class="title center">{{record.status==='completed'?'本次演练已结束':'本次演练已中止'}}</view>
+    <view class="center" style="margin-top:14rpx"><text class="save-badge">线上模拟演练 · {{record.statusName}}</text></view>
+    <view class="summary-stats"><view><view class="summary-number">{{record.durationText}}</view><view class="muted">参与时长</view></view><view><view class="summary-number">{{record.completedCount}} / {{record.totalSteps}}</view><view class="muted">已完成步骤</view></view></view>
+    <ui-card title="你已经完成"><view wx:for="{{record.steps}}" wx:key="id" class="check-row"><view class="check-symbol"><line-icon name="{{item.confirmed?'check':'drill'}}" size="28"/></view><view class="grow"><view>{{item.title}}</view><view class="muted">{{item.confirmed?'已查看并确认此线上步骤':'本次尚未完成'}}</view></view></view></ui-card>
+    <ui-card><view class="row between"><text class="strong">演练详情</text><text class="pill">{{record.isExample?'示例记录':'本次体验记录'}}</text></view><view class="detail-pair"><text class="muted">演练场景</text><text class="detail-value">{{record.snapshot.title}}</text></view><view class="detail-pair"><text class="muted">楼栋位置</text><text class="detail-value">{{record.snapshot.communityName}} · {{record.snapshot.buildingName}} · {{record.snapshot.floorNumber}}层</text></view><view class="detail-pair"><text class="muted">结束时间</text><text class="detail-value">{{record.timeText}}</text></view></ui-card>
+    <view class="hint"><view class="strong">{{record.isExample?'这是本地示例记录。':'已加入本次体验记录。'}}</view><view class="field-note">可在“我的 → 演练记录”回看。本次为线上模拟，不代表实际完成疏散。</view><button class="link-button" data-url="/pages/drill-records/drill-records" bindtap="go">查看演练记录 ›</button></view>
+    <view class="fixed-actions"><ui-button id="again-drill" label="再次演练" variant="plain" loading="{{busy}}" bind:action="again"/><ui-button label="返回楼栋" data-url="/pages/building/building" bind:action="go"/></view>
+  </block>
+</view>

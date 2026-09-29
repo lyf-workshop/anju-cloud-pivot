@@ -1,0 +1,6 @@
+
+> anju-cloud-pivot@1.0.0 check:wechat
+> node scripts/compile-wechat.cjs
+
+wcc: 28 files, exit 0
+wcsc: 29 files, exit 0

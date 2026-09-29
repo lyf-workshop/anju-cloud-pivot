@@ -1,0 +1,138 @@
+/* V1.1 overview reference: docs/design/安居云枢_小程序设计总览.png */
+page { --bg:#f4f6f9; --ink:#23364d; --muted:#8290a3; --red:#d44730; --red-light:#fff0eb; --green:#278873; --blue:#598db3; --navy:#234159; --radius:22rpx; background:var(--bg); font-size:26rpx; }
+.page { padding:24rpx 36rpx calc(36rpx + env(safe-area-inset-bottom)); }
+.page.has-actions { padding-bottom:calc(166rpx + env(safe-area-inset-bottom)); }
+.page button { margin-left:0; margin-right:0; width:auto; }
+.page .full,.page .list-row { width:100%; }
+.title { font-size:38rpx; line-height:1.45; letter-spacing:0; }
+.subtitle { font-size:24rpx; margin-top:8rpx; line-height:1.7; }
+.section { margin:26rpx 0 16rpx; }
+.section-title { font-size:29rpx; }
+.card { padding:26rpx; border:0; margin-bottom:20rpx; }
+.row { gap:18rpx; }
+.small { font-size:23rpx; }
+.muted { font-size:22rpx; }
+.divider { margin:20rpx 0; }
+.gap { height:22rpx; }
+.pill { padding:4rpx 12rpx; font-size:20rpx; border-radius:14rpx; background:#eaf3fa; color:var(--blue); }
+.record-title { font-size:27rpx; line-height:1.55; }
+.record-meta { font-size:21rpx; margin-top:9rpx; }
+.record-description { font-size:25rpx; }
+.icon-box { width:62rpx; height:62rpx; border-radius:16rpx; background:#eaf3fa; }
+.stats { padding:8rpx 0; }
+.stat { text-align:left; }
+.stat-number { font-size:43rpx; }
+.stat-label { font-size:20rpx; margin-top:5rpx; }
+.hint,.notice { padding:22rpx; border-radius:18rpx; font-size:23rpx; margin:18rpx 0; }
+.hint { background:#eaf3fa; color:#668eaa; }
+.fixed-actions { padding:20rpx 36rpx calc(20rpx + env(safe-area-inset-bottom)); gap:20rpx; border-top:0; }
+.link-button { color:var(--blue); font-size:23rpx; padding:16rpx 0; }
+.success-circle { width:110rpx; height:110rpx; margin:40rpx auto 22rpx; border-radius:24rpx; }
+.save-badge { background:#e8f5ef; color:var(--green); padding:8rpx 16rpx; font-size:21rpx; border-radius:14rpx; }
+.filter-scroll { margin:18rpx 0 8rpx; }
+.filter-scroll .chip { margin:0 10rpx 12rpx 0; font-size:23rpx; min-height:68rpx; padding:16rpx 22rpx; border-radius:40rpx; }
+.chip.active { background:var(--ink); color:white; }
+.brand { padding:42rpx 0 28rpx; }
+.brand-symbol { width:112rpx; height:112rpx; border-radius:32rpx; background:var(--navy); margin-bottom:22rpx; }
+.brand-title { font-size:43rpx; letter-spacing:1rpx; }
+.brand .subtitle { font-size:21rpx; }
+.login-illustration { background:#eaf3fa; border-radius:28rpx; margin:10rpx 0 28rpx; height:320rpx; display:flex; align-items:center; justify-content:center; }
+.login-illustration image { height:100%; width:390rpx; }
+.login-intro { margin:0 0 30rpx; }
+.login-intro .title { font-size:34rpx; }
+.login-intro .subtitle { font-size:23rpx; }
+.agreement { margin:20rpx 0 6rpx; gap:10rpx; justify-content:flex-start; flex-wrap:nowrap; }
+.agreement label { min-height:72rpx; }
+.agreement checkbox { transform:scale(.72); margin-left:-10rpx; }
+.agreement-copy { font-size:20rpx; padding-top:8rpx; line-height:1.6; }
+.agreement-links { display:flex; gap:12rpx; }
+.agreement .link-button { font-size:20rpx; padding:4rpx 0 14rpx; }
+.login-footer { margin-top:34rpx; text-align:center; }
+.home-location { margin-bottom:18rpx; font-weight:600; }
+.home-hero { background:var(--navy); color:white; border-radius:24rpx; min-height:262rpx; display:flex; align-items:center; overflow:hidden; padding:26rpx 0 18rpx 28rpx; }
+.home-hero .hero-title { font-size:38rpx; color:white; }
+.home-hero .eyebrow { color:#b7cddd; letter-spacing:0; font-size:20rpx; margin-bottom:8rpx; }
+.home-hero .hero-note { color:#bdd1df; font-size:20rpx; margin-top:8rpx; }
+.home-hero image { width:230rpx; height:252rpx; flex-shrink:0; margin-right:-4rpx; }
+.announcement-strip { margin:18rpx 0 28rpx; border-radius:18rpx; background:white; padding:15rpx 20rpx; font-size:21rpx; }
+.service-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14rpx; }
+.page .service-tile { width:100%; background:white; border-radius:20rpx; padding:20rpx 8rpx; min-height:122rpx; font-size:22rpx; line-height:1.6; display:flex; align-items:center; flex-direction:column; gap:9rpx; }
+.safety-strip { background:#e8f5ef; color:var(--green); padding:22rpx; border-radius:22rpx; margin:22rpx 0; }
+.safety-strip .muted { color:#699e93; margin-top:8rpx; font-size:20rpx; }
+.report-banner { display:flex; align-items:center; gap:18rpx; background:var(--red); color:white; border-radius:22rpx; padding:24rpx; margin:20rpx 0 10rpx; }
+.report-banner .strong { font-size:30rpx; }
+.report-banner .muted { color:#ffded2; font-size:20rpx; margin-top:5rpx; }
+.camera-tile { background:white; width:78rpx; height:78rpx; border-radius:22rpx; display:flex; justify-content:center; align-items:center; }
+.report-thumb { width:172rpx; height:145rpx; border-radius:16rpx; background:#eaf3fa; flex-shrink:0; }
+.report-card { padding:24rpx; }
+.report-card .record-meta { margin:8rpx 0; font-size:20rpx; }
+.record-footer { display:flex; justify-content:space-between; align-items:center; gap:12rpx; margin-top:16rpx; font-size:20rpx; color:var(--muted); }
+.record-footer .view-link { color:var(--blue); white-space:nowrap; font-weight:600; }
+.building-heading { margin-bottom:18rpx; }
+.building-stage { background:#eaf3fa; border-radius:24rpx; padding:22rpx; }
+.building-scene { display:flex; align-items:center; min-height:470rpx; }
+.building-art { flex:1; height:460rpx; width:0; }
+.floor-rail { width:82rpx; border-radius:18rpx; background:white; padding:6rpx; }
+.page .floor-button { width:100%; background:white; color:#7b8ca0; font-size:22rpx; padding:18rpx 0; line-height:1.4; border-radius:14rpx; }
+.page .floor-button.active { background:var(--red); color:white; font-weight:600; }
+.floor-controls { margin-top:18rpx; }
+.building-stats { margin-top:22rpx; }
+.action-row { display:flex; gap:20rpx; }
+.action-row ui-button { flex:1; min-width:0; display:block; }
+.profile-header { padding:28rpx 0 30rpx; }
+.profile-avatar { width:116rpx; height:116rpx; background:var(--navy); }
+.profile-header .hero-title { font-size:36rpx; }
+.profile-menus .list-row { padding:20rpx 0; }
+.profile-menus .muted { font-size:20rpx; }
+.muted,.field-note { font-weight:400; }
+.service-tile { color:var(--ink); font-weight:500; }
+.floor-plan { padding:24rpx 0; background:white; }
+.floor-plan .room { padding:24rpx 6rpx; background:#f4f7fa; }
+.floor-plan .room.exit { display:flex; align-items:center; justify-content:center; flex-direction:column; background:#e8f5ef; }
+.profile-menus .strong { font-size:25rpx; }
+.profile-group-gap { height:24rpx; background:var(--bg); margin:8rpx -26rpx; }
+.field { margin-bottom:28rpx; }
+.field-label { font-size:25rpx; margin-bottom:12rpx; }
+.field-label.row { display:flex; }
+.type-options { display:flex; flex-wrap:wrap; gap:10rpx; }
+.page .type-option { margin:0; padding:14rpx 18rpx; min-height:72rpx; border-radius:13rpx; background:white; border:1rpx solid #e4e9ef; font-size:22rpx; line-height:1.6; color:var(--ink); }
+.page .type-option.active { background:#fff0eb; border-color:var(--red); color:var(--red); }
+.input,.textarea { background:white; border:0; border-radius:18rpx; font-size:25rpx; padding:22rpx; }
+.input { height:88rpx; }
+.textarea { min-height:250rpx; }
+.field-note { font-size:20rpx; }
+.photo,.photo-add { height:168rpx; }
+.photo-add { background:white; border:1rpx solid #e7edf3; border-radius:18rpx; }
+.step-label { font-size:20rpx; color:var(--blue); }
+.campus-map { margin:22rpx 0; background:#eaf3fa; border-radius:24rpx; padding:26rpx 24rpx; }
+.campus-canvas { position:relative; height:440rpx; max-width:620rpx; margin:0 auto; }
+.campus-building { position:absolute; width:140rpx; height:116rpx; border-radius:20rpx; display:flex; align-items:center; justify-content:center; background:#cfe0ee; color:#6e93ad; font-size:23rpx; }
+.campus-building.nw{left:28rpx;top:55rpx}.campus-building.ne{right:28rpx;top:55rpx}.campus-building.sw{left:28rpx;bottom:25rpx}.campus-building.se{right:28rpx;bottom:25rpx}
+.campus-road-v { position:absolute; top:45rpx; bottom:0; width:60rpx; background:white; border-radius:28rpx; left:calc(50% - 30rpx); }
+.campus-road-h { position:absolute; top:210rpx; height:50rpx; left:0; right:0; background:white; border-radius:24rpx; }
+.campus-path { position:absolute; left:144rpx; right:50%; top:142rpx; height:218rpx; border-bottom:5rpx dashed #389a80; border-right:5rpx dashed #389a80; }
+.campus-meeting { position:absolute; top:2rpx; left:0; right:0; text-align:center; color:var(--green); font-size:23rpx; font-weight:600; }
+.campus-pin { position:absolute; top:71rpx; left:calc(50% - 30rpx); width:60rpx; height:66rpx; border-radius:18rpx; background:#e6f5ee; display:flex; align-items:center; justify-content:center; }
+.campus-here { position:absolute; left:135rpx; bottom:53rpx; width:22rpx; height:22rpx; border:5rpx solid white; background:#68a4c5; border-radius:50%; }
+.check-row { display:flex; align-items:flex-start; gap:16rpx; padding:12rpx 0; font-size:25rpx; }
+.check-row .check-symbol { border-radius:50%; background:#e8f5ef; width:46rpx; height:46rpx; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.summary-stats { margin:26rpx 0 20rpx; background:white; border-radius:22rpx; padding:25rpx; gap:35rpx; }
+.summary-stats>view { flex:1; text-align:left; }
+.summary-number { font-size:43rpx; line-height:1.2; }
+.summary-stats>view:first-child .summary-number { color:var(--ink); }
+.summary-stats .muted { font-size:20rpx; margin-top:7rpx; }
+.detail-pair { display:flex; justify-content:space-between; align-items:flex-start; gap:20rpx; font-size:21rpx; margin-top:12rpx; }
+.detail-pair .detail-value { text-align:right; min-width:0; overflow-wrap:anywhere; }
+.history-stats { background:#e7f4ef; border-radius:22rpx; padding:28rpx; margin:22rpx 0 28rpx; }
+.history-stats .stat-number { font-size:42rpx; }
+.step-guide { background:var(--navy); color:white; border-radius:22rpx; padding:27rpx; margin:20rpx 0; }
+.step-guide .muted { color:#c2d4df; }
+.page .contact-card { padding:28rpx; }
+@media (max-width:350px) {
+ .page { padding-left:28rpx; padding-right:28rpx; }
+ .title { font-size:35rpx; }.brand { padding-top:20rpx; }
+ .login-illustration { height:260rpx; }.brand-symbol { width:94rpx;height:94rpx; }
+ .home-hero image { width:210rpx; }.home-hero .hero-title { font-size:35rpx; }
+ .fixed-actions { padding-left:28rpx; padding-right:28rpx; }
+ .campus-building { width:130rpx; }.report-thumb { width:156rpx; }
+}

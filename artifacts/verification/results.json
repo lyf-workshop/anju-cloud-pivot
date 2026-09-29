@@ -1,0 +1,33 @@
+{
+  "at": "2026-09-28T16:45:11.707Z",
+  "node": "v25.8.2",
+  "results": [
+    {
+      "name": "build",
+      "exitCode": 0,
+      "log": "build.txt"
+    },
+    {
+      "name": "tests",
+      "exitCode": 0,
+      "log": "tests.txt"
+    },
+    {
+      "name": "wechat-compiler",
+      "exitCode": 0,
+      "log": "wechat-compiler.txt"
+    },
+    {
+      "name": "dependency-audit",
+      "exitCode": 0,
+      "log": "dependency-audit.txt"
+    }
+  ],
+  "notExecuted": [
+    "Figma comparison",
+    "WeChat simulator UI",
+    "physical devices",
+    "live WeChat identity exchange",
+    "real hardware"
+  ]
+}

@@ -1,0 +1,1 @@
+Client static checks passed: 21 routes, 43 JS files, 47 local asset references. WXML runtime compilation requires WeChat DevTools.

@@ -1,0 +1,38 @@
+{
+  "name": "anju-cloud-pivot",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "node scripts/run-demo.cjs",
+    "start": "node scripts/run-demo.cjs",
+    "build": "node scripts/check-client.cjs",
+    "check": "node scripts/check-client.cjs",
+    "test": "node scripts/check-demo.cjs",
+    "smoke": "node scripts/check-demo.cjs",
+    "backend:dev": "tsx watch --env-file-if-exists=server/.env server/src/index.ts",
+    "backend:start": "node --env-file-if-exists=server/.env dist/server/src/index.js",
+    "backend:build": "tsc -p server/tsconfig.json",
+    "backend:test": "tsx --test tests/api.test.ts",
+    "backend:db:init": "tsx --env-file-if-exists=server/.env server/src/manage.ts init",
+    "backend:db:reset": "tsx --env-file-if-exists=server/.env server/src/manage.ts reset-demo --confirm",
+    "check:wechat": "node scripts/compile-wechat.cjs",
+    "verify": "node scripts/verify.cjs"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "dependencies": {
+    "@fastify/multipart": "^9.0.3",
+    "@fastify/rate-limit": "^10.3.0",
+    "fastify": "^5.6.0",
+    "sharp": "^0.35.5",
+    "zod": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "miniprogram-api-typings": "^4.0.0",
+    "prettier": "^3.9.9",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0"
+  }
+}

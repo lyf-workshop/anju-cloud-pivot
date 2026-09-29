@@ -1,0 +1,12 @@
+<view class="page">
+  <view class="row between building-heading"><button class="link-button" bindtap="toggleLocation"><text class="strong" style="color:#23364d">{{buildingName || '选择楼栋'}} · {{unitName}} ⌄</text></button><text class="pill">演示数据</text></view>
+  <view wx:if="{{showLocation}}" class="card"><location-picker value="{{preferred}}" bind:change="changed"/></view>
+  <view class="building-stage"><view class="row between"><text class="pill" style="background:white">楼栋示意</text><line-icon name="cube" size="28"/></view><view class="building-scene"><image class="building-art" src="/assets/illustrations/building.png" mode="aspectFit"/><view class="floor-rail"><button wx:for="{{floorOptions}}" wx:key="*this" class="floor-button {{floorNumber===item?'active':''}}" data-number="{{item}}" bindtap="floor">{{item}}F</button></view></view><text class="pill" style="background:white">{{floorNumber}}F · 当前楼层</text></view>
+  <view class="field-note" style="margin-top:14rpx">点击楼层查看状态 · 示意模型，无真实设备连接</view>
+  <ui-state loading="{{loading}}" error="{{error}}" bind:retry="retry" compact/>
+  <view class="card building-stats"><view class="row between"><text class="strong">{{floorNumber}}层安全提示</text><text class="save-badge">本地示例</text></view><view class="gap"/><view class="stats"><view class="stat"><view class="stat-number">{{deviceTotal || 0}}</view><view class="stat-label">感知设备</view></view><view class="stat"><view class="stat-number accent">{{unknownTotal || 0}}</view><view class="stat-label">离线 / 未知</view></view><view class="stat"><view class="stat-number">{{onlineTotal || 0}}</view><view class="stat-label">在线示例</view></view></view><button id="view-devices" class="link-button full" bindtap="devices">查看本层感知设备 ›</button></view>
+  <view class="action-row"><ui-button id="start-drill" label="模拟演练" variant="plain" loading="{{busy}}" disabled="{{!selection.floorId}}" bind:action="start"/><ui-button label="紧急求助" data-url="/pages/emergency/emergency" bind:action="go"/></view>
+  <view class="field-note" style="margin-top:18rpx">本层出口：{{exitText}}</view>
+  <view wx:for="{{active}}" wx:key="id" class="card" style="margin-top:18rpx"><view class="row"><view class="grow"><view class="strong">继续上次线上练习</view><view class="record-meta">{{item.snapshot.buildingName}} · {{item.timeText}}</view></view><button class="link-button" data-id="{{item.id}}" bindtap="resume">继续 ›</button></view></view>
+  <mode-banner/>
+</view>

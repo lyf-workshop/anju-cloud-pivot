@@ -1,0 +1,77 @@
+{
+  "pages": [
+    "pages/login/login",
+    "pages/index/index",
+    "pages/hazards/hazards",
+    "pages/building/building",
+    "pages/me/me",
+    "pages/report/report",
+    "pages/report-result/report-result",
+    "pages/report-detail/report-detail",
+    "pages/drill/drill",
+    "pages/emergency/emergency",
+    "pages/my-reports/my-reports",
+    "pages/devices/devices",
+    "pages/assembly/assembly",
+    "pages/drill-summary/drill-summary",
+    "pages/drill-records/drill-records",
+    "pages/addresses/addresses",
+    "pages/profile/profile",
+    "pages/notices/notices",
+    "pages/help/help",
+    "pages/legal/legal",
+    "pages/logs/logs"
+  ],
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "安居云枢",
+    "navigationBarBackgroundColor": "#F4F6F9",
+    "backgroundColor": "#F4F6F9",
+    "backgroundTextStyle": "dark"
+  },
+  "tabBar": {
+    "color": "#8893A3",
+    "selectedColor": "#D44730",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "assets/icons/home.png",
+        "selectedIconPath": "assets/icons/home-active.png"
+      },
+      {
+        "pagePath": "pages/hazards/hazards",
+        "text": "隐患",
+        "iconPath": "assets/icons/hazard.png",
+        "selectedIconPath": "assets/icons/hazard-active.png"
+      },
+      {
+        "pagePath": "pages/building/building",
+        "text": "楼栋",
+        "iconPath": "assets/icons/cube.png",
+        "selectedIconPath": "assets/icons/cube-active.png"
+      },
+      {
+        "pagePath": "pages/me/me",
+        "text": "我的",
+        "iconPath": "assets/icons/user.png",
+        "selectedIconPath": "assets/icons/user-active.png"
+      }
+    ]
+  },
+  "usingComponents": {
+    "ui-button": "/components/ui-button/ui-button",
+    "ui-card": "/components/ui-card/ui-card",
+    "ui-state": "/components/ui-state/ui-state",
+    "status-tag": "/components/status-tag/status-tag",
+    "line-icon": "/components/line-icon/line-icon",
+    "mode-banner": "/components/mode-banner/mode-banner",
+    "location-picker": "/components/location-picker/location-picker"
+  },
+  "style": "v2",
+  "componentFramework": "glass-easel",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

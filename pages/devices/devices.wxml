@@ -1,0 +1,9 @@
+<view class="page">
+  <view class="row between"><view class="section-title">{{locationText}}</view><text class="pill">演示数据</text></view>
+  <view class="safety-strip"><view class="row"><view class="icon-box" style="background:white"><line-icon name="device" size="38"/></view><view class="grow"><view class="section-title">{{onlineCount || 0}} 台设备在线（示例）</view><view class="muted">最近更新时间：{{items[0].seenText || '暂无记录'}}</view></view></view><view class="muted">固定展示数据，未连接硬件；在线不代表环境安全。</view></view>
+  <view class="section"><view class="section-title">本层设备</view></view>
+  <ui-state loading="{{loading}}" error="{{error}}" empty="{{!loading && !error && !items.length}}" text="当前楼层暂无设备" bind:retry="retry"/>
+  <ui-card wx:for="{{items}}" wx:key="id"><view class="row"><view class="icon-box"><line-icon name="device" size="36"/></view><view class="grow"><view class="record-title">{{item.name}}</view><view class="record-meta">{{item.location}}</view></view><status-tag status="{{item.connectionStatus}}" label="{{item.connectionLabel}}"/></view><view class="divider"/><view class="row between"><text class="small">最近读数</text><text class="strong">{{item.reading?item.reading.value+' '+item.reading.unit:'暂无读数'}}</text></view><view class="record-meta">{{item.reading?(item.reading.freshness==='stale'?'过期读数示例':'固定读数示例'):'采集状态未知'}} · {{item.readingTime}}</view><view class="record-meta">{{item.eventLabel}}</view><button class="link-button full" data-id="{{item.id}}" bindtap="feedback">反馈设备问题 ›</button></ui-card>
+  <ui-button wx:if="{{items.length<total}}" label="加载更多" variant="plain" loading="{{busy}}" bind:action="more"/>
+  <view class="hint"><view class="strong">留意这三种设备状态</view><view class="chips"><status-tag status="online" label="在线"/><status-tag status="offline" label="离线"/><status-tag status="unknown" label="未知"/></view><view class="muted">离线或缺失数据不会显示为“正常”。</view></view><mode-banner/>
+</view>

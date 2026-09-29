@@ -1,0 +1,24 @@
+{
+  "at": "2026-09-29T04:44:55.281Z",
+  "screenshots": [
+    "home-scroll-end.png",
+    "report-scroll-end.png",
+    "reports-scroll-end.png",
+    "summary-scroll-end.png"
+  ],
+  "scope": "Actual simulator page scrolling; no physical keyboard or touchscreen certification",
+  "device": {
+    "model": "iPhone 12/13 (Pro)",
+    "width": 390,
+    "height": 844,
+    "safeArea": {
+      "top": 47,
+      "left": 0,
+      "right": 390,
+      "bottom": 810,
+      "width": 390,
+      "height": 763
+    }
+  },
+  "result": "captured"
+}

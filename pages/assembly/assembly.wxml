@@ -1,0 +1,11 @@
+<view class="page has-actions">
+  <view class="row between"><text class="pill">模拟演练</text><text class="step-label">STEP 02 / 02</text></view>
+  <ui-state loading="{{loading}}" error="{{error}}" bind:retry="retry" compact/>
+  <block wx:if="{{record}}">
+    <view class="title" style="margin-top:22rpx">认识社区集合点</view><view class="subtitle">{{record.snapshot.communityName}} · 中央广场</view>
+    <view class="campus-map"><view class="campus-canvas"><view class="campus-road-v"/><view class="campus-road-h"/><view class="campus-building nw">1号楼</view><view class="campus-building ne">2号楼</view><view class="campus-building sw">3号楼</view><view class="campus-building se">社区服务</view><view class="campus-path"/><view class="campus-here"/><view class="campus-meeting">中央广场集合点</view><view class="campus-pin"><line-icon name="user" size="38"/></view></view><view class="field-note center">线上示意图 · 非实际导航路线</view></view>
+    <ui-card title="完成前，请确认你已了解"><view class="check-row"><line-icon name="check" size="28"/><text>本层安全出口的位置</text></view><view class="check-row"><line-icon name="check" size="28"/><text>{{record.snapshot.meetingPoint}}</text></view><view class="check-row"><line-icon name="check" size="28"/><text>消防与物业的联系入口</text></view></ui-card>
+    <view class="field-note">完成后将在本次体验中留下记录。线上确认不代表已实际到达。</view><button class="link-button" bindtap="leave">退出本次练习</button>
+  </block>
+  <view class="fixed-actions"><ui-button id="finish-drill" label="结束演练，查看总结" disabled="{{!record}}" loading="{{busy}}" bind:action="confirm"/></view>
+</view>

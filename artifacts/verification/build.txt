@@ -1,0 +1,5 @@
+
+> anju-cloud-pivot@1.0.0 build
+> tsc -p server/tsconfig.json && node scripts/check-client.cjs
+
+Client static checks passed: 21 routes, 41 JS files. WXML runtime compilation requires WeChat DevTools.

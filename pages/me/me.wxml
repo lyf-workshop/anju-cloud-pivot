@@ -1,0 +1,8 @@
+<view class="page">
+  <ui-state loading="{{loading}}" error="{{error}}" bind:retry="retry" compact/>
+  <view class="row profile-header"><view class="profile-avatar"><line-icon name="user-white" size="48"/></view><view class="grow"><view class="hero-title">{{user?user.nickname:'欢迎来到安居云枢'}}</view><view class="record-meta">{{address?address.address:'登录后体验社区服务'}}</view><view class="gap" style="height:8rpx"/><text wx:if="{{user}}" class="save-badge">本地演示住户</text><button wx:else class="link-button" bindtap="login">点击登录 ›</button></view></view>
+  <ui-card wx:if="{{user}}"><view class="stats"><view class="stat"><view class="stat-number accent">{{reportStats.total}}</view><view class="stat-label">我的上报</view></view><view class="stat"><view class="stat-number">{{reportStats.processing}}</view><view class="stat-label">处理中</view></view><view class="stat"><view class="stat-number">{{reportStats.completed}}</view><view class="stat-label">已完成</view></view></view></ui-card>
+  <view class="card profile-menus"><block wx:for="{{menus}}" wx:key="url"><view wx:if="{{index===3}}" class="profile-group-gap"/><button class="list-row" data-url="{{item.url}}" bindtap="go"><view class="icon-box"><line-icon name="{{item.icon}}" size="34"/></view><view class="grow"><view class="strong">{{item.title}}</view><view class="muted">{{item.note}}</view></view><text class="chevron">›</text></button></block></view>
+  <button wx:if="{{user}}" class="link-button full center" loading="{{busy}}" bindtap="logout">退出登录</button>
+  <view class="center muted">隐私政策 · 用户协议</view><mode-banner/>
+</view>

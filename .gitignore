@@ -1,0 +1,29 @@
+node_modules/
+dist/
+coverage/
+
+# Local credentials and machine-specific configuration (keep templates).
+.env
+.env.*
+!.env.example
+config/local.js
+*.local
+server/data/
+project.private.config.json
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+*.db
+*.db-shm
+*.db-wal
+*.db-journal
+*.log
+
+# Local test tooling and generated compiler bundles; retain verification evidence.
+artifacts/local/
+artifacts/devtools-runner/
+artifacts/compiler/wcc.js
+artifacts/compiler/wcsc.js
+
+.DS_Store
+Thumbs.db

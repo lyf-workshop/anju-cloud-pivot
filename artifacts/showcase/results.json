@@ -1,0 +1,24 @@
+{
+  "edition": "local-showcase",
+  "at": "2026-09-29T04:48:48.895Z",
+  "results": [
+    {
+      "name": "static",
+      "exitCode": 0
+    },
+    {
+      "name": "flows",
+      "exitCode": 0
+    },
+    {
+      "name": "wechat-compiler",
+      "exitCode": 0
+    }
+  ],
+  "scope": "Code/controller/offline compiler checks only; see artifacts/visual-v11/results.json for actual simulator evidence.",
+  "notVerifiedByThisScript": [
+    "Figma original design comparison",
+    "WeChat simulator rendering",
+    "physical device rendering"
+  ]
+}

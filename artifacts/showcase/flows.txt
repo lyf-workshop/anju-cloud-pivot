@@ -1,0 +1,1 @@
+Local showcase smoke passed: 20 product pages; 0 network requests; 0 phone calls.

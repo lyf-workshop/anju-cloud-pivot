@@ -1,0 +1,9 @@
+<view class="page">
+  <view class="row"><view class="grow"><view class="title">一起守护社区安全</view><view class="subtitle">发现问题，随手拍照上报</view></view><view class="icon-box" style="background:#fff0eb"><line-icon name="shield-active" size="38"/></view></view>
+  <view class="report-banner" bindtap="report"><view class="grow"><view class="strong">发现隐患？拍照告诉我们</view><view class="muted">记录位置，也给邻里提个醒</view></view><view class="camera-tile"><line-icon name="camera-active" size="44"/></view></view>
+  <scroll-view class="filter-scroll" scroll-x><button wx:for="{{filters}}" wx:key="id" class="chip {{status===item.id?'active':''}}" data-id="{{item.id}}" bindtap="filter">{{item.name}}</button></scroll-view>
+  <ui-state loading="{{loading}}" error="{{error}}" empty="{{!loading && !error && !items.length}}" text="暂无该状态的隐患记录" bind:retry="retry"/>
+  <view wx:for="{{items}}" wx:key="id" class="card report-card" data-url="/pages/report-detail/report-detail?id={{item.id}}" bindtap="go"><view class="row"><image class="report-thumb" src="{{item.cover}}" mode="aspectFill"/><view class="grow"><view class="record-title">{{item.title}}</view><view class="record-meta">{{item.location}}</view><status-tag status="{{item.status}}" label="{{item.statusName}}"/></view></view><view class="record-footer"><text>{{item.timeText}}</text><text class="view-link">查看进度 ›</text></view></view>
+  <ui-button wx:if="{{items.length < total}}" label="加载更多" variant="plain" loading="{{busy}}" bind:action="more" />
+  <mode-banner/>
+</view>

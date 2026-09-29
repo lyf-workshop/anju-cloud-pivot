@@ -1,0 +1,23 @@
+<view class="page">
+  <view class="title">个人资料</view>
+  <view class="subtitle">昵称用于本人的账户展示</view>
+  <view class="gap" />
+  <ui-state loading="{{loading}}" error="{{error}}" bind:retry="retry" />
+  <ui-card>
+    <view class="field">
+      <text class="field-label">昵称</text>
+      <input
+        class="input"
+        value="{{nickname}}"
+        bindinput="input"
+        maxlength="30"
+        placeholder="填写你希望使用的称呼"
+        disabled="{{busy}}"
+      />
+    </view>
+    <ui-button label="保存资料" loading="{{busy}}" bind:action="save" />
+  </ui-card>
+  <view class="hint">
+    无需提供头像或手机号。上报时可单独填写必要的联系信息。
+  </view>
+</view>
