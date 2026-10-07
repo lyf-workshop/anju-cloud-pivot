@@ -1,13 +1,13 @@
-# 公网演示部署（2026-09-29）
+# 公网演示部署（更新于 2026-10-07）
 
-本次已部署到 `us-vps-01`，入口为 <https://xn--9kqy92aeqav77a.com/>，评委应用使用 `https://xn--9kqy92aeqav77a.com/api`。这是**公网演示环境**：Windows/Android 首次自动领取按安装隔离的匿名会话；默认网页使用小组成员版 Mock 值班台和台账；摄像头卡片接入树莓派实时测试画面及树莓派本地 YOLO 结果；`/login.html` 是后端联调工作台；数据库是服务器上的独立 SQLite 演示库。它不是已投入使用的消防监控系统，也没有接入真实微信登录或真实住户数据。模型结果需人工复核。
+服务部署在 `us-vps-01`，入口为 <https://xn--9kqy92aeqav77a.com/>，客户端 API 为 `https://xn--9kqy92aeqav77a.com/api`。这是**公网演示环境**：Windows 1.5.0 是需要物业账号的网页工作台；Android 1.5.0 和微信小程序是自动领取隔离匿名会话的住户端。默认浏览器首页保留小组成员版展示，`/login.html` 是真实物业登录入口。数据库是服务器上的独立 SQLite 演示库；它不是已投入使用的消防监控系统，也没有接入真实微信登录或真实住户数据。
 
 ## 当前服务器布局
 
 | 项目 | 位置 |
 | --- | --- |
 | systemd 服务 | `anju-cloud-pivot.service` |
-| 当前代码 | `/opt/anju-cloud-pivot/current` → `/opt/anju-cloud-pivot/releases/20261007-nav-v16` |
+| 当前代码 | `/opt/anju-cloud-pivot/current` → `/opt/anju-cloud-pivot/releases/20261007-auth-role-v17` |
 | 网页静态目录 | release 内 `site` → `安居云枢网页端(1)/textcursor` |
 | 数据库和附件 | `/var/lib/anju-cloud-pivot/` |
 | 服务端配置 | `/etc/anju-cloud-pivot/anju.env`（`root:anju`，权限 `640`） |
@@ -32,13 +32,13 @@ ssh raspberrypi-via-aliyun "systemctl status anju-camera-agent --no-pager"
 
 联调账号为 `property-demo`。密码在服务器上随机生成，不写入仓库或网页；服务器管理员可执行 `cat /etc/anju-cloud-pivot/staff-password` 查看。公开域名使用 `PUBLIC_DEMO=true`，居民开发登录被拒绝、网页不显示默认口令、物业会话 Cookie 带 `Secure`。演示数据和操作不得当作真实告警或住户资料。不要把此环境的演示数据库切换为正式业务库。
 
-评委下载页不在公开首页展示，路径为 `/judge-downloads/`，用户名 `reviewer`。当前提供带居民安全助手的 Windows/Android 1.4.0，服务器端 SHA-256 校验通过；旧 1.3.0 安装包移到站点外 `/srv/anju-cloud-pivot-downloads/archive/`，不再由下载 URL 提供。密码随机生成且不写入仓库，可由服务器管理员执行 `sudo cat /etc/anju-cloud-pivot/judge-download-password` 获取，并通过与链接不同的渠道发给评委。Caddy 对该路径设置 Basic Auth、`Cache-Control: private, no-store` 和 `X-Robots-Tag: noindex, nofollow`。1.4.0 实测未授权返回 401、授权索引返回 200、两个安装包分段请求返回 206。评审结束后删除下载文件、轮换密码或移除该路由。
+评委下载页不在公开首页展示，路径为 `/judge-downloads/`，用户名 `reviewer`。当前提供 Windows 物业工作台 `Anju-Property-Windows-1.5.0-Setup.exe` 和 Android 住户端 `Anju-CloudPivot-Android-1.5.0.apk`；旧 1.4.0 已移到站点外 `/srv/anju-cloud-pivot-downloads/archive/`。密码随机生成且不写入仓库，可由服务器管理员执行 `sudo cat /etc/anju-cloud-pivot/judge-download-password` 获取，并通过与链接不同的渠道发给评委。Caddy 对该路径设置 Basic Auth、`Cache-Control: private, no-store` 和 `X-Robots-Tag: noindex, nofollow`。1.5.0 已实测未授权 401、授权索引 200、两个安装包分段请求 206，服务器端 SHA-256 与本地构建一致。评审结束后应撤下文件、轮换下载密码并按保留政策清理演示数据。
 
 备份脚本 `/usr/local/sbin/anju-cloud-pivot-backup` 使用 SQLite `VACUUM INTO` 生成一致数据库副本，再归档附件并写入 SHA-256/`COMPLETE` 标记；首个实际备份位于 `/var/backups/anju-cloud-pivot/20260929T183113Z`。自动备份不等于恢复演练，正式运营前仍应在隔离目录执行定期恢复测试。
 
 ## 后续更新与恢复
 
-当前 release 为 `/opt/anju-cloud-pivot/releases/20261007-nav-v16`；上一版 `/opt/anju-cloud-pivot/releases/20261007-web-clarity-v15` 保留为回退点。本轮仅更新网页静态文件和统一导航脚本，没有数据库结构迁移；数据库、附件、服务器其他站点、树莓派服务和 `/var/lib/anju-cloud-pivot/` 均未覆盖。外部模型密钥当前未配置，居民和物业智能体使用明确标注的本地安全规则；需要启用兼容模型时只在服务器 `anju.env` 配置，禁止写入客户端或 Git。
+当前 release 为 `/opt/anju-cloud-pivot/releases/20261007-auth-role-v17`；上一版 `/opt/anju-cloud-pivot/releases/20261007-nav-v16` 保留为回退点。切换前已生成一致数据库备份 `/var/backups/anju-cloud-pivot/20261007T144150Z`。本轮 schema 4 只新增物业独立会话、登录审计及账号锁定字段；原账号密码、居民数据、附件、Caddy 其他站点、树莓派服务和 `/var/lib/anju-cloud-pivot/` 均未覆盖。物业会话默认12小时，“保持登录”默认7天；可用 `STAFF_SESSION_TTL_HOURS`、`STAFF_REMEMBER_SESSION_TTL_HOURS`、`STAFF_LOCK_ATTEMPTS`、`STAFF_LOCK_MINUTES` 配置。外部模型密钥当前未配置，居民和物业智能体使用明确标注的本地安全规则。
 
 回退时仅切换 `current` 软链接并重启 `anju-cloud-pivot`，不要改动 Caddy 中其他站点。例如将 `<上一个可用版本>` 替换为实际目录：
 

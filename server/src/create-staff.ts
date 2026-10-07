@@ -6,8 +6,15 @@ import { passwordHash } from "./staff.js";
 import { id, now } from "./core.js";
 
 const schema = z.object({
-  username: z.string().regex(/^[a-zA-Z0-9_-]{3,60}$/),
-  password: z.string().min(12).max(200),
+  username: z.string().regex(/^[a-z0-9_-]{3,60}$/),
+  password: z
+    .string()
+    .min(12)
+    .max(200)
+    .regex(/[a-z]/)
+    .regex(/[A-Z]/)
+    .regex(/[0-9]/)
+    .regex(/[^A-Za-z0-9]/),
   nickname: z.string().trim().min(1).max(30),
   communityId: z.string().trim().min(1),
   role: z.enum(["manager", "operator", "viewer"]),
@@ -46,11 +53,12 @@ if (!parsed.success) {
         cfg.legalVersion,
       );
       db.run(
-        "INSERT INTO staff_accounts VALUES (?,?,?,?)",
+        "INSERT INTO staff_accounts (user_id,username,password_hash,active,password_changed_at) VALUES (?,?,?,?,?)",
         uid,
         p.username,
         passwordHash(p.password),
         1,
+        now(),
       );
       db.run(
         "INSERT INTO staff_memberships VALUES (?,?,?)",

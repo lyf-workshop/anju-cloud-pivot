@@ -1,20 +1,20 @@
 # 安居云枢 · 居民小程序与物业网页
 
-## 评委体验版（Windows / Android，2026-10-07）
+## 评委体验版 1.5.0（Windows 物业端 / Android 住户端，2026-10-07）
 
-本次队友功能合并新增“居民安全助手”和物业“处置智能体”。原生小程序与 Windows/Android 共用前端都把助手放进一级导航，可按识险、处置、文书三种角色给出建议并把草稿带入隐患上报；网络失败时明确显示本地建议，不把离线结果伪装成服务器状态。物业智能体只读取当前员工有权访问的社区数据，任何工单动作都必须再次人工确认。大模型密钥仅允许配置在服务端，留空时使用可测试的本地安全规则。
+住户侧的原生小程序与 Android 应用都提供“居民安全助手”，可按识险、处置、文书生成建议并把草稿带入隐患上报；网络失败时明确显示本地建议。Windows 物业工作台提供独立的处置智能体，只读取当前员工有权访问的社区数据，任何工单动作都必须再次人工确认。大模型密钥仅允许配置在服务端，留空时使用可测试的本地安全规则。
 
 自有 AppID 配置见 [docs/miniprogram-own-app.md](docs/miniprogram-own-app.md)，可执行 `npm run wechat:setup -- <AppID> remote-demo <HTTPS API>`；脚本只修改当前仓库根目录，不使用队友旧包的 `mobile/` 路径。
 
-本仓库现保留原生微信小程序，并新增一套共享居民前端 `apps/resident`：Windows 使用 Electron，Android 使用 Capacitor。它们不是把 WXML/WXSS 伪装成可直接打包，而是复用现有业务模型、接口和视觉后重新实现的响应式客户端。打开安装版可点“直接体验”，首次自动领取按安装隔离的匿名演示会话；之后自动恢复，无需账号、密码、协议勾选或绑定住址。
+本仓库保留原生微信小程序及共享住户前端 `apps/resident`。Android 使用 Capacitor 打包住户端，与微信小程序保持同一业务定位：点击“直接体验”后领取按安装隔离的匿名演示会话，无需账号密码，重开自动恢复。Windows 使用 Electron 承载 HTTPS 物业网页工作台，使用独立物业账号会话，不再复用住户界面。两类会话使用不同 Cookie/token，物业 Cookie 不会成为住户身份。
 
-- Windows 安装包：`output/installers/windows/安居云枢-Windows-1.4.0-Setup.exe`
-- Android APK：`output/installers/android/Anju-CloudPivot-Android-1.4.0.apk`
+- Windows 物业安装包：`output/installers/windows/Anju-Property-Windows-1.5.0-Setup.exe`
+- Android 住户 APK：`output/installers/android/Anju-CloudPivot-Android-1.5.0.apk`
 - 正式演示 API：`https://xn--9kqy92aeqav77a.com/api`
 - 评委一页说明：[docs/judge-guide.md](docs/judge-guide.md)
 - 发布边界：[docs/release-notes.md](docs/release-notes.md)
 
-服务器当前 release 为 `/opt/anju-cloud-pivot/releases/20261007-nav-v16`，systemd、Caddy HTTPS、SQLite 持久化、每日备份与受控下载均独立配置。匿名会话默认 90 天有效；服务端按安装键映射私有用户，客户端只保存随机安装键和会话令牌，不包含共享管理员密钥。1.4.0 已合并队友智能体、保留住户登记流程，并通过 Windows 安装版和 Android 16 安装 APK 的完整闭环，详见 [验证记录](docs/verification.md)。
+服务器当前 release 为 `/opt/anju-cloud-pivot/releases/20261007-auth-role-v17`，systemd、Caddy HTTPS、SQLite 持久化、每日备份与受控下载均独立配置。schema 4 为物业增加独立 HttpOnly 会话、失败锁定、会话撤销、改密与登录审计；原住户匿名会话继续默认 90 天。1.5.0 已通过 Windows 物业安装版和 Android 16 住户 APK 的真实安装闭环，详见 [验证记录](docs/verification.md)。
 
 居民小程序与物业接口联调共用 Fastify / TypeScript / SQLite 后端。物业网页现以小组成员提供的 `安居云枢网页端(2).zip` 为默认界面，共有 10 个页面，并按核心工作、基础治理、巡查整改、处置支持、系统与应急重新组织；完整清单见 [物业网页页面与导航结构](docs/web-navigation.md)。成员版 Mock 交互继续保留，树莓派实时画面、物业登录和接口联调工作台由现有兼容层接入。小程序、本地数据库和现有接口继续保留。
 

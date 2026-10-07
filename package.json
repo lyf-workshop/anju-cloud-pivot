@@ -1,6 +1,6 @@
 {
   "name": "anju-cloud-pivot",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "安居云枢社区安全评委体验应用与演示后端",
   "author": "安居云枢项目组",
   "private": true,
@@ -31,8 +31,8 @@
     "app:dev": "vite --config apps/resident/vite.config.mjs",
     "app:build": "vite build --config apps/resident/vite.config.mjs",
     "app:preview": "vite preview --config apps/resident/vite.config.mjs --host 127.0.0.1 --port 4173",
-    "desktop:start": "npm run app:build && electron apps/desktop/main.cjs",
-    "desktop:build": "npm run app:build && powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-windows.ps1",
+    "desktop:start": "electron apps/desktop/main.cjs",
+    "desktop:build": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-windows.ps1",
     "desktop:verify-installed": "node scripts/verify-installed-windows.mjs",
     "android:sync": "npm run app:build && cap sync android",
     "android:build": "npm run android:sync && powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-android.ps1",

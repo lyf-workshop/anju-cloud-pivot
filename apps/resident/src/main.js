@@ -457,7 +457,7 @@ async function issueSession(existing = null) {
   const issued = await api.post("/auth/demo-session", {
     installationKey,
     platform: platformName(),
-    clientVersion: "1.4.0",
+    clientVersion: "1.5.0",
   });
   state.session = {
     ...issued,

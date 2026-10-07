@@ -6,16 +6,29 @@ import type { Settings } from "./config.js";
 import { fail, hash, id, now, text } from "./core.js";
 import { agentChatSchema, runStaffAgent } from "./agent.js";
 
+export const STAFF_SESSION_COOKIE = "anju_staff_session";
 export const passwordHash = (password: string) => {
   const salt = randomBytes(16).toString("hex");
   return salt + ":" + scryptSync(password, salt, 64).toString("hex");
 };
 const passwordMatches = (password: string, stored: string) => {
-  const [salt, expected] = stored.split(":");
-  const actual = scryptSync(password, salt, 64);
-  const target = Buffer.from(expected || "", "hex");
-  return target.length === actual.length && timingSafeEqual(actual, target);
+  try {
+    const [salt, expected] = stored.split(":");
+    const actual = scryptSync(password, salt, 64);
+    const target = Buffer.from(expected || "", "hex");
+    return target.length === actual.length && timingSafeEqual(actual, target);
+  } catch {
+    return false;
+  }
 };
+const staffPassword = z
+  .string()
+  .min(12, "密码至少需要 12 个字符")
+  .max(200)
+  .regex(/[a-z]/, "密码需要包含小写字母")
+  .regex(/[A-Z]/, "密码需要包含大写字母")
+  .regex(/[0-9]/, "密码需要包含数字")
+  .regex(/[^A-Za-z0-9]/, "密码需要包含符号");
 export function seedStaff(db: Store, cfg: Settings) {
   if (cfg.mode !== "demo" || cfg.production) return;
   if (
@@ -36,11 +49,12 @@ export function seedStaff(db: Store, cfg: Settings) {
       cfg.legalVersion,
     );
     db.run(
-      "INSERT INTO staff_accounts VALUES (?,?,?,?)",
+      "INSERT INTO staff_accounts (user_id,username,password_hash,active,password_changed_at) VALUES (?,?,?,?,?)",
       uid,
       "property-demo",
       passwordHash(cfg.demoStaffPassword),
       1,
+      now(),
     );
     db.run(
       "INSERT INTO staff_memberships VALUES (?,?,?)",
@@ -53,25 +67,60 @@ export function seedStaff(db: Store, cfg: Settings) {
 type Dependencies = {
   db: Store;
   cfg: Settings;
-  auth: (req: FastifyRequest) => any;
   reportView: (row: any) => any;
   deviceView: (row: any) => any;
   drillView: (row: any) => any;
   cameraInspect: (id: string) => unknown;
 };
 export function registerStaff(app: FastifyInstance, deps: Dependencies) {
-  const { db, cfg, auth, reportView, deviceView, drillView, cameraInspect } =
+  const { db, cfg, reportView, deviceView, drillView, cameraInspect } =
     deps;
   seedStaff(db, cfg);
+  const clientLabel = (r: FastifyRequest) => {
+    const declared = String(r.headers["x-anju-client"] || "").trim();
+    if (declared) return declared.slice(0, 100);
+    const agent = String(r.headers["user-agent"] || "");
+    if (/Electron/i.test(agent)) return "Windows 物业工作台";
+    if (/Android/i.test(agent)) return "Android 浏览器";
+    if (/Mobile/i.test(agent)) return "移动浏览器";
+    return agent ? "桌面浏览器" : "未知客户端";
+  };
+  const ipHash = (r: FastifyRequest) => hash(r.ip || "unknown").slice(0, 24);
+  const authEvent = (
+    r: FastifyRequest,
+    username: string,
+    action: string,
+    userId: string | null = null,
+  ) =>
+    db.run(
+      "INSERT INTO staff_auth_events VALUES (?,?,?,?,?,?,?)",
+      id(),
+      userId,
+      username,
+      action,
+      now(),
+      clientLabel(r),
+      ipHash(r),
+    );
   const staff = (r: FastifyRequest) => {
-    const u = auth(r);
-    if (
-      !db.one(
-        "SELECT user_id FROM staff_accounts WHERE user_id=? AND active=1",
-        u.id,
-      )
-    )
-      fail(403, "STAFF_REQUIRED", "此功能需要物业账号");
+    const token = r.cookies[STAFF_SESSION_COOKIE] || "";
+    if (!token) fail(401, "SESSION_EXPIRED", "请先登录物业工作台");
+    const u = db.one(
+      `SELECT u.*,a.username,a.last_login_at,a.password_changed_at,
+              s.id staff_session_id,s.expires_at staff_session_expires_at
+       FROM staff_sessions s
+       JOIN staff_accounts a ON a.user_id=s.user_id AND a.active=1
+       JOIN users u ON u.id=s.user_id
+       WHERE s.token_hash=? AND s.revoked_at IS NULL AND s.expires_at>?`,
+      hash(token),
+      now(),
+    );
+    if (!u) fail(401, "SESSION_EXPIRED", "登录已过期，请重新登录");
+    db.run(
+      "UPDATE staff_sessions SET last_seen_at=? WHERE id=?",
+      now(),
+      u.staff_session_id,
+    );
     return u;
   };
   const membership = (
@@ -101,7 +150,14 @@ export function registerStaff(app: FastifyInstance, deps: Dependencies) {
   const staffView = (u: any) => ({
     id: u.id,
     nickname: u.nickname,
+    username: u.username,
     communities: memberships(u.id),
+    security: {
+      sessionId: u.staff_session_id || null,
+      sessionExpiresAt: u.staff_session_expires_at || null,
+      lastLoginAt: u.last_login_at || null,
+      passwordChangedAt: u.password_changed_at || null,
+    },
   });
   const route = (method: any, url: string, fn: (r: any, reply: any) => any) =>
     app.route({
@@ -218,7 +274,15 @@ export function registerStaff(app: FastifyInstance, deps: Dependencies) {
     { config: { rateLimit: { max: 10, timeWindow: "1 minute" } } },
     async (r, reply) => {
       const p = z
-        .object({ username: text(1, 60), password: z.string().min(1).max(200) })
+        .object({
+          username: z
+            .string()
+            .trim()
+            .toLowerCase()
+            .regex(/^[a-z0-9_-]{3,60}$/),
+          password: z.string().min(1).max(200),
+          remember: z.boolean().default(false),
+        })
         .strict()
         .parse(r.body);
       const account = db.one(
@@ -229,35 +293,89 @@ export function registerStaff(app: FastifyInstance, deps: Dependencies) {
       const digest =
         account?.password_hash ||
         "0123456789abcdef0123456789abcdef:" + "00".repeat(64);
-      if (!passwordMatches(p.password, digest) || !account)
+      const locked =
+        account?.locked_until && Date.parse(account.locked_until) > Date.now();
+      if (locked) {
+        authEvent(r, p.username, "login_locked", account.user_id);
+        fail(429, "LOGIN_LOCKED", "登录尝试过多，请稍后再试");
+      }
+      if (!passwordMatches(p.password, digest) || !account) {
+        if (account) {
+          const attempts = Number(account.failed_attempts || 0) + 1;
+          const lockUntil =
+            attempts >= cfg.staffLockAttempts
+              ? new Date(
+                  Date.now() + cfg.staffLockMinutes * 60_000,
+                ).toISOString()
+              : null;
+          db.run(
+            "UPDATE staff_accounts SET failed_attempts=?,locked_until=? WHERE user_id=?",
+            lockUntil ? 0 : attempts,
+            lockUntil,
+            account.user_id,
+          );
+        }
+        authEvent(r, p.username, "login_failed", account?.user_id || null);
         fail(401, "LOGIN_FAILED", "账号或密码不正确");
+      }
       const token = randomBytes(32).toString("hex");
+      const sessionId = id();
+      const issuedAt = now();
+      const hours = p.remember
+        ? cfg.staffRememberSessionHours
+        : cfg.staffSessionHours;
       const expiresAt = new Date(
-        Date.now() + cfg.sessionHours * 3600000,
+        Date.now() + hours * 3600000,
       ).toISOString();
-      if (r.cookies.anju_session)
+      if (r.cookies[STAFF_SESSION_COOKIE])
         db.run(
-          "DELETE FROM sessions WHERE token_hash=?",
-          hash(r.cookies.anju_session),
+          "UPDATE staff_sessions SET revoked_at=? WHERE token_hash=? AND revoked_at IS NULL",
+          issuedAt,
+          hash(r.cookies[STAFF_SESSION_COOKIE]),
         );
-      db.run(
-        "INSERT INTO sessions VALUES (?,?,?)",
-        hash(token),
-        account.user_id,
-        expiresAt,
-      );
-      reply.setCookie("anju_session", token, {
+      db.tx(() => {
+        db.run(
+          "DELETE FROM staff_sessions WHERE expires_at<=? OR revoked_at IS NOT NULL",
+          issuedAt,
+        );
+        db.run(
+          "INSERT INTO staff_sessions VALUES (?,?,?,?,?,?,?,?,?)",
+          sessionId,
+          hash(token),
+          account.user_id,
+          issuedAt,
+          issuedAt,
+          expiresAt,
+          clientLabel(r),
+          ipHash(r),
+          null,
+        );
+        db.run(
+          "UPDATE staff_accounts SET failed_attempts=0,locked_until=NULL,last_login_at=? WHERE user_id=?",
+          issuedAt,
+          account.user_id,
+        );
+        authEvent(r, p.username, "login_success", account.user_id);
+      });
+      reply.setCookie(STAFF_SESSION_COOKIE, token, {
         path: "/",
         httpOnly: true,
         sameSite: "strict",
         secure: cfg.production || cfg.publicDemo,
-        maxAge: cfg.sessionHours * 3600,
+        maxAge: hours * 3600,
       });
+      reply.clearCookie("anju_session", { path: "/" });
+      const user = db.one(
+        `SELECT u.*,a.username,a.last_login_at,a.password_changed_at,
+                ? staff_session_id,? staff_session_expires_at
+         FROM users u JOIN staff_accounts a ON a.user_id=u.id WHERE u.id=?`,
+        sessionId,
+        expiresAt,
+        account.user_id,
+      );
       return {
         data: {
-          user: staffView(
-            db.one("SELECT * FROM users WHERE id=?", account.user_id),
-          ),
+          user: staffView(user),
           expiresAt,
         },
       };
@@ -265,18 +383,105 @@ export function registerStaff(app: FastifyInstance, deps: Dependencies) {
   );
   route("GET", "/me", (r) => staffView(staff(r)));
   route("POST", "/auth/logout", (r, reply) => {
-    staff(r);
+    const u = staff(r);
     db.run(
-      "DELETE FROM sessions WHERE token_hash=?",
-      hash(r.cookies.anju_session || ""),
+      "UPDATE staff_sessions SET revoked_at=? WHERE id=? AND revoked_at IS NULL",
+      now(),
+      u.staff_session_id,
     );
-    reply.clearCookie("anju_session", {
+    authEvent(r, u.username, "logout", u.id);
+    reply.clearCookie(STAFF_SESSION_COOKIE, {
       path: "/",
       httpOnly: true,
       sameSite: "strict",
       secure: cfg.production || cfg.publicDemo,
     });
     return { loggedOut: true };
+  });
+  route("GET", "/auth/sessions", (r) => {
+    const u = staff(r);
+    return db
+      .all(
+        `SELECT id,created_at createdAt,last_seen_at lastSeenAt,
+                expires_at expiresAt,client_label client
+         FROM staff_sessions
+         WHERE user_id=? AND revoked_at IS NULL AND expires_at>?
+         ORDER BY last_seen_at DESC`,
+        u.id,
+        now(),
+      )
+      .map((session) => ({
+        ...session,
+        current: session.id === u.staff_session_id,
+      }));
+  });
+  route("POST", "/auth/sessions/revoke", (r, reply) => {
+    const u = staff(r);
+    const p = z.object({ sessionId: z.uuid() }).strict().parse(r.body);
+    const result = db.run(
+      "UPDATE staff_sessions SET revoked_at=? WHERE id=? AND user_id=? AND revoked_at IS NULL",
+      now(),
+      p.sessionId,
+      u.id,
+    );
+    if (!result.changes) fail(404, "NOT_FOUND", "登录会话不存在或已经退出");
+    authEvent(r, u.username, "session_revoked", u.id);
+    if (p.sessionId === u.staff_session_id)
+      reply.clearCookie(STAFF_SESSION_COOKIE, {
+        path: "/",
+        httpOnly: true,
+        sameSite: "strict",
+        secure: cfg.production || cfg.publicDemo,
+      });
+    return { revoked: true, current: p.sessionId === u.staff_session_id };
+  });
+  route("POST", "/auth/logout-all", (r, reply) => {
+    const u = staff(r);
+    db.run(
+      "UPDATE staff_sessions SET revoked_at=? WHERE user_id=? AND revoked_at IS NULL",
+      now(),
+      u.id,
+    );
+    authEvent(r, u.username, "logout_all", u.id);
+    reply.clearCookie(STAFF_SESSION_COOKIE, {
+      path: "/",
+      httpOnly: true,
+      sameSite: "strict",
+      secure: cfg.production || cfg.publicDemo,
+    });
+    return { loggedOut: true };
+  });
+  route("POST", "/auth/change-password", (r) => {
+    const u = staff(r);
+    const p = z
+      .object({ currentPassword: z.string().max(200), newPassword: staffPassword })
+      .strict()
+      .parse(r.body);
+    const account = db.one(
+      "SELECT password_hash FROM staff_accounts WHERE user_id=?",
+      u.id,
+    );
+    if (!account || !passwordMatches(p.currentPassword, account.password_hash))
+      fail(401, "PASSWORD_INCORRECT", "当前密码不正确");
+    if (passwordMatches(p.newPassword, account.password_hash))
+      fail(409, "PASSWORD_REUSED", "新密码不能与当前密码相同");
+    const changedAt = now();
+    db.tx(() => {
+      db.run(
+        "UPDATE staff_accounts SET password_hash=?,password_changed_at=?,failed_attempts=0,locked_until=NULL WHERE user_id=?",
+        passwordHash(p.newPassword),
+        changedAt,
+        u.id,
+      );
+      db.run(
+        "UPDATE staff_sessions SET revoked_at=? WHERE user_id=? AND id<>? AND revoked_at IS NULL",
+        changedAt,
+        u.id,
+        u.staff_session_id,
+      );
+      authEvent(r, u.username, "password_changed", u.id);
+    });
+    return { changedAt, otherSessionsRevoked: true };
   });
   route("GET", "/members", (r) => {
     const q = pageQuery(r);

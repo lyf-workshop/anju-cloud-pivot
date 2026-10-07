@@ -1,11 +1,10 @@
-const { contextBridge, ipcRenderer } = require("electron");
+const { contextBridge } = require("electron");
 
-contextBridge.exposeInMainWorld("anjuDesktop", {
-  platform: "windows",
-  version: "1.4.0",
-  secret: Object.freeze({
-    get: (key) => ipcRenderer.invoke("secret:get", key),
-    set: (key, value) => ipcRenderer.invoke("secret:set", key, value),
-    remove: (key) => ipcRenderer.invoke("secret:remove", key),
+contextBridge.exposeInMainWorld(
+  "anjuDesktop",
+  Object.freeze({
+    platform: "windows",
+    role: "property",
+    version: "1.5.0",
   }),
-});
+);

@@ -23,7 +23,7 @@ export class ApiClient {
     const headers = {
       Accept: "application/json",
       "X-Data-Mode": "demo",
-      "X-Anju-Client": "judge-app/1.4.0",
+      "X-Anju-Client": "resident-android/1.5.0",
       ...(options.headers || {}),
     };
     if (this.token) headers.Authorization = `Bearer ${this.token}`;

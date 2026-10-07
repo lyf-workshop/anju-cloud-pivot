@@ -145,7 +145,7 @@
       }
     }
   }
-  function submit(form, task) {
+  function submit(form, task, reportError = showError) {
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
       if (!form.reportValidity() || form.dataset.busy) return;
@@ -156,7 +156,7 @@
       try {
         await task(Object.fromEntries(new FormData(form)), form);
       } catch (e) {
-        showError(e);
+        reportError(e);
       } finally {
         delete form.dataset.busy;
         b.disabled = false;
@@ -197,19 +197,93 @@
     );
   }
   async function login() {
+    const requested = new URLSearchParams(location.search).get("next") || "";
+    const safeNext = /^\/[a-z-]+\.html$/.test(requested)
+      ? apiPage(requested)
+      : apiPage("index.html");
+    try {
+      await api.get("/staff/me");
+      location.replace(safeNext);
+      return;
+    } catch (error) {
+      if (error.status !== 401) throw error;
+    }
     frame(
       "物业工作台登录",
-      `<div class="api-login">${card("安居云枢", `<form id="login-form">${input("username", "物业账号")}${input("password", "密码", "password")}<button class="btn btn-primary" type="submit">登录</button></form><p class="api-secondary">${config.staffDemoLogin ? "本地演示账号：property-demo<br>默认密码：AnjuLocal2026!（若已配置其他密码，请使用配置值）" : "请使用管理员分配的物业账号。"}</p>`)}</div>`,
+      `<div class="api-login">${card("安居云枢", `<form id="login-form"><label>物业账号<input name="username" autocomplete="username" autocapitalize="none" spellcheck="false" required></label><label>密码<input name="password" type="password" autocomplete="current-password" required></label><label class="api-check"><input name="remember" type="checkbox" value="true"> 在本机保持登录 7 天</label><button class="btn btn-primary api-login-submit" type="submit">登录物业工作台</button></form><p class="api-secondary">${config.staffDemoLogin ? "本地演示账号：property-demo<br>默认密码：AnjuLocal2026!（若已配置其他密码，请使用配置值）" : "请使用管理员分配的物业账号。连续输错密码会临时锁定账号。"}</p>`)}</div>`,
       "居民使用微信小程序；物业账号由管理员分配。",
     );
     const form = document.getElementById("login-form");
     if (config.staffDemoLogin) form.elements.username.value = "property-demo";
     submit(form, async (body) => {
+      body.remember = form.elements.remember.checked;
       await api.post("/staff/auth/login", body);
-      const requested = new URLSearchParams(location.search).get("next") || "";
-      const safeNext = /^\/[a-z-]+\.html$/.test(requested) ? requested : apiPage("index.html");
       location.replace(safeNext);
     });
+  }
+  async function openSecurity() {
+    document.getElementById("security-dialog")?.remove();
+    const sessions = await api.get("/staff/auth/sessions");
+    const dialog = document.createElement("dialog");
+    dialog.id = "security-dialog";
+    dialog.className = "security-dialog";
+    dialog.innerHTML = `<div class="security-head"><div><small>账号安全</small><h2>${esc(user.nickname)}</h2><p>${esc(user.username)}</p></div><button type="button" class="modal-close" data-security-close aria-label="关闭">×</button></div>
+      <div class="security-body"><div id="security-message" class="api-message" role="status" aria-live="polite"></div>
+      <section><h3>当前登录</h3><p class="api-secondary">密码修改时间：${date(user.security.passwordChangedAt)}。修改密码后，其他设备会自动退出。</p>
+      <div class="security-sessions">${sessions
+        .map(
+          (session) => `<article><div><strong>${esc(session.client)}${session.current ? " · 当前设备" : ""}</strong><small>最近使用 ${date(session.lastSeenAt)}<br>有效期至 ${date(session.expiresAt)}</small></div>${session.current ? '<span class="api-status completed">使用中</span>' : `<button type="button" class="btn btn-ghost" data-revoke-session="${esc(session.id)}">退出此设备</button>`}</article>`,
+        )
+        .join("")}</div></section>
+      <section><h3>修改密码</h3><form id="password-form"><label>当前密码<input name="currentPassword" type="password" autocomplete="current-password" required></label><label>新密码<input name="newPassword" type="password" autocomplete="new-password" minlength="12" maxlength="200" required></label><label>确认新密码<input name="confirmPassword" type="password" autocomplete="new-password" minlength="12" maxlength="200" required></label><p class="api-secondary">至少 12 位，并同时包含大写字母、小写字母、数字和符号。</p><button class="btn btn-primary" type="submit">保存新密码</button></form></section>
+      <div class="security-actions"><button type="button" class="btn btn-ghost" id="logout-all">退出全部设备</button><button type="button" class="btn btn-primary" data-security-close>完成</button></div></div>`;
+    document.body.append(dialog);
+    const securityMessage = (value, success = false) => {
+      const target = dialog.querySelector("#security-message");
+      target.textContent = value;
+      target.className = "api-message" + (success ? " api-success" : "");
+    };
+    dialog.querySelectorAll("[data-security-close]").forEach((element) =>
+      element.addEventListener("click", () => dialog.close()),
+    );
+    dialog.addEventListener("close", () => dialog.remove());
+    dialog.querySelectorAll("[data-revoke-session]").forEach((element) =>
+      element.addEventListener("click", async () => {
+        element.disabled = true;
+        try {
+          await api.post("/staff/auth/sessions/revoke", {
+            sessionId: element.dataset.revokeSession,
+          });
+          element.closest("article").remove();
+          securityMessage("该设备已退出登录。", true);
+        } catch (error) {
+          element.disabled = false;
+          securityMessage(error.message);
+        }
+      }),
+    );
+    const passwordForm = dialog.querySelector("#password-form");
+    submit(passwordForm, async (body) => {
+      if (body.newPassword !== body.confirmPassword) {
+        securityMessage("两次输入的新密码不一致。");
+        return;
+      }
+      delete body.confirmPassword;
+      await api.post("/staff/auth/change-password", body);
+      passwordForm.reset();
+      securityMessage("密码已修改，其他设备已退出登录。", true);
+    }, (error) => securityMessage(error.message));
+    dialog.querySelector("#logout-all").addEventListener("click", async (event) => {
+      event.currentTarget.disabled = true;
+      try {
+        await api.post("/staff/auth/logout-all", {});
+        location.replace("login.html");
+      } catch (error) {
+        event.currentTarget.disabled = false;
+        securityMessage(error.message);
+      }
+    });
+    dialog.showModal();
   }
   async function overview() {
     const [s, devices, events, drills, notices] = await Promise.all([
@@ -675,7 +749,7 @@
         communityId = user.communities[0].communityId;
       const bar = document.createElement("div");
       bar.className = "connection-bar";
-      bar.innerHTML = `<strong>${config.publicDemo ? "在线演示" : config.mode === "demo" ? "本地联调" : "物业工作台"}</strong><span>${esc(user.nickname)}</span><label>当前社区 <select id="community-select">${user.communities.map((c) => option(c.communityId, c.communityName)).join("")}</select></label>${button("退出登录", "logout", "btn-ghost")}`;
+      bar.innerHTML = `<strong>${config.publicDemo ? "在线演示" : config.mode === "demo" ? "本地联调" : "物业工作台"}</strong><span>${esc(user.nickname)}</span><label>当前社区 <select id="community-select">${user.communities.map((c) => option(c.communityId, c.communityName)).join("")}</select></label><span class="connection-actions">${button("账号安全", "security", "btn-ghost")}${button("退出登录", "logout", "btn-ghost")}</span>`;
       main.before(bar);
       const originalSite = document.createElement("a");
       originalSite.href = "index.html";
@@ -696,6 +770,7 @@
           action(document.getElementById("retry"), render);
         }
       };
+      action(document.getElementById("security"), openSecurity);
       action(document.getElementById("logout"), async () => {
         await api.post("/staff/auth/logout", {});
         Object.keys(sessionStorage)

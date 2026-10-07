@@ -27,7 +27,12 @@ body[data-ready] .float-call {
 .connection-bar select {
   max-width: 280px;
 }
-.connection-bar button {
+.connection-bar > button {
+  margin-left: auto;
+}
+.connection-actions {
+  display: flex;
+  gap: 8px;
   margin-left: auto;
 }
 .api-main {
@@ -138,6 +143,77 @@ body[data-ready] .float-call {
 .api-login {
   max-width: 460px;
   margin: 36px auto;
+}
+.api-check {
+  display: flex !important;
+  align-items: center;
+  gap: 9px;
+}
+.api-check input {
+  width: auto;
+}
+.api-login-submit {
+  width: 100%;
+}
+.security-dialog {
+  width: min(720px, calc(100vw - 32px));
+  max-height: min(820px, calc(100vh - 32px));
+  padding: 0;
+  border: 0;
+  border-radius: 18px;
+  box-shadow: 0 24px 80px rgba(14, 36, 50, 0.28);
+  color: var(--ink, #233f52);
+}
+.security-dialog::backdrop {
+  background: rgba(17, 35, 48, 0.52);
+}
+.security-head,
+.security-actions,
+.security-sessions article {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.security-head {
+  padding: 20px 24px;
+  border-bottom: 1px solid #dde5ed;
+}
+.security-head h2,
+.security-head p {
+  margin: 2px 0;
+}
+.security-body {
+  overflow: auto;
+  max-height: calc(100vh - 160px);
+  padding: 0 24px 24px;
+}
+.security-body section {
+  padding: 18px 0;
+  border-bottom: 1px solid #e7edf2;
+}
+.security-body label {
+  display: block;
+  margin: 12px 0;
+}
+.security-body input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  border: 1px solid #cbd5df;
+  border-radius: 8px;
+}
+.security-sessions article {
+  padding: 12px 0;
+}
+.security-sessions small {
+  display: block;
+  margin-top: 5px;
+  color: #64748b;
+}
+.security-actions {
+  padding-top: 18px;
 }
 .api-status {
   display: inline-block;

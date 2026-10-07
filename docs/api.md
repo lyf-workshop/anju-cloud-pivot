@@ -167,7 +167,7 @@ Base URL：`http://127.0.0.1:3000/api`；正式部署 HTTPS。JSON UTF-8。业�
 
 ## 持久化与错误码
 
-表：`metadata/users/sessions/communities/buildings/units/floors/residences/bindings/announcements/attachments/hazard_reports/report_attachments/report_events/devices/readings/device_events/drill_sessions/drill_steps`。SQLite外键开启，WAL模式，业务创建/状态修改用事务；现有居民表为版本1，`server/src/migrations.ts` 事务迁移到版本2，新增物业表且不覆盖业务数据。打开数据库时先校验 demo/production 模式再执行迁移。文件名服务端生成，实际存储名从鉴权后的附件记录读取，不接受用户磁盘路径。
+核心表：`metadata/users/sessions/staff_accounts/staff_sessions/staff_auth_events/staff_memberships/communities/buildings/units/floors/residences/bindings/announcements/attachments/hazard_reports/report_attachments/report_events/devices/readings/device_events/drill_sessions/drill_steps`。SQLite 外键开启，WAL 模式，业务创建/状态修改用事务；`server/src/migrations.ts` 目前迁移到 schema 4，物业会话和登录审计与居民会话分表，迁移不覆盖已有业务数据。打开数据库时先校验 demo/production 模式再执行迁移。文件名由服务端生成，实际存储名从鉴权后的附件记录读取，不接受用户磁盘路径。
 
 | HTTP | 代码 | 含义 |
 |---|---|---|
@@ -190,7 +190,7 @@ Base URL：`http://127.0.0.1:3000/api`；正式部署 HTTPS。JSON UTF-8。业�
 
 默认网页现已恢复原Mock页面，不请求下列接口；仅 `login.html` 及带 `?mode=api` 的接口联调视图使用这些API。接口实现和数据库保留。
 
-网页与 API 同源，由 Fastify 托管 `安居云枢网页端(1)/textcursor/`。浏览器通过 HttpOnly、SameSite=Strict Cookie `anju_session` 认证；production 增加 Secure，本地 HTTP 不设置 Secure。随机会话仅把摘要存入数据库，登录响应不包含 token。
+网页与 API 同源，由 Fastify 托管 `安居云枢网页端(1)/textcursor/`。浏览器和 Windows 物业工作台通过独立的 HttpOnly、SameSite=Strict Cookie `anju_staff_session` 认证；公网演示和 production 增加 Secure，本地 HTTP 不设置 Secure。随机会话只把 SHA-256 摘要存入 `staff_sessions`，登录响应不包含 token。该 Cookie 不能调用住户绑定、演练或个人资料接口；物业现场上报及其图片是显式授权的有限例外。
 
 所有 `/staff/*` 写请求及携带会话 Cookie 的其他写请求，必须带 `X-Anju-Request: 1`。有 Origin 时必须匹配 `WEB_ORIGINS`；登录也执行该规则。安装版客户端的跨域访问只允许 `CLIENT_ORIGINS` 中逐项配置的精确来源，不使用通配符，也不携带物业 Cookie。网页密码使用随机盐和 scrypt 派生，不保存明文；登录限流每 IP 每分钟10次。停用员工账号后物业接口拒绝访问。
 
@@ -198,9 +198,13 @@ Base URL：`http://127.0.0.1:3000/api`；正式部署 HTTPS。JSON UTF-8。业�
 
 | 方法与路径 | 权限 | 输入 / 返回 |
 |---|---|---|
-| POST /staff/auth/login | 公开、CSRF校验 | `{username,password}`；返回 `{user:{id,nickname,communities:[{communityId,communityName,role}]},expiresAt}`，设置会话Cookie |
-| GET /staff/me | 物业 | 当前员工与授权社区列表 |
-| POST /staff/auth/logout | 物业 | `{}`；删除会话并清Cookie |
+| POST /staff/auth/login | 公开、CSRF校验 | `{username,password,remember?:boolean}`；失败次数达到阈值后临时锁定；返回 `{user:{id,username,nickname,communities,security},expiresAt}`，设置独立物业 Cookie。普通会话默认12小时，`remember=true` 默认7天，均可由环境变量调整 |
+| GET /staff/me | 物业 | 当前员工、授权社区及当前会话安全信息 |
+| GET /staff/auth/sessions | 物业 | 当前账号所有未撤销且未过期会话，包含客户端、最近使用、有效期和 `current` 标记，不返回 token/IP |
+| POST /staff/auth/sessions/revoke | 物业 | `{sessionId}`；只能撤销本账号会话，记录审计事件 |
+| POST /staff/auth/change-password | 物业 | `{currentPassword,newPassword}`；新密码至少12位并包含大小写、数字和符号；修改后撤销其他设备会话 |
+| POST /staff/auth/logout-all | 物业 | `{}`；撤销本账号全部会话并清 Cookie |
+| POST /staff/auth/logout | 物业 | `{}`；撤销当前会话并清 Cookie |
 | GET /staff/members | 社区只读 | 本社区有效员工 `{id,nickname,role}[]` |
 | GET /staff/overview | 社区只读 | 社区、上报/待办/绑定居民/完成演练/设备数量，来源数据库；`hardwareConnected:false` 表示本轮未验证任何真实硬件连接 |
 | GET /staff/agent/status | 物业 | 无 | 返回服务端智能体模型是否配置，不暴露 API 密钥 |

@@ -89,7 +89,9 @@ export async function buildApp(cfg: Settings = settings()) {
     // Browser writes are same-origin and carry a non-simple header. No CORS wildcard.
     // Protect login too, to prevent login CSRF; bearer requests from wx do not use cookies.
     if (!["GET", "HEAD", "OPTIONS"].includes(req.method) &&
-        (req.cookies.anju_session || req.url.startsWith("/api/staff/"))) {
+        (req.cookies.anju_session ||
+          req.cookies.anju_staff_session ||
+          req.url.startsWith("/api/staff/"))) {
       if (req.headers["x-anju-request"] !== "1" ||
           (req.headers.origin && !cfg.webOrigins.includes(req.headers.origin)))
         fail(403, "CSRF_REJECTED", "网页请求来源无效，请从本地站点重新打开");
@@ -133,6 +135,22 @@ export async function buildApp(cfg: Settings = settings()) {
     );
     return user || fail(401, "SESSION_EXPIRED", "登录已过期，请重新登录");
   };
+  const staffAuth = (req: FastifyRequest): any | null => {
+    const token = req.cookies.anju_staff_session || "";
+    if (!token) return null;
+    return db.one(
+      `SELECT u.* FROM users u
+       JOIN staff_accounts a ON a.user_id=u.id AND a.active=1
+       JOIN staff_sessions s ON s.user_id=u.id
+       WHERE s.token_hash=? AND s.revoked_at IS NULL AND s.expires_at>?`,
+      hash(token),
+      now(),
+    );
+  };
+  // Property staff may create field reports and own their uploaded evidence, but
+  // they do not inherit the resident session for bindings, drills, or profiles.
+  const reportingActor = (req: FastifyRequest): any =>
+    staffAuth(req) || auth(req);
   const floor = (floorId: string) =>
     db.one(
       `SELECT f.*,u.name unit_name,u.building_id,b.name building_name,b.community_id,c.name community_name,c.meeting_point FROM floors f JOIN units u ON f.unit_id=u.id JOIN buildings b ON u.building_id=b.id JOIN communities c ON b.community_id=c.id WHERE f.id=?`,
@@ -739,7 +757,7 @@ export async function buildApp(cfg: Settings = settings()) {
     return homePayload(q.communityId);
   });
   route("POST", "/attachments", async (r) => {
-    const u = auth(r);
+    const u = reportingActor(r);
     if (u.identity.startsWith("demoapp:")) {
       const recent = db.one(
         "SELECT COUNT(*) n FROM attachments WHERE user_id=? AND created_at>?",
@@ -802,7 +820,7 @@ export async function buildApp(cfg: Settings = settings()) {
     return { id: aid, mime: "image/jpeg", size: output!.length };
   }, { config: { rateLimit: { max: 20, timeWindow: "1 minute" } } });
   route("GET", "/attachments/:id", async (r, p) => {
-    const u = auth(r);
+    const u = reportingActor(r);
     const a = db.one("SELECT * FROM attachments WHERE id=?", r.params.id);
     if (!a) fail(404, "NOT_FOUND", "图片不存在或无权访问");
     if (a.user_id !== u.id && !db.one(`SELECT ra.attachment_id FROM report_attachments ra
@@ -817,7 +835,7 @@ export async function buildApp(cfg: Settings = settings()) {
       .send(fs.readFileSync(path.join(cfg.uploadDir, a.storage_name)));
   });
   route("POST", "/reports", (r) => {
-    const u = auth(r),
+    const u = reportingActor(r),
       p = reportSchema.parse(r.body),
       signature = hash(JSON.stringify(p));
     return db.tx(() => {
@@ -953,7 +971,7 @@ export async function buildApp(cfg: Settings = settings()) {
     return reportStatsPayload(auth(r).id);
   });
   route("GET", "/reports/submission/:key", (r) => {
-    const u = auth(r),
+    const u = reportingActor(r),
       record = db.one(
         "SELECT * FROM hazard_reports WHERE user_id=? AND idempotency_key=?",
         u.id,
@@ -1198,7 +1216,6 @@ export async function buildApp(cfg: Settings = settings()) {
   registerStaff(app, {
     db,
     cfg,
-    auth,
     reportView,
     deviceView,
     drillView,

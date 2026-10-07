@@ -75,7 +75,7 @@ test("property login, CSRF, community/role/attachment scope, work transitions an
     });
     assert.equal(login.status, 200);
     assert.ok(!login.body.data.token);
-    assert.match(login.cookie, /^anju_session=/);
+    assert.match(login.cookie, /^anju_staff_session=/);
     const manager = { cookie: login.cookie };
     assert.equal(
       (await request("GET", "/staff/me", undefined, manager)).body.data
@@ -98,7 +98,7 @@ test("property login, CSRF, community/role/attachment scope, work transitions an
     ).body.data;
     assert.equal(
       (await request("GET", "/staff/me", undefined, { token: a.token })).status,
-      403,
+      401,
     );
     await request(
       "POST",
@@ -145,11 +145,12 @@ test("property login, CSRF, community/role/attachment scope, work transitions an
         cfg.legalVersion,
       );
       store.run(
-        "INSERT INTO staff_accounts VALUES (?,?,?,?)",
+        "INSERT INTO staff_accounts(user_id,username,password_hash,active,password_changed_at) VALUES (?,?,?,?,?)",
         uid,
         username,
         passwordHash("TestingOnly123!"),
         1,
+        new Date().toISOString(),
       );
       store.run(
         "INSERT INTO staff_memberships VALUES (?,?,?)",
@@ -546,6 +547,187 @@ test("property login, CSRF, community/role/attachment scope, work transitions an
       (await request("GET", "/staff/me", undefined, manager)).status,
       401,
     );
+  } finally {
+    await app.close();
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("staff sessions are isolated, manageable, and support property field reports", async () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "anju-staff-security-"));
+  const cfg = settings({
+    DATA_MODE: "demo",
+    DATABASE_PATH: path.join(dir, "test.sqlite"),
+  });
+  const app = await buildApp(cfg);
+  const call = async (method: any, url: string, body?: any, cookie = "") => {
+    const response = await app.inject({
+      method: method as any,
+      url: "/api" + url,
+      payload: body,
+      headers: {
+        ...(cookie ? { cookie } : {}),
+        "x-anju-request": "1",
+        origin: "http://127.0.0.1:3000",
+      },
+    });
+    return {
+      status: response.statusCode,
+      data: response.json().data,
+      cookie: String(response.headers["set-cookie"] || "").split(";")[0],
+    };
+  };
+  try {
+    const first = await call("POST", "/staff/auth/login", {
+      username: "property-demo",
+      password: cfg.demoStaffPassword,
+      remember: true,
+    });
+    const second = await call("POST", "/staff/auth/login", {
+      username: "property-demo",
+      password: cfg.demoStaffPassword,
+      remember: false,
+    });
+    assert.equal(first.status, 200);
+    assert.equal(second.status, 200);
+    const sessions = await call(
+      "GET",
+      "/staff/auth/sessions",
+      undefined,
+      second.cookie,
+    );
+    assert.equal(sessions.data.length, 2);
+    assert.equal(sessions.data.filter((item: any) => item.current).length, 1);
+
+    const report = await call(
+      "POST",
+      "/reports",
+      {
+        idempotencyKey: "property-field-report-001",
+        floorId: "floor-1-1-6",
+        type: "obstruction",
+        location: "六层公共走廊",
+        description: "物业巡查发现纸箱堆放影响通行。",
+        contact: "13800000000",
+        attachmentIds: [],
+      },
+      second.cookie,
+    );
+    assert.equal(report.status, 200);
+    assert.match(report.data.number, /^AJ\d{8}-[A-F0-9]{8}$/);
+    assert.equal(
+      (
+        await call(
+          "GET",
+          "/reports/submission/property-field-report-001",
+          undefined,
+          second.cookie,
+        )
+      ).data.id,
+      report.data.id,
+    );
+    assert.equal(
+      (
+        await call(
+          "POST",
+          "/bindings",
+          { floorId: "floor-1-1-6", room: "601" },
+          second.cookie,
+        )
+      ).status,
+      401,
+      "staff cookies must not become resident sessions",
+    );
+
+    const changed = await call(
+      "POST",
+      "/staff/auth/change-password",
+      {
+        currentPassword: cfg.demoStaffPassword,
+        newPassword: "ChangedForTest123!",
+      },
+      second.cookie,
+    );
+    assert.equal(changed.status, 200);
+    assert.equal(
+      (await call("GET", "/staff/me", undefined, first.cookie)).status,
+      401,
+      "password change revokes other staff sessions",
+    );
+    assert.equal(
+      (
+        await call("POST", "/staff/auth/login", {
+          username: "property-demo",
+          password: cfg.demoStaffPassword,
+        })
+      ).status,
+      401,
+    );
+    const relogin = await call("POST", "/staff/auth/login", {
+      username: "property-demo",
+      password: "ChangedForTest123!",
+    });
+    assert.equal(relogin.status, 200);
+    assert.equal(
+      (
+        await call(
+          "POST",
+          "/staff/auth/logout-all",
+          {},
+          relogin.cookie,
+        )
+      ).status,
+      200,
+    );
+    assert.equal(
+      (await call("GET", "/staff/me", undefined, relogin.cookie)).status,
+      401,
+    );
+  } finally {
+    await app.close();
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("staff login locks repeated failures and records authentication events", async () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "anju-staff-lock-"));
+  const cfg = settings({
+    DATA_MODE: "demo",
+    DATABASE_PATH: path.join(dir, "test.sqlite"),
+    STAFF_LOCK_ATTEMPTS: "2",
+    STAFF_LOCK_MINUTES: "1",
+  });
+  const app = await buildApp(cfg);
+  const login = (password: string) =>
+    app.inject({
+      method: "POST",
+      url: "/api/staff/auth/login",
+      payload: { username: "property-demo", password },
+      headers: {
+        "x-anju-request": "1",
+        origin: "http://127.0.0.1:3000",
+      },
+    });
+  try {
+    assert.equal((await login("WrongPassword123!")).statusCode, 401);
+    assert.equal((await login("WrongPassword123!")).statusCode, 401);
+    const locked = await login(cfg.demoStaffPassword);
+    assert.equal(locked.statusCode, 429);
+    assert.equal(locked.json().error.code, "LOGIN_LOCKED");
+    const store = new Store(cfg);
+    assert.equal(
+      store.one(
+        "SELECT COUNT(*) n FROM staff_auth_events WHERE action='login_failed'",
+      ).n,
+      2,
+    );
+    assert.equal(
+      store.one(
+        "SELECT COUNT(*) n FROM staff_auth_events WHERE action='login_locked'",
+      ).n,
+      1,
+    );
+    store.close();
   } finally {
     await app.close();
     fs.rmSync(dir, { recursive: true, force: true });

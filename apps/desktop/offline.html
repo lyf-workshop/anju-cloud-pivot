@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'" />
+    <title>暂时无法连接</title>
+    <style>
+      :root { color-scheme: light; font-family: "Microsoft YaHei UI", system-ui, sans-serif; }
+      body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #eaf3fa; color: #213b4b; }
+      main { width: min(460px, calc(100vw - 48px)); padding: 40px; box-sizing: border-box; border-radius: 20px; background: #fff; box-shadow: 0 20px 60px rgba(28, 58, 75, .13); text-align: center; }
+      h1 { margin: 12px 0; font-size: 26px; }
+      p { color: #617388; line-height: 1.7; }
+      button { margin-top: 12px; border: 0; border-radius: 10px; padding: 12px 24px; background: #176b87; color: #fff; font: inherit; cursor: pointer; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div aria-hidden="true">☁️</div>
+      <h1>暂时无法连接物业服务</h1>
+      <p>请检查网络连接后重试。工作台不会在离线时显示过期数据，也不会把操作伪装成已保存。</p>
+      <button id="retry" type="button">重新连接</button>
+    </main>
+    <script>
+      const retry = new URLSearchParams(location.search).get("retry");
+      document.getElementById("retry").addEventListener("click", () => {
+        if (
+          retry &&
+          (/^https:\/\//.test(retry) || /^http:\/\/(127\.0\.0\.1|localhost)(:\d+)?\//.test(retry))
+        )
+          location.href = retry;
+      });
+    </script>
+  </body>
+</html>

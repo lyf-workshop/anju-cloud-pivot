@@ -73,24 +73,24 @@ export function registerCamera(
   );
 
   const staffMember = (req: FastifyRequest) => {
-    const token = req.cookies.anju_session || "";
+    const token = req.cookies.anju_staff_session || "";
     if (!token) return null;
     return db.one(
       `SELECT u.id,m.role FROM users u
-       JOIN sessions s ON s.user_id=u.id
+       JOIN staff_sessions s ON s.user_id=u.id
        JOIN staff_accounts a ON a.user_id=u.id AND a.active=1
        JOIN staff_memberships m ON m.user_id=u.id
-       WHERE s.token_hash=? AND s.expires_at>? AND m.community_id=?`,
+       WHERE s.token_hash=? AND s.revoked_at IS NULL AND s.expires_at>? AND m.community_id=?`,
       hash(token),
       now(),
       cfg.cameraCommunityId,
     );
   };
   const requireStaff = (req: FastifyRequest) => {
-    if (!req.cookies.anju_session)
+    if (!req.cookies.anju_staff_session)
       fail(401, "SESSION_EXPIRED", "请先登录物业工作台");
     const member = staffMember(req);
-    if (!member) fail(403, "COMMUNITY_SCOPE", "无权查看该社区摄像头");
+    if (!member) fail(401, "SESSION_EXPIRED", "登录已过期，请重新登录");
     return member;
   };
 

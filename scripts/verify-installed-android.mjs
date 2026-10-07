@@ -15,7 +15,7 @@ const cdpPort = "9222";
 const artifactDir = path.join(root, "output", "android-verification");
 const screenshot = path.join(artifactDir, "installed-history.png");
 const deviceScreenshot = path.join(artifactDir, "installed-history-device.png");
-const photoPickerScreenshot = path.join(artifactDir, "image-picker-open-1.4.0.png");
+const photoPickerScreenshot = path.join(artifactDir, "image-picker-open-1.5.0.png");
 const sampleImageBase64 = fs.readFileSync(
   path.join(root, "assets", "illustrations", "hazard-exit-blocked.png"),
 ).toString("base64");

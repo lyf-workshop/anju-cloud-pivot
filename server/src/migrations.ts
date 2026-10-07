@@ -74,4 +74,43 @@ export function migrateProperty(db: DatabaseSync) {
       throw error;
     }
   }
+  if (version < 4) {
+    db.exec("BEGIN IMMEDIATE");
+    try {
+      db.exec(`
+        ALTER TABLE staff_accounts ADD COLUMN failed_attempts INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE staff_accounts ADD COLUMN locked_until TEXT;
+        ALTER TABLE staff_accounts ADD COLUMN last_login_at TEXT;
+        ALTER TABLE staff_accounts ADD COLUMN password_changed_at TEXT;
+        CREATE TABLE staff_sessions (
+          id TEXT PRIMARY KEY,
+          token_hash TEXT NOT NULL UNIQUE,
+          user_id TEXT NOT NULL REFERENCES staff_accounts(user_id),
+          created_at TEXT NOT NULL,
+          last_seen_at TEXT NOT NULL,
+          expires_at TEXT NOT NULL,
+          client_label TEXT NOT NULL,
+          ip_hash TEXT NOT NULL,
+          revoked_at TEXT
+        );
+        CREATE TABLE staff_auth_events (
+          id TEXT PRIMARY KEY,
+          user_id TEXT REFERENCES staff_accounts(user_id),
+          username TEXT NOT NULL,
+          action TEXT NOT NULL CHECK(action IN ('login_success','login_failed','login_locked','logout','logout_all','password_changed','session_revoked')),
+          occurred_at TEXT NOT NULL,
+          client_label TEXT NOT NULL,
+          ip_hash TEXT NOT NULL
+        );
+        CREATE INDEX staff_session_user_time ON staff_sessions(user_id,created_at DESC);
+        CREATE INDEX staff_session_expiry ON staff_sessions(expires_at);
+        CREATE INDEX staff_auth_user_time ON staff_auth_events(user_id,occurred_at DESC);
+        PRAGMA user_version=4;
+      `);
+      db.exec("COMMIT");
+    } catch (error) {
+      db.exec("ROLLBACK");
+      throw error;
+    }
+  }
 }

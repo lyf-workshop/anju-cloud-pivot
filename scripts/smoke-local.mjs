@@ -8,7 +8,7 @@ async function call(path, body, credential = "") {
     "x-anju-request": "1",
     origin,
   };
-  if (credential.startsWith("anju_session=")) headers.cookie = credential;
+  if (credential.includes("=")) headers.cookie = credential;
   else if (credential) headers.authorization = "Bearer " + credential;
   const res = await fetch(base + path, {
     method: body === undefined ? "GET" : "POST",

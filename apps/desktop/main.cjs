@@ -1,120 +1,105 @@
-const { app, BrowserWindow, ipcMain, net, protocol, safeStorage, shell } = require("electron");
-const fs = require("node:fs");
+const { app, BrowserWindow, shell } = require("electron");
 const path = require("node:path");
 const { pathToFileURL } = require("node:url");
 
-protocol.registerSchemesAsPrivileged([
-  {
-    scheme: "app",
-    privileges: {
-      standard: true,
-      secure: true,
-      supportFetchAPI: true,
-      corsEnabled: true,
-      stream: true,
-    },
-  },
-]);
+const DEFAULT_PROPERTY_URL = "https://xn--9kqy92aeqav77a.com/";
+const configuredUrl = new URL(process.env.ANJU_PROPERTY_URL || DEFAULT_PROPERTY_URL);
+const isLocalDevelopment = ["127.0.0.1", "localhost"].includes(configuredUrl.hostname);
+if (configuredUrl.protocol !== "https:" && !(isLocalDevelopment && configuredUrl.protocol === "http:")) {
+  throw new Error("ANJU_PROPERTY_URL 必须使用 HTTPS（本机开发地址除外）");
+}
+const allowedOrigin = configuredUrl.origin;
+const startUrl = new URL("/login.html?next=/index.html", configuredUrl).toString();
+const offlinePath = path.join(__dirname, "offline.html");
+const offlineUrl = pathToFileURL(offlinePath).toString();
 
 const hasLock = app.requestSingleInstanceLock();
 if (!hasLock) app.quit();
 
 let mainWindow;
-const clientRoot = path.resolve(__dirname, "../../dist/client");
-const vaultPath = () => path.join(app.getPath("userData"), "secure-session.json");
-const validKey = (key) => typeof key === "string" && /^[A-Za-z0-9_-]{1,80}$/.test(key);
+let showingOfflinePage = false;
 
-function readVault() {
+function isAllowedNavigation(value) {
   try {
-    return JSON.parse(fs.readFileSync(vaultPath(), "utf8"));
+    const url = new URL(value);
+    return (
+      url.origin === allowedOrigin ||
+      (url.protocol === "file:" && url.href.split("?")[0] === offlineUrl)
+    );
   } catch {
-    return {};
+    return false;
   }
 }
 
-function writeVault(value) {
-  const target = vaultPath();
-  const temp = target + ".tmp";
-  fs.mkdirSync(path.dirname(target), { recursive: true });
-  fs.writeFileSync(temp, JSON.stringify(value), { encoding: "utf8", mode: 0o600 });
-  fs.renameSync(temp, target);
-}
-
-function requireEncryption() {
-  if (!safeStorage.isEncryptionAvailable()) throw new Error("Windows 安全存储当前不可用");
+function loadOfflinePage() {
+  if (!mainWindow || mainWindow.isDestroyed() || showingOfflinePage) return;
+  showingOfflinePage = true;
+  mainWindow.loadFile(offlinePath, {
+    query: { retry: startUrl },
+  });
 }
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 1180,
-    height: 780,
-    minWidth: 820,
-    minHeight: 620,
+    width: 1320,
+    height: 860,
+    minWidth: 980,
+    minHeight: 680,
     show: false,
     autoHideMenuBar: true,
     backgroundColor: "#eaf3fa",
+    title: "安居云枢物业工作台",
     webPreferences: {
       preload: path.join(__dirname, "preload.cjs"),
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true,
       webSecurity: true,
+      spellcheck: false,
     },
   });
-  mainWindow.once("ready-to-show", () => mainWindow.show());
+
+  mainWindow.webContents.session.setPermissionRequestHandler((_contents, _permission, callback) =>
+    callback(false),
+  );
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-    if (url.startsWith("https://xn--9kqy92aeqav77a.com/")) shell.openExternal(url);
+    if (isAllowedNavigation(url) && new URL(url).origin === allowedOrigin) {
+      mainWindow.loadURL(url);
+    } else if (/^https?:/i.test(url)) {
+      shell.openExternal(url);
+    }
     return { action: "deny" };
   });
   mainWindow.webContents.on("will-navigate", (event, url) => {
-    if (!url.startsWith("app://anju/")) event.preventDefault();
+    if (!isAllowedNavigation(url)) {
+      event.preventDefault();
+      if (/^https?:/i.test(url)) shell.openExternal(url);
+    }
   });
-  mainWindow.loadURL("app://anju/index.html");
+  mainWindow.webContents.on("did-start-navigation", (_event, _url, _sameDocument, isMainFrame) => {
+    if (isMainFrame) showingOfflinePage = false;
+  });
+  mainWindow.webContents.on(
+    "did-fail-load",
+    (_event, errorCode, _description, validatedUrl, isMainFrame) => {
+      if (isMainFrame && errorCode !== -3 && validatedUrl.startsWith(allowedOrigin)) loadOfflinePage();
+    },
+  );
+  mainWindow.webContents.on("render-process-gone", () => loadOfflinePage());
+  mainWindow.once("ready-to-show", () => mainWindow.show());
+  mainWindow.loadURL(startUrl).catch(loadOfflinePage);
 }
 
 app.whenReady().then(() => {
-  app.setAppUserModelId("com.anjuyunshu.judge");
-  protocol.handle("app", (request) => {
-    const parsed = new URL(request.url);
-    let relative = decodeURIComponent(parsed.pathname).replace(/^\/+/, "");
-    if (!relative) relative = "index.html";
-    let target = path.resolve(clientRoot, relative);
-    if (!target.startsWith(clientRoot + path.sep) || !fs.existsSync(target)) {
-      target = path.join(clientRoot, "index.html");
-    }
-    return net.fetch(pathToFileURL(target).toString());
-  });
-  ipcMain.handle("secret:get", (_event, key) => {
-    if (!validKey(key)) throw new Error("Invalid storage key");
-    requireEncryption();
-    const encrypted = readVault()[key];
-    return encrypted
-      ? safeStorage.decryptString(Buffer.from(encrypted, "base64"))
-      : null;
-  });
-  ipcMain.handle("secret:set", (_event, key, value) => {
-    if (!validKey(key) || typeof value !== "string" || value.length > 20000)
-      throw new Error("Invalid secure storage value");
-    requireEncryption();
-    const vault = readVault();
-    vault[key] = safeStorage.encryptString(value).toString("base64");
-    writeVault(vault);
-    return true;
-  });
-  ipcMain.handle("secret:remove", (_event, key) => {
-    if (!validKey(key)) throw new Error("Invalid storage key");
-    const vault = readVault();
-    delete vault[key];
-    writeVault(vault);
-    return true;
-  });
+  app.setAppUserModelId("com.anjuyunshu.property");
   createWindow();
 });
 
 app.on("second-instance", () => {
-  if (mainWindow) {
-    if (mainWindow.isMinimized()) mainWindow.restore();
-    mainWindow.focus();
-  }
+  if (!mainWindow) return;
+  if (mainWindow.isMinimized()) mainWindow.restore();
+  mainWindow.show();
+  mainWindow.focus();
 });
+
 app.on("window-all-closed", () => app.quit());

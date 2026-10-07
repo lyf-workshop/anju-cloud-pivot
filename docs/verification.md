@@ -1,4 +1,18 @@
-# 当前验证：队友智能体合并与三端 1.4.0（2026-10-07）
+# 当前验证：物业 Windows / 住户 Android 与登录后端 1.5.0（2026-10-07）
+
+- 后端 TypeScript 构建通过，自动测试 15/15 通过；真实本地 HTTP 冒烟完成居民登录/绑定、物业 Cookie 登录、幂等上报、物业受理/完成、居民读回、演练历史和退出。
+- schema 4 将物业会话从居民 `sessions` 分离到 `staff_sessions`，新增 `staff_auth_events`、失败锁定、12小时普通会话、7天记住登录、会话列表/撤销、退出全部设备和改密后撤销其他设备。物业 Cookie 不能调用住户绑定或演练接口；物业现场上报和图片使用显式有限授权。
+- 部署前执行服务器一致性备份 `/var/backups/anju-cloud-pivot/20261007T144150Z`；新 release `/opt/anju-cloud-pivot/releases/20261007-auth-role-v17` 已切换并保持 active，前一版 `20261007-nav-v16` 保留。公网真实登录返回独立 `anju_staff_session` Secure/HttpOnly Cookie，`/staff/me`、会话列表、退出及退出后401均通过。
+- Windows `Anju-Property-Windows-1.5.0-Setup.exe` 静默安装退出码0，已安装 EXE FileVersion 1.5.0。最终构建的真实安装版完成物业登录、账号安全、值班台、楼栋设备、现场隐患上报 `AJ20261007-0CB5EDF1`、关闭重开会话恢复和退出登录，控制台错误0；截图为 [Windows 物业安装版](../output/playwright/windows-property-installed-1.5.0.png)。
+- Android `Anju-CloudPivot-Android-1.5.0.apk` 在 API 36 / Android 16、1080×2400 模拟器卸载旧版后全新安装；包名 `com.anjuyunshu.judge`、versionCode 6、versionName 1.5.0、minSdk 24、targetSdk 36。直接体验、登记、助手草稿、设备、系统 Photo Picker、服务器上报 `AJ20261007-A14D1EDD`、两步演练及强制停止重开恢复全部通过，控制台错误0。
+- Android v2/v3 签名有效，证书 SHA-256 为 `225CE809425D1911115E84C923E149E34B4A01A40491BE79A2043F6372398601`。APK SHA-256 `C840B9C1B046C3505BD2467672D99E0AD7474B5D1C4B1AE94100FF784D8255F6`，大小10,619,556 bytes；Windows SHA-256 `8FD416A1147757FF5FDCD0EE2E5E3A389F23E9012482627DB2FA9869E27BCE92`，大小119,658,157 bytes。
+- 受控下载区已发布1.5.0；服务器再次计算两项 SHA-256 均通过，未授权返回401、授权索引200、两个安装包64字节分段请求206。旧1.4.0已移到站点外归档。
+
+验证边界：Android 使用官方模拟器而非实体手机；Windows 尚无 Authenticode 证书；没有验证真实微信登录、正式住户数据、公开运营许可、真实消防告警或模型精度。
+
+---
+
+# 历史验证：队友智能体合并与三端 1.4.0（2026-10-07）
 
 - 在独立集成分支上选择性合并队友新增的居民安全助手、物业处置智能体与模型适配层；保留当前根目录原生小程序、住户登记流程、正式 AppID 配置、共享安装版和既有网页。没有复制队友旧包中假定 `mobile/website` 目录的构建配置。
 - 原生小程序现为五个一级标签，新增“助手”页；`npm run check`、`npm test`、`npm run check:wechat` 全部通过，WCC 编译 34 个文件、WCSC 编译 37 个文件。后端构建通过，自动测试 13/13 通过，覆盖居民会话鉴权、物业社区范围、只生成待确认草稿和不自动写工单。
