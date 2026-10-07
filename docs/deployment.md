@@ -7,7 +7,7 @@
 | 项目 | 位置 |
 | --- | --- |
 | systemd 服务 | `anju-cloud-pivot.service` |
-| 当前代码 | `/opt/anju-cloud-pivot/current` → `/opt/anju-cloud-pivot/releases/20261007-web-clarity-v15` |
+| 当前代码 | `/opt/anju-cloud-pivot/current` → `/opt/anju-cloud-pivot/releases/20261007-nav-v16` |
 | 网页静态目录 | release 内 `site` → `安居云枢网页端(1)/textcursor` |
 | 数据库和附件 | `/var/lib/anju-cloud-pivot/` |
 | 服务端配置 | `/etc/anju-cloud-pivot/anju.env`（`root:anju`，权限 `640`） |
@@ -38,7 +38,7 @@ ssh raspberrypi-via-aliyun "systemctl status anju-camera-agent --no-pager"
 
 ## 后续更新与恢复
 
-当前 release 为 `/opt/anju-cloud-pivot/releases/20261007-web-clarity-v15`；上一版 `/opt/anju-cloud-pivot/releases/20261007-assistant-v14` 保留为回退点。本轮仅更新网页静态文件，没有数据库结构迁移；数据库、附件、服务器其他站点、树莓派服务和 `/var/lib/anju-cloud-pivot/` 均未覆盖。外部模型密钥当前未配置，居民和物业智能体使用明确标注的本地安全规则；需要启用兼容模型时只在服务器 `anju.env` 配置，禁止写入客户端或 Git。
+当前 release 为 `/opt/anju-cloud-pivot/releases/20261007-nav-v16`；上一版 `/opt/anju-cloud-pivot/releases/20261007-web-clarity-v15` 保留为回退点。本轮仅更新网页静态文件和统一导航脚本，没有数据库结构迁移；数据库、附件、服务器其他站点、树莓派服务和 `/var/lib/anju-cloud-pivot/` 均未覆盖。外部模型密钥当前未配置，居民和物业智能体使用明确标注的本地安全规则；需要启用兼容模型时只在服务器 `anju.env` 配置，禁止写入客户端或 Git。
 
 回退时仅切换 `current` 软链接并重启 `anju-cloud-pivot`，不要改动 Caddy 中其他站点。例如将 `<上一个可用版本>` 替换为实际目录：
 
