@@ -710,12 +710,6 @@
       action(document.getElementById("retry"), async () => location.reload());
     }
   }
-  document.querySelector(".nav-toggle")?.addEventListener("click", (e) => {
-    const b = e.currentTarget;
-    const open = b.getAttribute("aria-expanded") !== "true";
-    b.setAttribute("aria-expanded", String(open));
-    document.querySelector(".site-nav")?.classList.toggle("is-open", open);
-  });
   document.querySelectorAll('a[href^="tel:"]').forEach((a) =>
     a.addEventListener("click", (e) => {
       e.preventDefault();

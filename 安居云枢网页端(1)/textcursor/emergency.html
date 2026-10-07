@@ -21,16 +21,32 @@
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="打开菜单">
         <span></span><span></span><span></span>
       </button>
-      <nav class="site-nav" id="site-nav">
-        <a href="index.html">值班台</a>
-        <a href="duty.html">制度责任</a>
-        <a href="buildings.html">数字孪生</a>
-        <a href="people.html">人员台账</a>
-        <a href="inspection.html">巡查台账</a>
-        <a href="knowledge.html">处置预案</a>
-        <a href="report.html">隐患工单</a>
-        <a href="agent.html">处置智能体</a>
-        <a class="nav-cta is-active" href="emergency.html">紧急处置</a>
+      <nav class="site-nav" id="site-nav" aria-label="主导航">
+        <a class="nav-direct" href="index.html">值班台</a>
+        <details class="nav-group">
+          <summary>基础治理</summary>
+          <div class="nav-menu">
+            <a href="duty.html"><strong>制度责任</strong><small>岗位职责与管理制度</small></a>
+            <a href="buildings.html"><strong>数字孪生</strong><small>楼栋、设备与疏散信息</small></a>
+            <a href="people.html"><strong>人员台账</strong><small>住户与重点协助对象</small></a>
+          </div>
+        </details>
+        <details class="nav-group">
+          <summary>巡查整改</summary>
+          <div class="nav-menu">
+            <a href="inspection.html"><strong>巡查台账</strong><small>检查记录与整改公示</small></a>
+            <a href="report.html"><strong>隐患工单</strong><small>上报问题并联系物业</small></a>
+          </div>
+        </details>
+        <details class="nav-group">
+          <summary>处置支持</summary>
+          <div class="nav-menu nav-menu-right">
+            <a href="knowledge.html"><strong>处置预案</strong><small>按火情级别查看流程</small></a>
+            <a href="agent.html"><strong>处置智能体</strong><small>检索工单并生成建议</small></a>
+          </div>
+        </details>
+        <a class="nav-direct nav-account" href="login.html">物业登录</a>
+        <a class="nav-cta" href="emergency.html">紧急处置</a>
       </nav>
     </div>
   </header>
@@ -83,6 +99,7 @@
     </div>
   </footer>
   <a class="float-call" href="tel:119" aria-label="拨打火警 119">拨打 119</a>
+  <script src="navigation.js"></script>
   <script src="site.js"></script>
 </body>
 </html>

@@ -11,16 +11,46 @@
   <body>
     <header class="site-header">
       <div class="container header-inner">
-        <a class="brand" href="index.html" data-showcase
-          ><span class="brand-mark"></span
+        <a class="brand" href="index.html" data-showcase aria-label="安居云枢首页"
+          ><span class="brand-mark" aria-hidden="true"><img src="assets/logo.png" alt="" /></span
           ><span class="brand-text"
             ><strong>安居云枢</strong><small>物业工作台</small></span
           ></a
         >
-        <nav><a href="index.html" data-showcase>返回原版网页</a> · <a href="emergency.html" data-showcase>公共紧急联系方式</a></nav>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="打开菜单">
+          <span></span><span></span><span></span>
+        </button>
+        <nav class="site-nav" id="site-nav" aria-label="主导航">
+          <a class="nav-direct" href="index.html" data-showcase>值班台</a>
+          <details class="nav-group">
+            <summary>基础治理</summary>
+            <div class="nav-menu">
+              <a href="duty.html" data-showcase><strong>制度责任</strong><small>岗位职责与管理制度</small></a>
+              <a href="buildings.html" data-showcase><strong>数字孪生</strong><small>楼栋、设备与疏散信息</small></a>
+              <a href="people.html" data-showcase><strong>人员台账</strong><small>住户与重点协助对象</small></a>
+            </div>
+          </details>
+          <details class="nav-group">
+            <summary>巡查整改</summary>
+            <div class="nav-menu">
+              <a href="inspection.html" data-showcase><strong>巡查台账</strong><small>检查记录与整改公示</small></a>
+              <a href="report.html" data-showcase><strong>隐患工单</strong><small>上报问题并联系物业</small></a>
+            </div>
+          </details>
+          <details class="nav-group">
+            <summary>处置支持</summary>
+            <div class="nav-menu nav-menu-right">
+              <a href="knowledge.html" data-showcase><strong>处置预案</strong><small>按火情级别查看流程</small></a>
+              <a href="agent.html" data-showcase><strong>处置智能体</strong><small>检索工单并生成建议</small></a>
+            </div>
+          </details>
+          <a class="nav-direct nav-account" href="login.html">物业登录</a>
+          <a class="nav-cta" href="emergency.html" data-showcase>紧急处置</a>
+        </nav>
       </div>
     </header>
     <main id="main"></main>
+    <script src="navigation.js"></script>
     <script src="api.js"></script>
     <script src="connected.js"></script>
   </body>

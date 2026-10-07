@@ -1,35 +1,8 @@
 (() => {
-  const header = document.querySelector(".site-header");
-  const toggle = document.querySelector(".nav-toggle");
-  const nav = document.querySelector("#site-nav");
   const form = document.querySelector("#report-form");
   const status = document.querySelector("#form-status");
   const buildingInfo = document.querySelector("#building-info");
   const buildings = document.querySelectorAll("[data-building]");
-
-  const onScroll = () => {
-    if (!header) return;
-    header.classList.toggle("is-scrolled", window.scrollY > 8);
-  };
-
-  window.addEventListener("scroll", onScroll, { passive: true });
-  onScroll();
-
-  if (toggle && nav) {
-    toggle.addEventListener("click", () => {
-      const open = nav.classList.toggle("is-open");
-      toggle.setAttribute("aria-expanded", String(open));
-      toggle.setAttribute("aria-label", open ? "关闭菜单" : "打开菜单");
-    });
-
-    nav.querySelectorAll("a").forEach((link) => {
-      link.addEventListener("click", () => {
-        nav.classList.remove("is-open");
-        toggle.setAttribute("aria-expanded", "false");
-        toggle.setAttribute("aria-label", "打开菜单");
-      });
-    });
-  }
 
   const buildingData = {
     b1: {
