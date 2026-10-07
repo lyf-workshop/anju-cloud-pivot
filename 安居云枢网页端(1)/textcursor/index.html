@@ -42,18 +42,25 @@
   </header>
 
   <main id="main" class="home-board">
+    <section class="container command-intro" aria-labelledby="command-title">
+      <div class="command-intro-copy">
+        <p class="page-eyebrow">物业值班 · 演示环境</p>
+        <h1 id="command-title">物业安全值班台</h1>
+        <p>把告警研判、楼栋定位和处置入口集中在一个清晰工作区，当前设备与告警均为比赛演示数据。</p>
+      </div>
+      <div class="command-intro-side">
+        <div class="command-actions" aria-label="常用操作">
+          <a class="btn btn-primary" href="agent.html">打开处置智能体</a>
+          <a class="btn btn-ghost" href="emergency.html">查看紧急处置</a>
+        </div>
+        <p class="demo-safety-note"><span aria-hidden="true">●</span> 演示环境不会自动拨号或发送真实告警</p>
+      </div>
+      <div class="urge-toast" id="urge-toast" hidden role="alert"></div>
+    </section>
+
     <div class="container board-grid">
       <!-- 左列：值班状态 -->
       <aside class="board-left" aria-label="值班仪表盘">
-        <div class="platform-lockup">
-          <span class="brand-mark brand-mark-lg" aria-hidden="true"><img src="assets/logo.png" alt="" /></span>
-          <div>
-            <p class="page-eyebrow lockup-eyebrow">物业值班 · 火情处置</p>
-            <h1>安居云枢</h1>
-            <p>面向物业值班员的火情监测与处置台</p>
-          </div>
-        </div>
-
         <section class="dash-panel">
           <h2>今日运行状态</h2>
           <div class="status-row"><span>树莓派 YOLO（测试）</span><span class="pill-ok" id="ai-status">连接中</span></div>
@@ -203,11 +210,11 @@
         </section>
 
         <section class="dash-panel">
-          <h3>一键联络</h3>
+          <h3>联络与处置</h3>
           <div class="contact-list">
-            <a class="contact-item contact-hot" href="tel:119"><span>火警 119</span><strong>拨打</strong></a>
-            <a class="contact-item" href="tel:13800003333"><span>工程维修</span><strong>138-0000-3333</strong></a>
-            <a class="contact-item" href="tel:13800002222"><span>秩序主管</span><strong>138-0000-2222</strong></a>
+            <a class="contact-item contact-hot" href="emergency.html"><span>火警 119</span><strong>人工确认后拨打</strong></a>
+            <a class="contact-item" href="knowledge.html"><span>工程维修</span><strong>查看联络预案</strong></a>
+            <a class="contact-item" href="people.html"><span>秩序主管</span><strong>查看人员台账</strong></a>
           </div>
         </section>
       </aside>
@@ -283,27 +290,7 @@
     </div>
   </div>
 
-  <div class="urge-toast" id="urge-toast" hidden role="alert"></div>
-
-  <a class="float-call float-alarm" href="emergency.html" aria-label="紧急报警">紧急报警</a>
-  <aside class="agent-dock" id="agent-dock">
-    <button class="agent-toggle" id="agent-toggle" type="button" aria-expanded="false" aria-controls="agent-panel">处置智能体</button>
-    <section class="agent-panel" id="agent-panel" hidden>
-      <header>
-        <strong>值班处置智能体</strong>
-        <small id="agent-status">正在检查登录</small>
-        <a class="agent-page-link" href="agent.html">完整页面</a>
-      </header>
-      <div class="agent-log" id="agent-log"></div>
-      <form class="agent-form" id="agent-form">
-        <label class="visually-hidden" for="agent-input">对智能体说</label>
-        <input id="agent-input" name="q" maxlength="200" value="请查看待办工单并给出处置建议" placeholder="询问摄像头状态、待办工单或起草处置说明" />
-        <button class="btn btn-primary" type="submit">发送</button>
-      </form>
-    </section>
-  </aside>
   <script src="api.js"></script>
   <script src="site.js"></script>
-  <script src="agent.js"></script>
 </body>
 </html>

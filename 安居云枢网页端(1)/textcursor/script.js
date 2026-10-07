@@ -134,8 +134,8 @@
         "就地使用灭火毯或手提灭火器做初期控制（确保自身安全）",
         "同步在孪生图标注位置，准备升级预案",
       ],
-      primaryText: "联系秩序主管",
-      primaryHref: "tel:13800002222",
+      primaryText: "查看联络与人员台账",
+      primaryHref: "people.html",
     },
     medium: {
       title: "中火处置指引",
@@ -156,8 +156,8 @@
         "控制室保持与到场消防力量联络",
         "禁止返回火场取物，电梯停用引导走疏散楼梯",
       ],
-      primaryText: "立即拨打 119",
-      primaryHref: "tel:119",
+      primaryText: "打开紧急处置页",
+      primaryHref: "emergency.html",
     },
   };
 
@@ -390,7 +390,7 @@
     playAlertVideo(restartVideo);
     startTimer();
     if (announce) {
-      showToast("检测到疑似火情：2号楼 1801 附近，请立即处理。");
+      showToast("演示告警：2 号楼 1801 附近出现疑似火情，请进入模拟处置流程。");
     }
   };
 

@@ -4300,3 +4300,320 @@ body.page-home .board-left {
     max-width: 100%;
   }
 }
+
+/* —— 2026-10 homepage clarity refresh ——
+   The command board now follows a clear reading order and scrolls naturally.
+   This intentionally overrides the earlier one-screen dashboard rules. */
+body.page-home {
+  overflow-x: hidden;
+  overflow-y: auto;
+  background:
+    radial-gradient(circle at 8% 0%, rgba(155, 44, 44, 0.055), transparent 30rem),
+    #f4f6f7;
+}
+
+body.page-home .site-footer {
+  display: block;
+}
+
+.page-home .home-board {
+  padding: 1.1rem 0 2.5rem;
+}
+
+body.page-home .home-board > .container {
+  width: min(1440px, calc(100% - 2rem));
+  max-width: 1440px;
+  margin-inline: auto;
+  padding-inline: 0;
+}
+
+.command-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1rem 2rem;
+  margin-bottom: 1rem;
+  padding: 1.25rem 1.4rem;
+  border: 1px solid rgba(30, 58, 95, 0.1);
+  border-left: 4px solid var(--brand);
+  border-radius: calc(var(--radius) + 2px);
+  background:
+    linear-gradient(110deg, rgba(155, 44, 44, 0.055), transparent 48%),
+    rgba(255, 255, 255, 0.94);
+  box-shadow: var(--shadow-soft);
+}
+
+.command-intro-copy {
+  min-width: 0;
+}
+
+.command-intro .page-eyebrow {
+  margin: 0 0 0.35rem;
+  color: var(--brand);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.command-intro h1 {
+  margin: 0;
+  color: var(--steel);
+  font-family: var(--font-display);
+  font-size: clamp(1.45rem, 2.1vw, 2rem);
+  font-weight: 650;
+  letter-spacing: 0.045em;
+}
+
+.command-intro-copy > p:last-child {
+  max-width: 48rem;
+  margin: 0.45rem 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
+
+.command-intro-side {
+  display: grid;
+  justify-items: end;
+  gap: 0.65rem;
+}
+
+.command-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.6rem;
+}
+
+.demo-safety-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.demo-safety-note span {
+  color: var(--ok);
+}
+
+.page-home .command-intro .urge-toast {
+  position: static;
+  grid-column: 1 / -1;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  transform: none;
+  padding: 0.7rem 0.9rem;
+  border-left: 3px solid #efc4bd;
+  border-radius: 10px;
+  box-shadow: none;
+  font-size: 0.86rem;
+}
+
+.page-home .board-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 360px);
+  grid-template-areas:
+    "center left"
+    "right right";
+  align-items: start;
+  gap: 0.85rem 1rem;
+  height: auto;
+  min-height: 0;
+  max-height: none;
+  overflow: visible;
+}
+
+.page-home .board-center {
+  grid-area: center;
+  align-self: start;
+  min-height: 0;
+  height: auto;
+  overflow: hidden;
+}
+
+.page-home .board-left {
+  grid-area: left;
+}
+
+.page-home .board-right {
+  grid-area: right;
+}
+
+.page-home .board-left,
+.page-home .board-right {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.75rem;
+  padding: 0 !important;
+  overflow: visible;
+}
+
+.page-home .board-right {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.page-home .dash-panel {
+  padding: 0.95rem 1rem;
+}
+
+.page-home .ops-split {
+  height: auto;
+  min-height: 610px;
+}
+
+.page-home .ops-camera .camera-viewport {
+  flex: 1 1 320px;
+  width: calc(100% - 1.5rem) !important;
+  height: auto !important;
+  margin: 0.75rem 0.75rem 0 !important;
+  aspect-ratio: auto !important;
+}
+
+.page-home .camera-video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.page-home .ops-pane-actions {
+  margin-top: auto;
+}
+
+.page-home .contact-item {
+  min-height: 44px;
+}
+
+.page-home .contact-item strong {
+  max-width: 10rem;
+  text-align: right;
+}
+
+/* The full navigation becomes a clean menu before labels begin to crowd. */
+@media (max-width: 1180px) {
+  .nav-toggle {
+    display: inline-flex;
+  }
+
+  .site-nav {
+    position: absolute;
+    top: var(--header-h);
+    left: 0;
+    right: 0;
+    display: none;
+    max-height: calc(100vh - var(--header-h));
+    overflow-y: auto;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 0.7rem 1rem 1rem;
+    background: rgba(251, 252, 253, 0.98);
+    border-bottom: 1px solid var(--line);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .site-nav.is-open {
+    display: flex;
+  }
+
+  .site-nav a {
+    padding: 0.8rem 0.35rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .nav-cta {
+    margin: 0.7rem 0 0;
+    text-align: center;
+  }
+}
+
+@media (max-width: 1100px) {
+  .page-home .board-grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "center"
+      "left"
+      "right";
+  }
+
+  .page-home .board-left,
+  .page-home .board-right {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .page-home .ops-split {
+    min-height: 0;
+  }
+
+  .page-home .ops-pane {
+    min-height: 0;
+  }
+
+  .page-home .ops-camera .camera-viewport {
+    flex: 0 0 auto;
+    aspect-ratio: var(--video-aspect) !important;
+  }
+
+  .page-home .locate-panel {
+    min-height: 520px;
+  }
+}
+
+@media (max-width: 760px) {
+  body.page-home .home-board > .container {
+    width: min(100% - 1rem, 1440px);
+  }
+
+  .page-home .home-board {
+    padding-top: 0.6rem;
+  }
+
+  .command-intro {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.9rem;
+    padding: 1rem;
+  }
+
+  .command-intro-side {
+    justify-items: stretch;
+  }
+
+  .command-actions {
+    justify-content: stretch;
+  }
+
+  .command-actions .btn {
+    flex: 1 1 10rem;
+  }
+
+  .page-home .board-left,
+  .page-home .board-right {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .page-home .ops-pane-head {
+    padding-inline: 0.8rem;
+  }
+
+  .page-home .locate-panel {
+    min-height: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .command-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .command-actions .btn {
+    width: 100%;
+  }
+
+  .page-home .contact-item {
+    align-items: flex-start;
+  }
+
+  .page-home .contact-item strong {
+    max-width: 9rem;
+  }
+}
