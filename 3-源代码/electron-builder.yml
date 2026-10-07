@@ -1,0 +1,30 @@
+appId: com.anjuyunshu.judge
+productName: 安居云枢
+artifactName: 安居云枢-Windows-${version}-Setup.${ext}
+directories:
+  output: output/installers/windows
+  buildResources: build
+files:
+  - apps/desktop/**/*
+  - dist/client/**/*
+  - package.json
+asar: true
+compression: maximum
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+  icon: build/icon.svg
+  verifyUpdateCodeSignature: false
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  perMachine: false
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: 安居云枢
+  uninstallDisplayName: 安居云枢 评委体验版
+  installerLanguages:
+    - zh_CN
+  language: 2052

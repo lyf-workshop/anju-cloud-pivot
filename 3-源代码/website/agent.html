@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>处置智能体 · 安居云枢</title>
+  <meta name="description" content="物业服务大模型工作台：值班问询、工单协助与物业知识库展示。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;800&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+</head>
+<body class="page-agent">
+  <a class="skip-link" href="#main">跳到主要内容</a>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html" aria-label="安居云枢首页">
+        <span class="brand-mark" aria-hidden="true"><img src="assets/logo.png" alt="" /></span>
+        <span class="brand-text">
+          <strong>安居云枢</strong>
+          <small>物业消防值班台</small>
+        </span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="打开菜单">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="site-nav" id="site-nav" aria-label="主导航">
+        <a href="index.html">值班台</a>
+        <a href="duty.html">制度责任</a>
+        <a href="buildings.html">数字孪生</a>
+        <a href="people.html">人员台账</a>
+        <a href="inspection.html">巡查台账</a>
+        <a href="knowledge.html">处置预案</a>
+        <a href="report.html">隐患工单</a>
+        <a class="is-active" href="agent.html">处置智能体</a>
+        <a href="login.html">物业登录</a>
+        <a class="nav-cta" href="emergency.html">紧急处置</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="container page-hero">
+      <p class="page-eyebrow">物业服务 · 大模型工作台</p>
+      <h1>处置智能体</h1>
+      <p>面向物业值班与日常服务的问答工作台。右侧对话；左侧为云栖花园知识库的原文与切块展示，接入检索。</p>
+    </div>
+
+    <section class="section section-agent">
+      <div class="container agent-layout">
+        <aside class="rag-panel" aria-label="物业服务知识库展示">
+          <header class="panel-head">
+            <div>
+              <h2>物业服务知识库</h2>
+              <p>云栖花园演示库 · 含固定工单 WY-20261005-001</p>
+            </div>
+            <span class="rag-count">最近入库 09-28</span>
+          </header>
+          <div class="rag-toolbar">
+            <div class="rag-stats">
+              <span>原文 9</span>
+              <span>切片 14</span>
+              <span>嵌入 dim 768</span>
+              <span>分块 400–512 字</span>
+            </div>
+            <label class="rag-filter">
+              <span class="visually-hidden">筛选知识库文档</span>
+              <input id="rag-filter" type="search" placeholder="筛选文件名、切片编号或正文…" />
+            </label>
+          </div>
+          <ul class="rag-list" id="rag-list">
+            <li class="rag-doc rag-doc-source" data-search="原文 工单 WY-20261005-001 消防通道 杂物 纸箱 自行车">
+              <span class="rag-tag">原文</span>
+              <h3>安全工单 WY-20261005-001（永久内置案例）</h3>
+              <p class="rag-file">值班台 / WY-20261005-001.json · 入库 2026-10-05 · 固定演示单</p>
+              <pre class="rag-excerpt">工单编号：WY-20261005-001
+标题：楼道消防通道堆放废弃杂物
+位置：XX小区 3号楼 2单元 1层楼道消防通道门口
+现场：业主长期堆积旧纸箱、废旧家具、闲置自行车，占用全部疏散通道；杂物易燃，消防通道标识被遮挡。
+图片口述：居民楼楼道门口堆满纸箱、木板、旧椅子，通道标识不可见。</pre>
+            </li>
+            <li class="rag-doc rag-doc-source" data-search="原文 消防预案 云栖花园 值守 sop 小火 中火 大火">
+              <span class="rag-tag">原文</span>
+              <h3>云栖花园消防值守与分级处置手册（2026修订）</h3>
+              <p class="rag-file">品质部 / SOP-XF-2026-03.docx · v3.2 · 入库 2026-09-12</p>
+              <pre class="rag-excerpt">1.3 值班确认
+接到烟感/人工报警后，2 分钟内调取对应楼层监控，5 分钟内到达现场。
+1.4 分级
+小火：现场可扑灭、无蔓延；中火：单户或楼层受影响需协助疏散；大火：立即 119，同步工程/秩序/项目经理。
+不得以智能体回复替代现场确认。微型消防站器材清点每班一次，缺项写入交接班记录。</pre>
+            </li>
+            <li class="rag-doc" data-search="切片 消防 小火 chunk-xf-014">
+              <span class="rag-tag">切片</span>
+              <h3>小火现场确认话术</h3>
+              <p class="rag-file">chunk-xf-014 · 来源 SOP-XF-2026-03.docx §1.4</p>
+              <pre class="rag-excerpt">值守员到达后先观察有无明火、有无人员被困。若为厨余或香烟误报，填写《火情误报登记》并在 10 分钟内回告业主。话术：我们已到 2 号楼 1801 门口核验，目前未见明火，将保持监控复核。</pre>
+              <small>tokens ≈ 186 · 向量已写入 demo-index</small>
+            </li>
+            <li class="rag-doc" data-search="切片 消防 疏散 中火 chunk-xf-027">
+              <span class="rag-tag">切片</span>
+              <h3>中火疏散协同要点</h3>
+              <p class="rag-file">chunk-xf-027 · 来源 SOP-XF-2026-03.docx §2.1</p>
+              <pre class="rag-excerpt">中火启动后：秩序组封堵火层电梯召回基站；工程组切断本层非消防电源；客服通知同单元住户走楼梯往南门集散点。特殊人群优先，2-1801 行动不便，联系人王女士 138****2218（台账已脱敏展示）。</pre>
+              <small>tokens ≈ 214 · 向量已写入 demo-index</small>
+            </li>
+            <li class="rag-doc rag-doc-source" data-search="原文 报修 工单 sla 漏水 照明 门禁">
+              <span class="rag-tag">原文</span>
+              <h3>公共区域报修作业指导书</h3>
+              <p class="rag-file">工程部 / WI-BX-2025-11.pdf · v1.8 · 入库 2026-08-03</p>
+              <pre class="rag-excerpt">受理时限：公共区域漏水、停电、门禁失效为紧急，15 分钟响应、2 小时到场。楼道照明、健身器材为一般，当日派单、24 小时内完成或说明原因。
+派单对象：水电→工程班长李工；门禁→弱电张工；土建渗漏→外委防水班。
+回访：完成后 24 小时内电话回访，满意率记入月度品质报表。业主未接听记“未接通”，次日补访一次。</pre>
+            </li>
+            <li class="rag-doc" data-search="切片 报修 漏水 chunk-bx-006">
+              <span class="rag-tag">切片</span>
+              <h3>公共漏水派单字段</h3>
+              <p class="rag-file">chunk-bx-006 · 来源 WI-BX-2025-11.pdf 表3</p>
+              <pre class="rag-excerpt">工单必填：位置（楼栋-单元-楼层/部位）、渗漏范围、是否影响入户、现场照片不少于 2 张、临时封堵措施。紧急单默认派工程班长，超时未接单自动抄送项目经理。</pre>
+              <small>tokens ≈ 152 · 向量已写入 demo-index</small>
+            </li>
+            <li class="rag-doc rag-doc-source" data-search="原文 电梯 困人 特种设备 维保 迅达">
+              <span class="rag-tag">原文</span>
+              <h3>电梯困人应急处置卡（2号楼 1–2 号梯）</h3>
+              <p class="rag-file">工程部 / 卡-DT-02.jpg + 文本 · 入库 2026-07-21</p>
+              <pre class="rag-excerpt">品牌：迅达。维保单位：华北迅达维保站，24h 400-608-2210。
+步骤：1.对讲安抚，询问人数、有无老人儿童、身体不适；2.禁止指导业主扒门；3.5 分钟内工程到机房；4.15 分钟未解除呼叫维保；5.超时 30 分钟通知项目经理并准备轿厢外部救援。
+话术：师傅正在机房处理，请靠轿厢壁站稳，不要拍门。我们保持通话。</pre>
+            </li>
+            <li class="rag-doc" data-search="切片 电梯 困人 chunk-dt-003">
+              <span class="rag-tag">切片</span>
+              <h3>困人安抚与升级时限</h3>
+              <p class="rag-file">chunk-dt-003 · 来源 卡-DT-02</p>
+              <pre class="rag-excerpt">接到困人：立即打开对讲，记录梯号、楼层显示、被困人数。工程 5 分钟到场；维保 15 分钟未到场则第二次催修并记录工单号。禁止物业人员无证释放制动器。</pre>
+              <small>tokens ≈ 138 · 向量已写入 demo-index</small>
+            </li>
+            <li class="rag-doc rag-doc-source" data-search="原文 装修 噪声 投诉 静音 备案">
+              <span class="rag-tag">原文</span>
+              <h3>装修与噪声投诉处理规范</h3>
+              <p class="rag-file">客服中心 / 规-TS-2026-01.docx · 入库 2026-09-01</p>
+              <pre class="rag-excerpt">静音时段：工作日 12:00–14:00、19:00–次日 8:00；法定节假日全天禁止装修敲打。
+处理：先核验装修备案。已备案的，现场劝导并开《整改通知》；未备案的，责令停工补办。同一房间 7 日内第三次投诉，升级秩序主管，可暂扣出入证（工具搬运）。
+回复口径：我们已于 HH:MM 上门，对方停止作业/拒不配合，已记录并纳入装修验收扣分。</pre>
+            </li>
+            <li class="rag-doc" data-search="切片 噪声 装修 chunk-ts-011">
+              <span class="rag-tag">切片</span>
+              <h3>夜间噪声标准答复</h3>
+              <p class="rag-file">chunk-ts-011 · 来源 规-TS-2026-01.docx §4</p>
+              <pre class="rag-excerpt">夜间非装修噪声（聚会、拖动家具）：先电话劝导，10 分钟无效果上门。涉及治安的同步社区民警联系人（值班台黄页，不对外公示手机号）。回访须在次日 12 点前完成。</pre>
+              <small>tokens ≈ 121 · 向量已写入 demo-index</small>
+            </li>
+            <li class="rag-doc rag-doc-source" data-search="原文 电动车 充电桩 地库 飞线 消防通道">
+              <span class="rag-tag">原文</span>
+              <h3>电动车停放充电管理公示（原文）</h3>
+              <p class="rag-file">公示栏扫描件 / GS-DD-2026-04.txt · 入库 2026-04-16</p>
+              <pre class="rag-excerpt">禁止电动车及蓄电池进入电梯、楼道、住户。地库 B2 充电区车位 36 个，充满即走，单次不超过 8 小时。
+飞线充电、占用消防通道的，现场劝离并拍照存档；拒不配合的，按业主公约提请业委会确认后限制地库月卡。微型消防站灭火器每月检查，充电区配备灭火毯 4 块。</pre>
+            </li>
+            <li class="rag-doc" data-search="切片 充电 飞线 chunk-dd-008">
+              <span class="rag-tag">切片</span>
+              <h3>飞线充电劝离记录字段</h3>
+              <p class="rag-file">chunk-dd-008 · 来源 GS-DD-2026-04.txt</p>
+              <pre class="rag-excerpt">记录：时间、车牌/车架号后四位、位置（如 B2-12 柱）、是否切断私拉线路、是否开具劝离单、照片编号。当日秩序班次交班必须清点未完成项。</pre>
+              <small>tokens ≈ 109 · 向量已写入 demo-index</small>
+            </li>
+            <li class="rag-doc rag-doc-source" data-search="原文 特殊人群 台账 脱敏 1801 行动不便">
+              <span class="rag-tag">原文</span>
+              <h3>特殊人群协助台账（脱敏摘录）</h3>
+              <p class="rag-file">客服 / TZ-TS-2026Q3.xlsx 导出 · 入库 2026-09-20</p>
+              <pre class="rag-excerpt">楼栋,户号,类型,协助要点,联系人
+2,1801,行动不便,优先楼梯协助,王女士 138****2218
+2,0602,独居老人,夜间敲门无应答升级,李先生 139****7704
+5,1103,听障,短信/上门书面,周女士 186****0901
+说明：完整身份证号、病历不得写入知识库；模型侧只允许使用脱敏字段。</pre>
+            </li>
+            <li class="rag-doc" data-search="切片 特殊人群 1801 chunk-tz-002">
+              <span class="rag-tag">切片</span>
+              <h3>2-1801 疏散协助摘要</h3>
+              <p class="rag-file">chunk-tz-002 · 来源 TZ-TS-2026Q3.xlsx</p>
+              <pre class="rag-excerpt">2 号楼 1801 行动不便，火情或停电梯时由秩序组 2 人协助下楼，客服同步联系王女士。禁止在对讲或群通知中播报病症细节。</pre>
+              <small>tokens ≈ 96 · 向量已写入 demo-index</small>
+            </li>
+            <li class="rag-doc rag-doc-source" data-search="原文 巡查 原始记录 9月 楼道堆物">
+              <span class="rag-tag">原文</span>
+              <h3>2026年9月秩序巡查原始记录（节选）</h3>
+              <p class="rag-file">秩序班 / XC-202609.csv · 入库 2026-09-30</p>
+              <pre class="rag-excerpt">日期,时段,区域,问题,处理,拍照
+09-03,08:20,南门通道,无异常,正常,
+09-03,10:05,2号楼地库坡道,纸箱占道,已劝离并建单 XC-2403,IMG_0921
+09-08,19:40,B2充电区,飞线1处,切断并开劝离单,IMG_1102
+09-15,14:10,3号楼2单元,楼道堆放旧家具,张贴整改,IMG_1288
+09-22,09:00,6层走廊东侧,烟感测试联动,演示事件,CAM-RPI-01</pre>
+            </li>
+            <li class="rag-doc" data-search="切片 巡查 堆物 chunk-xc-019">
+              <span class="rag-tag">切片</span>
+              <h3>楼道堆物工单分类</h3>
+              <p class="rag-file">chunk-xc-019 · 来源 XC-202609.csv + 巡查要点</p>
+              <pre class="rag-excerpt">楼道堆物属消防通道类隐患。分类：可移动杂物→当日劝离；大件家具→下发 24 小时整改；逾期→工程协助清运并按公约告知费用。拍照需含楼层标识。</pre>
+              <small>tokens ≈ 128 · 向量已写入 demo-index</small>
+            </li>
+            <li class="rag-doc rag-doc-source" data-search="原文 物业费 发票 账期 公示">
+              <span class="rag-tag">原文</span>
+              <h3>物业费咨询答复底稿</h3>
+              <p class="rag-file">财务 / FAQ-FY-2026.txt · 入库 2026-03-09</p>
+              <pre class="rag-excerpt">收费标准以业委会公示为准，住宅 2.80 元/㎡·月（演示数据）。账期为自然月，每月 5 日前可在物业中心或微信缴费。发票：电子票在缴费次日生成，纸质票工作日 9:00–17:00 前台领取。
+争议：先核对面积与车位，无法当场解释的登记后 3 个工作日书面回复，不在智能体中承诺减免。</pre>
+            </li>
+            <li class="rag-doc" data-search="切片 物业费 发票 chunk-fy-004">
+              <span class="rag-tag">切片</span>
+              <h3>发票与账期口径</h3>
+              <p class="rag-file">chunk-fy-004 · 来源 FAQ-FY-2026.txt</p>
+              <pre class="rag-excerpt">业主问发票：先确认缴费流水号。电子票通道为“安居云枢-我的账单”（演示）。禁止向模型索要他人账单。面积异议引导至测绘复核，不现场改系统。</pre>
+              <small>tokens ≈ 118 · 向量已写入 demo-index</small>
+            </li>
+            <li class="rag-doc" data-search="切片 门禁 访客 快递 chunk-mj-007">
+              <span class="rag-tag">切片</span>
+              <h3>访客与快递登记</h3>
+              <p class="rag-file">chunk-mj-007 · 来源 门禁作业指导 WI-MJ-09</p>
+              <pre class="rag-excerpt">访客需业主远程确认或前台登记身份证后四位。快递、外卖不得尾随进入单元门。高峰 18:00–20:00 南门增加 1 名岗。异常尾随立即对讲劝返并回放门禁 30 秒。</pre>
+              <small>tokens ≈ 141 · 向量已写入 demo-index</small>
+            </li>
+            <li class="rag-doc" data-search="切片 二次供水 停水 通知 chunk-gs-002">
+              <span class="rag-tag">切片</span>
+              <h3>计划停水通知模板</h3>
+              <p class="rag-file">chunk-gs-002 · 来源 工程计划 2026-W38</p>
+              <pre class="rag-excerpt">【停水通知】2、3 号楼二次供水泵组保养，9 月 18 日 13:00–16:00 暂停。请提前备水。紧急情况找值班室。保养完成以群通知为准，超时由工程班长在群内说明原因。</pre>
+              <small>tokens ≈ 102 · 向量已写入 demo-index</small>
+            </li>
+            <li class="rag-doc" data-search="切片 高空抛物 监控 chunk-gk-005">
+              <span class="rag-tag">切片</span>
+              <h3>高空抛物取证口径</h3>
+              <p class="rag-file">chunk-gk-005 · 来源 安全巡查手册 §7</p>
+              <pre class="rag-excerpt">接到高空抛物：保护现场、查看坠落物、调取对应立面摄像头前后 5 分钟。不得在未核实前向业主群点名。涉及人身伤害立即 120/110，物业只做现场维护与资料移交。</pre>
+              <small>tokens ≈ 133 · 向量已写入 demo-index</small>
+            </li>
+            <li class="rag-doc" data-search="切片 宠物 公约 遛狗 chunk-cw-001">
+              <span class="rag-tag">切片</span>
+              <h3>宠物管理公约要点</h3>
+              <p class="rag-file">chunk-cw-001 · 来源 业主公约 2025 备案稿</p>
+              <pre class="rag-excerpt">公共区域牵绳、及时清理粪便。禁养名录以街道公示为准。电梯内宠物主动避让老人儿童。三次不清理粪便的，客服书面提醒；再犯提请业委会确认处理。</pre>
+              <small>tokens ≈ 111 · 向量已写入 demo-index</small>
+            </li>
+            <li class="rag-doc" data-search="切片 地库 积水 排涝 chunk-ps-006">
+              <span class="rag-tag">切片</span>
+              <h3>暴雨地库排涝步骤</h3>
+              <p class="rag-file">chunk-ps-006 · 来源 防汛预案 2026</p>
+              <pre class="rag-excerpt">橙色预警起：关闭 B2 非必要车行入口、启动潜水泵、沙袋封堵坡道。积水超过 8cm 禁止车辆下行。客服群发地库暂停通知。抽水后冲洗防滑条并记录泵运行小时数。</pre>
+              <small>tokens ≈ 125 · 向量已写入 demo-index</small>
+            </li>
+            <li class="rag-doc rag-doc-source" data-search="原文 监控 调阅 隐私 树莓派">
+              <span class="rag-tag">原文</span>
+              <h3>监控调阅与隐私规定（节选）</h3>
+              <p class="rag-file">综合部 / 规-JK-2026.pdf · 入库 2026-06-02</p>
+              <pre class="rag-excerpt">调阅须当班主管审批，填写《监控调阅单》：事由、时段、摄像头编号、是否外拷。业主个人调阅仅限与本人相关时段，由本人到场核验。
+树莓派 CAM-RPI-01 为消防值守演示源，画面可用于值班台，不得发到业主群。智能体可询问“是否疑似烟火”，但不得输出完整人脸或车牌原文。</pre>
+            </li>
+            <li class="rag-doc" data-search="切片 监控 调阅 chunk-jk-009">
+              <span class="rag-tag">切片</span>
+              <h3>智能体可用的监控结论范围</h3>
+              <p class="rag-file">chunk-jk-009 · 来源 规-JK-2026.pdf §5.2</p>
+              <pre class="rag-excerpt">允许输出：摄像头在线状态、最近告警类型（火焰/烟雾/误报）、告警区域楼栋。禁止输出：可识别人脸、完整车牌、业主姓名与户号的组合，除非值班员已登录且查询的是其授权范围。</pre>
+              <small>tokens ≈ 147 · 向量已写入 demo-index</small>
+            </li>
+          </ul>
+        </aside>
+
+        <section class="agent-workspace" id="agent-workspace" aria-label="物业服务大模型对话">
+          <header class="panel-head">
+            <div>
+              <h2>物业服务大模型</h2>
+              <p>问询烟火检测、待办工单、报修口径或起草回访说明</p>
+            </div>
+            <small id="agent-status">正在检查登录</small>
+          </header>
+          <div class="agent-log agent-log-page" id="agent-log"></div>
+          <form class="agent-form" id="agent-form">
+            <label class="visually-hidden" for="agent-input">对智能体说</label>
+            <input id="agent-input" name="q" maxlength="200" value="请调取工单WY-20261005-001，识别安全隐患，给出物业处置方案" placeholder="请调取工单WY-20261005-001，识别安全隐患，给出物业处置方案" />
+            <button class="btn btn-primary" type="submit">发送</button>
+          </form>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script src="api.js"></script>
+  <script src="script.js"></script>
+  <script src="agent.js"></script>
+  <script>
+    (() => {
+      const input = document.getElementById("rag-filter");
+      const docs = document.querySelectorAll(".rag-doc");
+      input?.addEventListener("input", () => {
+        const q = (input.value || "").trim().toLowerCase();
+        docs.forEach((doc) => {
+          const hay = `${doc.dataset.search || ""} ${doc.textContent || ""}`.toLowerCase();
+          doc.hidden = Boolean(q) && !hay.includes(q);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

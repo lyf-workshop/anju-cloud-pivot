@@ -1,0 +1,9 @@
+<view class="page">
+  <ui-state loading="{{loading}}" error="{{error}}" bind:retry="retry" />
+  <mode-banner></mode-banner>
+  <ui-card>
+    <view class="muted">版本 {{version}}</view>
+    <view class="gap" />
+    <view class="legal">{{text}}</view>
+  </ui-card>
+</view>

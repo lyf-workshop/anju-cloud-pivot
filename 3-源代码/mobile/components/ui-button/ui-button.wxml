@@ -1,0 +1,10 @@
+<button
+  class="button {{variant}}"
+  disabled="{{disabled || loading}}"
+  loading="{{loading}}"
+  bindtap="tap"
+  hover-class="pressed"
+>
+  {{label}}
+  <slot />
+</button>

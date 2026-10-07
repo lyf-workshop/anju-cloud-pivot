@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>隐患上报 · 安居云枢</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;800&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到主要内容</a>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark" aria-hidden="true"><img src="assets/logo.png" alt="" /></span>
+        <span class="brand-text"><strong>安居云枢</strong><small>物业消防值班台</small></span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="打开菜单">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="site-nav" id="site-nav">
+        <a href="index.html">值班台</a>
+        <a href="duty.html">制度责任</a>
+        <a href="buildings.html">数字孪生</a>
+        <a href="people.html">人员台账</a>
+        <a href="inspection.html">巡查台账</a>
+        <a href="knowledge.html">处置预案</a>
+        <a class="is-active" href="report.html">隐患工单</a>
+        <a href="agent.html">处置智能体</a>
+        <a href="login.html">物业登录</a>
+        <a class="nav-cta" href="emergency.html">紧急处置</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="container page-hero">
+      <h1>隐患上报 / 联系物业</h1>
+      <p>填写位置与情况，我们会在 1 个工作日内回复处理进度。</p>
+    </div>
+
+    <section class="section">
+      <div class="container narrow">
+        <form class="report-form" id="report-form" novalidate>
+          <div class="form-row">
+            <label for="location">位置 <span>*</span></label>
+            <input id="location" name="location" type="text" placeholder="例如：3号楼2单元楼梯间" required />
+          </div>
+
+          <div class="form-row">
+            <label for="type">隐患类型 <span>*</span></label>
+            <select id="type" name="type" required>
+              <option value="">请选择</option>
+              <option>占用消防车通道 / 疏散通道</option>
+              <option>消防设施损坏或缺件</option>
+              <option>电动车违规停放充电</option>
+              <option>常闭防火门常开 / 损坏</option>
+              <option>其他</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <label for="desc">情况描述 <span>*</span></label>
+            <textarea id="desc" name="desc" rows="4" placeholder="请简要说明发现时间与现场情况" required></textarea>
+          </div>
+
+          <div class="form-row two-col">
+            <div>
+              <label for="name">联系人</label>
+              <input id="name" name="name" type="text" placeholder="选填" />
+            </div>
+            <div>
+              <label for="phone">联系电话 <span>*</span></label>
+              <input id="phone" name="phone" type="tel" placeholder="便于回访" required />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label for="photo">现场照片（演示）</label>
+            <input id="photo" name="photo" type="file" accept="image/*" />
+            <p class="field-hint">本地预览版仅前端校验与成功提示，不会上传服务器。后续可对接后端 API 或邮箱（mailto）。</p>
+          </div>
+
+          <button class="btn btn-primary btn-block" type="submit">提交上报</button>
+          <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+        </form>
+
+        <div style="margin-top:1.5rem">
+          <h2 style="margin:0 0 0.5rem;font-size:1.1rem;">其他联系方式</h2>
+          <p style="margin:0;color:var(--muted)">物业消防值班：<a class="phone" href="tel:4008009000">400-800-9000</a></p>
+          <p style="margin:0.35rem 0 0;color:var(--muted)">生命危险请立即拨打 <a class="phone" href="tel:119">119</a>，再通知物业。</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div>
+        <strong>安居云枢 · 阳光家园物业服务中心</strong>
+        <p>地址：示例市示例区阳光路 88 号</p>
+      </div>
+      <div><p>最后更新：2026-09-22 · 备案号：待填写</p></div>
+    </div>
+  </footer>
+  <a class="float-call" href="tel:4008009000">值班电话</a>
+  <script src="site.js"></script>
+</body>
+</html>

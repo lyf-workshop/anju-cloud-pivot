@@ -1,0 +1,115 @@
+<view class="page assist-page">
+  <view class="assist-top">
+    <view class="assist-head">
+      <text class="assist-brand">安居云枢</text>
+      <text class="assist-title">看见隐患，马上问清楚</text>
+      <text class="assist-note">识险 · 处置 · 文书，建议仅供参考</text>
+    </view>
+    <view class="role-switch">
+      <view
+        wx:for="{{roles}}"
+        wx:key="id"
+        class="role-chip {{role===item.id?'on':''}}"
+        data-id="{{item.id}}"
+        bindtap="setRole"
+      >
+        <text class="role-name">{{item.name}}</text>
+        <text class="role-note">{{item.note}}</text>
+      </view>
+    </view>
+  </view>
+
+  <scroll-view class="assist-scroll" scroll-y scroll-with-animation scroll-into-view="{{scrollInto}}">
+    <view class="radar-strip">
+      <view class="radar-mark">
+        <line-icon name="shield-white" size="32" />
+      </view>
+      <view class="radar-copy">
+        <view class="radar-kicker">本楼风险雷达 · 待跟进 {{radar.openReports || 0}}</view>
+        <view class="radar-title">{{radar.address || '绑定住址后可生成楼层提示'}}</view>
+        <view class="radar-body">{{radar.advice || '登录后结合住址与上报记录，给出贴身安全提示。'}}</view>
+      </view>
+    </view>
+
+    <view class="assist-tip">紧急情况请先确保安全，并联系物业或 119</view>
+    <view wx:for="{{messages}}" wx:key="id" id="msg-{{item.id}}" class="msg-row {{item.role}} {{item.intro?'intro':''}}">
+      <view class="msg-avatar {{item.role}}">{{item.role==='user'?'我':'助'}}</view>
+      <view class="msg-col">
+        <view class="msg-bubble">{{item.text}}</view>
+        <view wx:if="{{item.card}}" class="action-card risk-{{item.card.riskLevel}}">
+          <view class="card-head">
+            <text class="risk-pill">{{item.card.riskLabel}}</text>
+            <text class="card-title">{{item.card.title}}</text>
+          </view>
+          <view wx:if="{{item.card.findings.length}}" class="card-block">
+            <view class="card-label">识别要点</view>
+            <view wx:for="{{item.card.findings}}" wx:for-item="line" wx:key="*this" class="find-row">
+              <view class="dot"></view>
+              <text class="card-line">{{line}}</text>
+            </view>
+          </view>
+          <view wx:if="{{item.card.questions.length}}" class="card-block">
+            <view class="card-label">还想确认</view>
+            <view class="ask-wrap">
+              <view
+                wx:for="{{item.card.questions}}"
+                wx:for-item="q"
+                wx:key="*this"
+                class="ask-chip"
+                data-text="{{q}}"
+                bindtap="ask"
+              >{{q}}</view>
+            </view>
+          </view>
+          <view wx:if="{{item.card.actions.length}}" class="card-block">
+            <view class="card-label">建议处置</view>
+            <view wx:for="{{item.card.actions}}" wx:for-item="act" wx:key="no" class="act-row">
+              <text class="act-no">{{act.no}}</text>
+              <view class="act-copy">
+                <text class="act-title">{{act.title}}</text>
+                <text class="act-detail">{{act.detail}}</text>
+              </view>
+            </view>
+          </view>
+          <view wx:if="{{item.card.avoid.length}}" class="avoid-box">
+            <view class="card-label warn">请不要</view>
+            <view wx:for="{{item.card.avoid}}" wx:for-item="line" wx:key="*this" class="card-line dim">{{line}}</view>
+          </view>
+          <view class="step-row">
+            <button
+              wx:for="{{item.card.nextSteps}}"
+              wx:for-item="step"
+              wx:key="id"
+              class="step-btn {{index===0?'primary':'ghost'}}"
+              data-url="{{step.url}}"
+              data-draft="{{item.card.reportDraft}}"
+              bindtap="goStep"
+            >{{step.label}}</button>
+          </view>
+        </view>
+      </view>
+    </view>
+    <view wx:if="{{busy}}" class="msg-row assistant">
+      <view class="msg-avatar assistant">助</view>
+      <view class="typing">正在整理建议</view>
+    </view>
+    <view id="msg-end" class="scroll-end"></view>
+  </scroll-view>
+
+  <view class="composer-dock">
+    <ui-state error="{{error}}" bind:retry="clearAssistError" compact />
+    <scroll-view class="chip-scroll" scroll-x>
+      <view
+        wx:for="{{chips}}"
+        wx:key="*this"
+        class="quick-chip"
+        data-text="{{item}}"
+        bindtap="ask"
+      >{{item}}</view>
+    </scroll-view>
+    <view class="composer">
+      <input class="assist-input" value="{{draft}}" placeholder="描述你看到的现象，如走廊堆物、烟味" bindinput="onDraft" confirm-type="send" bindconfirm="send" />
+      <button class="assist-send" disabled="{{busy || !draft}}" bindtap="send">{{busy?'…':'发送'}}</button>
+    </view>
+  </view>
+</view>

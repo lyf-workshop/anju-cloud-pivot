@@ -1,0 +1,51 @@
+# Dependencies and build output
+**/node_modules/
+**/dist/
+**/coverage/
+**/artifacts/local/
+**/artifacts/devtools-runner/
+**/artifacts/compiler/wcc.js
+**/artifacts/compiler/wcsc.js
+
+# Secrets and local config
+**/.env
+**/.env.*
+!**/.env.example
+**/config/local.js
+**/mobile/config/local.js
+**/mobile/config/appid.local.js
+**/*.local
+**/server/data/
+**/project.private.config.json
+**/.secrets/
+
+# Databases and logs
+**/*.sqlite
+**/*.sqlite-shm
+**/*.sqlite-wal
+**/*.db
+**/*.db-shm
+**/*.db-wal
+**/*.db-journal
+**/*.log
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# GitHub 单文件上限 100MB：安装包与演示视频体积过大，不纳入版本库
+4-安装包/
+5-视频短片/
+**/website/assets/demo/*.mp4
+
+# Generated installers and signing material
+**/output/
+**/*.jks
+**/*.keystore
+**/android/.gradle/
+**/android/local.properties
+**/android/app/release/
+**/android/app/build/
+
+# Browser automation session state
+**/.playwright-cli/

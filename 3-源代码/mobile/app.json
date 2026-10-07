@@ -1,0 +1,90 @@
+{
+  "pages": [
+    "pages/login/login",
+    "pages/register/register",
+    "pages/register-done/register-done",
+    "pages/index/index",
+    "pages/hazards/hazards",
+    "pages/assist/assist",
+    "pages/building/building",
+    "pages/building-escape/building-escape",
+    "pages/building-equipment/building-equipment",
+    "pages/building-chat/building-chat",
+    "pages/me/me",
+    "pages/report/report",
+    "pages/report-result/report-result",
+    "pages/report-detail/report-detail",
+    "pages/drill/drill",
+    "pages/emergency/emergency",
+    "pages/my-reports/my-reports",
+    "pages/devices/devices",
+    "pages/assembly/assembly",
+    "pages/drill-summary/drill-summary",
+    "pages/drill-records/drill-records",
+    "pages/addresses/addresses",
+    "pages/profile/profile",
+    "pages/notices/notices",
+    "pages/help/help",
+    "pages/legal/legal",
+    "pages/logs/logs"
+  ],
+  "window": {
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "安居云枢",
+    "navigationBarBackgroundColor": "#0B5CAB",
+    "backgroundColor": "#EAF3FA",
+    "backgroundTextStyle": "dark"
+  },
+  "tabBar": {
+    "custom": true,
+    "color": "#8893A3",
+    "selectedColor": "#0B5CAB",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "assets/icons/home.png",
+        "selectedIconPath": "assets/icons/home-active.png"
+      },
+      {
+        "pagePath": "pages/hazards/hazards",
+        "text": "隐患",
+        "iconPath": "assets/icons/hazard.png",
+        "selectedIconPath": "assets/icons/hazard-active.png"
+      },
+      {
+        "pagePath": "pages/assist/assist",
+        "text": "助手",
+        "iconPath": "assets/icons/assist.png",
+        "selectedIconPath": "assets/icons/assist-active.png"
+      },
+      {
+        "pagePath": "pages/building/building",
+        "text": "楼栋",
+        "iconPath": "assets/icons/cube.png",
+        "selectedIconPath": "assets/icons/cube-active.png"
+      },
+      {
+        "pagePath": "pages/me/me",
+        "text": "我的",
+        "iconPath": "assets/icons/user.png",
+        "selectedIconPath": "assets/icons/user-active.png"
+      }
+    ]
+  },
+  "usingComponents": {
+    "ui-button": "/components/ui-button/ui-button",
+    "ui-card": "/components/ui-card/ui-card",
+    "ui-state": "/components/ui-state/ui-state",
+    "status-tag": "/components/status-tag/status-tag",
+    "line-icon": "/components/line-icon/line-icon",
+    "mode-banner": "/components/mode-banner/mode-banner",
+    "location-picker": "/components/location-picker/location-picker"
+  },
+  "style": "v2",
+  "componentFramework": "glass-easel",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

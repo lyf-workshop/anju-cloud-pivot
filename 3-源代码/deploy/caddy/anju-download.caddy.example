@@ -1,0 +1,10 @@
+# The real file is generated on the server with a random password hash.
+handle /judge-downloads/* {
+	basic_auth {
+		reviewer <CADDY_BCRYPT_HASH>
+	}
+	header Cache-Control "private, no-store"
+	header X-Robots-Tag "noindex, nofollow, noarchive"
+	root * /srv/anju-cloud-pivot-downloads
+	file_server
+}

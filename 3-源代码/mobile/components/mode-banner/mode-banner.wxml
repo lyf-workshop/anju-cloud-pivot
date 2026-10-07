@@ -1,0 +1,3 @@
+<view class="banner">
+  <text class="dot" /> {{label}}
+</view>

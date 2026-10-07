@@ -1,0 +1,28 @@
+.hazards-page .title {
+  font-size: 42rpx;
+}
+
+.hazards-page .subtitle {
+  font-size: 26rpx;
+}
+
+.hazards-page .report-banner .strong {
+  font-size: 32rpx;
+}
+
+.hazards-page .report-banner .muted {
+  font-size: 22rpx;
+}
+
+.hazards-page .record-title {
+  font-size: 28rpx;
+}
+
+.hazards-page .record-meta,
+.hazards-page .view-link {
+  font-size: 23rpx;
+}
+
+.hazards-page .chip {
+  font-size: 25rpx;
+}

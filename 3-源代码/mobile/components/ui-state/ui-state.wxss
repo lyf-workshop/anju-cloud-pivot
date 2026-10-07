@@ -1,0 +1,35 @@
+.state {
+  padding: 48rpx 24rpx;
+  text-align: center;
+  color: #7b8696;
+  background: white;
+  border-radius: 24rpx;
+  margin: 22rpx 0;
+  font-size: 26rpx;
+}
+.compact {
+  padding: 20rpx;
+}
+.symbol {
+  color: #b5bfca;
+  font-size: 44rpx;
+  line-height: 1.2;
+  margin-bottom: 16rpx;
+}
+.message {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.state button {
+  display: inline-block;
+  font-size: 25rpx;
+  line-height: 1.5;
+  padding: 18rpx 32rpx;
+  background: #fff0ed;
+  color: #d96055;
+  margin: 18rpx 12rpx 0;
+  border-radius: 16rpx;
+}
+.state button::after {
+  border: 0;
+}

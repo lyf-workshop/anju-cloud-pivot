@@ -1,0 +1,244 @@
+.report-page {
+  padding-bottom: calc(140rpx + env(safe-area-inset-bottom));
+}
+
+.report-page .report-label {
+  font-size: 28rpx;
+}
+
+.report-page .report-input {
+  font-size: 28rpx;
+}
+
+.report-page .field-note,
+.report-page .muted {
+  font-size: 23rpx;
+}
+
+.report-top {
+  margin-bottom: 18rpx;
+}
+
+.report-page .title {
+  font-size: 42rpx;
+}
+
+.report-page .subtitle {
+  font-size: 26rpx;
+}
+
+/* 红色长条：左文右相机 */
+.photo-banner {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  background: var(--red, #d44730);
+  color: #ffffff;
+  border-radius: 22rpx;
+  padding: 26rpx 24rpx;
+  margin: 0 0 18rpx;
+  transition: transform 0.18s ease, opacity 0.18s ease;
+}
+
+.photo-banner-press {
+  transform: scale(0.985);
+  opacity: 0.94;
+}
+
+.photo-banner-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.photo-banner-desc {
+  margin-top: 6rpx;
+  font-size: 22rpx;
+  color: #ffded2;
+}
+
+.photo-preview-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14rpx;
+  margin-bottom: 18rpx;
+}
+
+.hazard-field {
+  margin-top: 4rpx;
+}
+
+.hazard-cat-scroll {
+  width: 100%;
+  white-space: nowrap;
+  margin-bottom: 12rpx;
+}
+
+.hazard-cat-row {
+  display: inline-flex;
+  gap: 12rpx;
+  padding: 2rpx 0 8rpx;
+}
+
+.page .hazard-cat {
+  margin: 0;
+  padding: 14rpx 24rpx;
+  font-size: 26rpx;
+  line-height: 1.3;
+  border-radius: 999rpx;
+  background: #eef4f9;
+  color: #5b738a;
+  flex-shrink: 0;
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.page .hazard-cat::after {
+  border: 0;
+}
+
+.page .hazard-cat.active {
+  background: #d44730;
+  color: #ffffff;
+  font-weight: 650;
+  box-shadow: 0 8rpx 18rpx rgba(212, 71, 48, 0.22);
+}
+
+.page .hazard-cat.pop {
+  animation: chip-pop 0.32s ease;
+}
+
+.hazard-empty-tip {
+  padding: 28rpx 20rpx;
+  text-align: center;
+  font-size: 24rpx;
+  color: #8290a3;
+  background: #f5f9fc;
+  border-radius: 16rpx;
+}
+
+/* 类型卡片：左右留白、图片适中、下方居中文字，选中整框描红 */
+.hazard-reveal {
+  opacity: 0;
+  transform: translateY(12rpx);
+}
+
+.hazard-reveal.in {
+  animation: reveal-in 0.32s ease forwards;
+}
+
+.page .hazard-type-card {
+  width: 100%;
+  margin: 0 0 18rpx;
+  padding: 16rpx 16rpx 14rpx;
+  background: #ffffff;
+  border-radius: 18rpx;
+  border: 3rpx solid #e4e9ef;
+  box-sizing: border-box;
+  text-align: center;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(14rpx) scale(0.98);
+  box-shadow: 0 4rpx 14rpx rgba(89, 141, 179, 0.06);
+}
+
+.hazard-reveal.in .hazard-type-card {
+  animation: card-in 0.38s ease forwards;
+}
+
+.page .hazard-type-card::after {
+  border: 0;
+}
+
+.page .hazard-type-card.active {
+  border-color: #d44730;
+  background: #fff8f6;
+  box-shadow: 0 8rpx 20rpx rgba(212, 71, 48, 0.14);
+}
+
+.page .hazard-type-card.active .hazard-type-caption {
+  color: #d44730;
+}
+
+.page .hazard-type-card.pop {
+  animation: card-pop 0.34s ease;
+}
+
+.hazard-type-card-img {
+  width: 100%;
+  height: 260rpx;
+  display: block;
+  margin: 0 auto;
+  background: #f4f8fb;
+  border-radius: 12rpx;
+}
+
+.hazard-type-caption {
+  margin-top: 14rpx;
+  padding: 4rpx 8rpx 2rpx;
+  font-size: 28rpx;
+  font-weight: 650;
+  color: #23364d;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.custom-box {
+  margin-top: 16rpx;
+  padding: 16rpx;
+  border-radius: 16rpx;
+  background: #f5f9fc;
+}
+
+.selected-tip {
+  margin-top: 14rpx;
+  font-size: 26rpx;
+  color: #278873;
+  font-weight: 600;
+}
+
+.report-picker {
+  background: white;
+  border: 0;
+  font-size: 28rpx;
+}
+
+@keyframes chip-pop {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes reveal-in {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes card-in {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes card-pop {
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(0.97);
+  }
+  70% {
+    transform: scale(1.015);
+  }
+  100% {
+    transform: scale(1);
+  }
+}

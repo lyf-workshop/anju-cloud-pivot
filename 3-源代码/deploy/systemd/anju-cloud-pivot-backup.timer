@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily Anju Cloud Pivot demo backup
+
+[Timer]
+OnCalendar=*-*-* 03:20:00 UTC
+Persistent=true
+RandomizedDelaySec=10m
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,209 @@
+/* 首页：天坛式分层 —— 顶部氛围遮罩 + 内容卡上叠；公告/轮播内容逻辑不变 */
+
+.home-page {
+  /* 让顶部氛围层可贴齐屏幕左右 */
+  padding-left: 0;
+  padding-right: 0;
+  padding-top: 0;
+}
+
+/* —— 顶部氛围：门头实景半透明 + 原有文案 + 底部波浪 —— */
+.home-cover {
+  position: relative;
+  z-index: 1;
+  padding: 24rpx 36rpx 100rpx;
+  min-height: 380rpx;
+  box-sizing: border-box;
+  overflow: hidden;
+  background: #dcebf7;
+}
+
+.home-cover-bg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  display: block;
+  opacity: 0.48;
+}
+
+/* 浅色罩层：再冲淡实景，保证原文字可读 */
+.home-cover-veil {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    180deg,
+    rgba(220, 235, 247, 0.55) 0%,
+    rgba(232, 243, 251, 0.42) 45%,
+    rgba(234, 243, 250, 0.72) 100%
+  );
+  pointer-events: none;
+}
+
+.home-cover-top {
+  position: relative;
+  z-index: 2;
+  margin-bottom: 28rpx;
+}
+
+.home-cover-chip {
+  background: rgba(255, 255, 255, 0.86);
+  border-radius: 999rpx;
+  padding: 10rpx 18rpx;
+  gap: 8rpx;
+  color: #2a4a5e;
+  font-size: 24rpx;
+  font-weight: 600;
+  box-shadow: 0 4rpx 12rpx rgba(89, 141, 179, 0.08);
+}
+
+.home-cover-pill {
+  background: rgba(255, 255, 255, 0.82);
+  color: #598db3;
+  font-size: 20rpx;
+  padding: 8rpx 14rpx;
+  border-radius: 999rpx;
+}
+
+.home-cover-body {
+  position: relative;
+  z-index: 2;
+  max-width: 72%;
+  min-height: 180rpx;
+  display: flex;
+  align-items: center;
+}
+
+.home-cover-copy {
+  width: 100%;
+}
+
+.home-cover-eyebrow {
+  font-size: 22rpx;
+  color: #4a6f8a;
+  margin-bottom: 12rpx;
+  letter-spacing: 1rpx;
+}
+
+.home-cover-title {
+  font-size: 40rpx;
+  font-weight: 700;
+  color: #1f3d52;
+  line-height: 1.35;
+  letter-spacing: 1rpx;
+}
+
+.home-cover-note {
+  margin-top: 12rpx;
+  font-size: 22rpx;
+  color: #5b738a;
+  line-height: 1.55;
+}
+
+/* 底部波浪：只装饰封面，不压住下方公告 */
+.home-cover-wave {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1rpx;
+  height: 56rpx;
+  z-index: 1;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 375 40' preserveAspectRatio='none'%3E%3Cpath d='M0 18C48 34 96 4 150 14C204 24 246 36 300 22C336 12 360 18 375 24V40H0Z' fill='%23eaf3fa'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+/* —— 内容上叠层：公告置于顶层 —— */
+.home-sheet {
+  position: relative;
+  z-index: 10;
+  margin-top: -64rpx;
+  padding: 0 36rpx calc(36rpx + env(safe-area-inset-bottom));
+}
+
+/* 公告卡片 */
+.home-notice-card {
+  position: relative;
+  z-index: 12;
+  background: #ffffff;
+  border-radius: 20rpx;
+  padding: 10rpx 18rpx;
+  margin: 0 0 16rpx;
+  box-shadow: 0 10rpx 28rpx rgba(63, 111, 143, 0.12);
+  align-items: center;
+  gap: 12rpx;
+  min-height: 0;
+}
+
+.home-notice-horn {
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 12rpx;
+  background: #fff0eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.home-notice-horn-icon {
+  font-size: 24rpx;
+  line-height: 1;
+  color: #d44730;
+}
+
+.home-notice-swiper {
+  height: 44rpx;
+  min-width: 0;
+}
+
+.home-notice-line {
+  height: 44rpx;
+  line-height: 44rpx;
+  font-size: 24rpx;
+  font-weight: 400;
+  color: #5a6b7d;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.home-notice-arrow {
+  color: #a0adbc;
+  font-size: 30rpx;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+/* 轮播：白卡圆角，叠在氛围层上 */
+.home-hero-wrap {
+  position: relative;
+  margin: 0 0 12rpx;
+  border-radius: 22rpx;
+  overflow: hidden;
+  background: #f0f4f7;
+  box-shadow: 0 10rpx 26rpx rgba(63, 111, 143, 0.1);
+}
+
+.home-swiper {
+  width: 100%;
+  background: #f0f4f7;
+}
+
+.home-hero-card {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  background: #f0f4f7;
+}
+
+.home-hero-poster {
+  width: 100%;
+  height: 100%;
+  display: block;
+}

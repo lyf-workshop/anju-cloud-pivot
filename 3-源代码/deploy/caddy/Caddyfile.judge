@@ -1,0 +1,20 @@
+codetether.org {
+	encode zstd gzip
+	reverse_proxy 127.0.0.1:3000
+}
+
+www.codetether.org {
+	redir https://codetether.org{uri} permanent
+}
+
+api.codetether.org {
+	reverse_proxy 127.0.0.1:4320
+}
+
+xn--9kqy92aeqav77a.com {
+	encode zstd gzip
+	import /etc/caddy/anju-download.caddy
+	handle {
+		reverse_proxy 127.0.0.1:3101
+	}
+}

@@ -1,0 +1,9 @@
+<view class="page has-actions">
+  <view class="title">每一次反馈，都有回响</view><view class="subtitle">你已为社区提交 {{stats.total}} 条演示记录</view><view class="gap"/>
+  <ui-card><view class="stats"><view class="stat"><view class="stat-number">{{stats.total}}</view><view class="stat-label">全部上报</view></view><view class="stat"><view class="stat-number accent">{{stats.pending}}</view><view class="stat-label">待处理</view></view><view class="stat"><view class="stat-number success">{{stats.completed}}</view><view class="stat-label">已完成</view></view></view></ui-card>
+  <scroll-view class="filter-scroll" scroll-x><button wx:for="{{filters}}" wx:key="id" class="chip {{status===item.id?'active':''}}" data-id="{{item.id}}" bindtap="filter">{{item.name}}</button></scroll-view>
+  <ui-state loading="{{loading}}" error="{{error}}" empty="{{!loading && !error && !items.length}}" text="还没有该状态的记录" bind:retry="retry"/>
+  <view wx:for="{{items}}" wx:key="id" class="card report-card" data-url="/pages/report-detail/report-detail?id={{item.id}}" bindtap="go"><view class="row"><image class="report-thumb" src="{{item.cover}}" mode="aspectFill"/><view class="grow"><view class="record-title">{{item.title}}</view><view class="record-meta">{{item.location}}</view><status-tag status="{{item.status}}" label="{{item.statusName}}"/></view></view><view class="record-footer"><text>{{item.timeText}}</text><text class="view-link">查看进度 ›</text></view></view>
+  <ui-button wx:if="{{items.length<total}}" label="加载更多" variant="plain" loading="{{busy}}" bind:action="more"/>
+  <mode-banner></mode-banner><view class="fixed-actions"><ui-button label="继续上报新隐患" data-url="/pages/report/report" bind:action="go"/></view>
+</view>

@@ -1,0 +1,10 @@
+<view class="page has-actions">
+  <view class="hint row" style="margin-top:0"><line-icon name="shield" size="30"/><text>模拟演练中 · 以下为示例路线</text></view>
+  <ui-state loading="{{loading}}" error="{{error}}" bind:retry="retry" compact/>
+  <block wx:if="{{record}}">
+    <view class="card"><view class="row between"><text class="strong">{{record.snapshot.buildingName}} · {{record.snapshot.floorNumber}}层</text><text class="pill">楼层平面</text></view><view class="diagram floor-plan"><view class="diagram-floor"><view class="room exit"><line-icon name="exit" size="28"/><text>安全出口</text></view><view class="room">{{record.snapshot.floorNumber}}01</view><view class="room">{{record.snapshot.floorNumber}}02</view></view><view class="corridor">← 楼层通道示意 →</view><view class="diagram-floor"><view class="room">{{record.snapshot.floorNumber}}03</view><view class="room">电梯厅</view><view class="room">{{record.snapshot.floorNumber}}04</view></view></view><view class="field-note center">线上认知示意 · 非现场实测平面图</view></view>
+    <view class="step-guide"><view class="muted">STEP 01 / 02</view><view class="section-title" style="margin:12rpx 0">找到本层安全出口</view><view class="muted">{{record.snapshot.exitText}}</view></view>
+    <ui-card title="演练帮助熟悉环境"><view class="muted">本页面仅供线上认识出口和集合点，不表示已完成实际疏散。</view></ui-card>
+  </block>
+  <view class="fixed-actions"><ui-button label="退出演练" variant="plain" disabled="{{!record}}" bind:action="leave"/><ui-button id="next-drill" label="下一步：查看集合点" variant="plain" disabled="{{!record}}" loading="{{busy}}" bind:action="confirm"/></view>
+</view>

@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>物业登录 · 安居云枢</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;800&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="connected.css" />
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body class="page-login" data-ready="true">
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href="index.html" data-showcase aria-label="安居云枢首页">
+          <span class="brand-mark" aria-hidden="true"><img src="assets/logo.png" alt="" /></span>
+          <span class="brand-text">
+            <strong>安居云枢</strong>
+            <small>物业工作台</small>
+          </span>
+        </a>
+        <nav class="site-nav">
+          <a href="index.html" data-showcase>返回值班台</a>
+          <a href="emergency.html" data-showcase>公共紧急联系方式</a>
+        </nav>
+      </div>
+    </header>
+    <main id="main" class="api-main">
+      <div class="container">
+        <div class="page-hero">
+          <h1>物业工作台登录</h1>
+          <p>居民使用微信小程序；物业账号由管理员分配。登录后可使用值班处置智能体和物业工作台。</p>
+        </div>
+        <div id="api-message" class="api-message" role="status" aria-live="polite"></div>
+        <div class="api-login">
+          <section class="api-card">
+            <h2>账号登录</h2>
+            <form id="login-form">
+              <label>物业账号<input name="username" type="text" required autocomplete="username" maxlength="60" /></label>
+              <label>密码<input name="password" type="password" required autocomplete="current-password" maxlength="200" /></label>
+              <button class="btn btn-primary" type="submit">登录</button>
+            </form>
+            <p class="api-secondary" id="login-demo-hint" hidden>
+              本地演示账号：property-demo<br />默认密码：AnjuLocal2026!（若已配置其他密码，请使用配置值）
+            </p>
+          </section>
+        </div>
+      </div>
+    </main>
+    <script src="api.js"></script>
+    <script src="connected.js"></script>
+  </body>
+</html>

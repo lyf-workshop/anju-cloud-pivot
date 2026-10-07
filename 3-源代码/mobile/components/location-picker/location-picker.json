@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "ui-state": "/components/ui-state/ui-state"
+  }
+}

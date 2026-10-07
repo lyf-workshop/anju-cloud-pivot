@@ -1,0 +1,53 @@
+<view class="page">
+  <view class="title">住址管理</view>
+  <view class="subtitle">选择一处示例住址，体验不同楼层</view>
+  <ui-state
+    loading="{{loading}}"
+    error="{{error}}"
+    bind:retry="retry"
+    compact
+  />
+  <ui-card wx:for="{{items}}" wx:key="id">
+    <view class="strong">{{item.address}}</view>
+    <view class="row between">
+      <text class="pill">
+        示例住址
+      </text>
+      <text wx:if="{{item.isCurrent}}" class="success small">当前住址</text>
+      <button
+        wx:else
+        class="link-button"
+        data-id="{{item.id}}"
+        bindtap="current"
+      >
+        设为当前
+      </button>
+    </view>
+  </ui-card>
+  <view class="hint" wx:if="{{!items.length}}">
+    你还没有绑定住址。选择社区、楼栋、楼层并填写房号后可参与相应楼栋的上报与线上演练。
+  </view>
+  <ui-card title="添加示例住址">
+    <location-picker
+      value="{{preferred}}"
+      bind:change="changed"
+      disabled="{{busy}}"
+    />
+    <view class="gap" />
+    <view class="field">
+      <text class="field-label">房号</text>
+      <input
+        class="input"
+        value="{{room}}"
+        bindinput="input"
+        disabled="{{busy}}"
+        maxlength="20"
+        placeholder="如 601（演示填写即可）"
+      />
+    </view>
+    <ui-button label="使用此示例住址" loading="{{busy}}" bind:action="save" />
+    <view class="field-note">
+      仅在本次展示中使用，无需填写真实住址。
+    </view>
+  </ui-card>
+</view>

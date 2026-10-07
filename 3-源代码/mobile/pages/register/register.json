@@ -1,0 +1,7 @@
+{
+  "navigationBarTextStyle": "white",
+  "navigationBarTitleText": "人口登记",
+  "navigationBarBackgroundColor": "#0B5CAB",
+  "backgroundColor": "#EAF3FA",
+  "enablePullDownRefresh": false
+}

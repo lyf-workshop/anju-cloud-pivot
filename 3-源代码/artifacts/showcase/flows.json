@@ -1,0 +1,20 @@
+{
+  "at": "2026-10-05T09:56:32.610Z",
+  "result": "passed",
+  "productPagesChecked": 22,
+  "networkCalls": 0,
+  "phoneCalls": 0,
+  "checks": [
+    "consent, local login and two-step household registration",
+    "all product page controllers and handlers",
+    "four tab routes",
+    "local filters",
+    "selected photo preview",
+    "new report/result/detail consistency",
+    "floor/device switching",
+    "drill steps/duration/summary/history/repeat",
+    "emergency dialogs",
+    "logout to login and reset"
+  ],
+  "scope": "Node controller smoke with wx stubs; not WeChat UI or device verification"
+}

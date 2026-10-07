@@ -1,0 +1,26 @@
+.select {
+  background: #f7f8fa;
+  border: 1rpx solid #ebeef2;
+  border-radius: 18rpx;
+  padding: 22rpx;
+  font-size: 26rpx;
+  min-height: 88rpx;
+  line-height: 1.6;
+  box-sizing: border-box;
+  color: #203047;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.pair {
+  display: flex;
+  gap: 14rpx;
+  margin-top: 14rpx;
+}
+.pair picker {
+  flex: 1;
+  min-width: 0;
+}
+.pair .select {
+  padding: 20rpx 12rpx;
+}

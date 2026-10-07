@@ -1,0 +1,27 @@
+<view class="page">
+  <mode-banner></mode-banner>
+  <view class="eyebrow">EMERGENCY CONTACT</view>
+  <view class="title">紧急求助</view>
+  <view class="subtitle">重要的联系方式，就在身边</view>
+  <view class="gap" />
+  <view class="contact-card fire-contact">
+    <view class="row"><view class="icon-box"><line-icon name="phone-active" /></view><view class="grow"><view class="contact-number">119</view><view class="small">消防报警电话</view></view><button class="contact-action" data-kind="fire" bindtap="call">演示联系</button></view>
+  </view>
+  <view class="contact-card">
+    <view class="row"><view class="icon-box"><line-icon name="building" /></view><view class="grow"><view class="strong">物业服务中心</view><view class="muted">{{config.propertyPhone}} · 示例号码</view></view><button class="link-button" data-kind="property" bindtap="call">联系 ›</button></view>
+  </view>
+  <view class="field-note center">当前仅展示联系流程，所有电话按钮均不会实际拨号</view>
+  <view wx:if="{{callMessage}}" class="hint">{{callMessage}}</view>
+  <ui-state loading="{{loading}}" error="{{error}}" bind:retry="retry" compact />
+  <view class="gap" />
+  <ui-card title="我的住址">
+    <view class="row"><line-icon name="pin" /><view class="grow strong">{{address}}</view></view>
+    <view class="field-note">展示用示例住址，可补充位置体验复制功能</view>
+    <view class="gap" />
+    <input class="input" value="{{manual}}" bindinput="input" maxlength="200" placeholder="补充位置（选填）" cursor-spacing="40" />
+    <view class="gap" />
+    <ui-button label="复制住址" variant="plain" bind:action="copy" />
+  </ui-card>
+  <ui-button label="上报现场情况" data-url="/pages/report/report" bind:action="go" />
+  <view class="field-note center">进入本地上报演示，不会发送真实求助</view>
+</view>

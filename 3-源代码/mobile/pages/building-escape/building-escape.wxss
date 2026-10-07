@@ -1,0 +1,17 @@
+.escape-card {
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.escape-plan-image {
+  width: 100%;
+  border-radius: 16rpx;
+  background: #f4f6f9;
+  display: block;
+}
+
+.escape-tip {
+  font-size: 25rpx;
+  color: #33475c;
+  line-height: 1.7;
+  margin-bottom: 8rpx;
+}

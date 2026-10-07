@@ -1,0 +1,54 @@
+node_modules/
+dist/
+coverage/
+
+# Local credentials and machine-specific configuration (keep templates).
+.env
+.env.*
+!.env.example
+config/local.js
+mobile/config/local.js
+mobile/config/appid.local.js
+*.local
+server/data/
+project.private.config.json
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+*.db
+*.db-shm
+*.db-wal
+*.db-journal
+*.log
+
+# Local test tooling and generated compiler bundles; retain verification evidence.
+artifacts/local/
+artifacts/devtools-runner/
+artifacts/compiler/wcc.js
+artifacts/compiler/wcsc.js
+
+.DS_Store
+Thumbs.db
+
+# Generated installers and local signing material.
+/output/
+*.jks
+*.keystore
+.secrets/
+android/.gradle/
+android/local.properties
+android/app/release/
+android/app/build/
+
+# Browser automation session state may contain authentication cookies.
+.playwright-cli/
+
+# Local handoff archives and merge staging; merged source lives in the normal project paths.
+/anju-cloud-pivot-main.zip
+/安居云枢网页端(2).zip
+/artifacts/member-web-merge-20260929/
+/artifacts/member-merge-*/
+/artifacts/connected-backend/
+/artifacts/connected-devtools/
+/artifacts/deployment/
+/artifacts/deployment/*.tar.gz

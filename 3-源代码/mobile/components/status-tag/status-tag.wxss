@@ -1,0 +1,30 @@
+.tag {
+  display: inline-block;
+  white-space: nowrap;
+  font-size: 20rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 12rpx;
+  background: #fff0e8;
+  color: #db8b56;
+  line-height: 1.5;
+}
+.completed,
+.online {
+  background: #e8f5ee;
+  color: #439b78;
+}
+.processing,
+.in_progress {
+  background: #ebf2fc;
+  color: #5b83b3;
+}
+.aborted,
+.offline,
+.unknown {
+  background: #eff1f4;
+  color: #8190a2;
+}
+.alarm {
+  background: #fff0ed;
+  color: #d96055;
+}

@@ -1,0 +1,15 @@
+<view class="page">
+  <mode-banner></mode-banner>
+  <view class="title">使用帮助</view><view class="subtitle">轻松体验，熟悉社区服务</view><view class="gap" />
+  <ui-card title="欢迎体验安居云枢"><view class="body-text">{{config.help}}</view></ui-card>
+  <ui-card title="可以体验什么？">
+    <view class="strong">发现隐患，随手记录</view><view class="muted">填写类型、位置和描述，选择照片，即可查看本次模拟结果。</view><view class="divider" />
+    <view class="strong">认识出口，完成演练</view><view class="muted">从楼栋进入两步线上体验，结束后查看总结和演练记录。</view><view class="divider" />
+    <view class="strong">放心体验，不会真实提交</view><view class="muted">所有内容来自本地。重新启动或退出演示后会恢复示例，不会向物业提交记录，也不会实际拨打电话。</view>
+  </ui-card>
+  <ui-card>
+    <button class="list-row" data-url="/pages/legal/legal?type=terms" bindtap="go"><text class="grow">展示版使用说明</text><text>›</text></button>
+    <button class="list-row" data-url="/pages/legal/legal?type=privacy" bindtap="go"><text class="grow">展示版隐私说明</text><text>›</text></button>
+    <button class="list-row" data-url="/pages/emergency/emergency" bindtap="go"><text class="grow">紧急求助演示</text><text>›</text></button>
+  </ui-card>
+</view>

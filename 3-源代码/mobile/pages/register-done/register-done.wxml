@@ -1,0 +1,15 @@
+<view class="page register-done-page">
+  <view class="success-circle"><line-icon name="check" size="84" /></view>
+  <view class="title center">登记完成</view>
+  <view class="subtitle center">感谢你的填写，社区应急关怀会更有温度</view>
+  <view class="gap" />
+  <view class="card register-done-card">
+    <view class="hint" style="margin:0">
+      住址信息已保存。重点人群与家庭人员情况为选填内容，后续可在「我的资料」中随时补充或修改。
+    </view>
+  </view>
+  <view class="gap" />
+  <ui-button label="进入首页" bind:action="goHome" />
+  <view class="gap" style="height:16rpx" />
+  <ui-button label="编辑资料" variant="plain" bind:action="goEdit" />
+</view>

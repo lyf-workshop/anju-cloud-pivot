@@ -1,0 +1,192 @@
+{
+  "compileType": "miniprogram",
+  "cloudfunctionRoot": "mobile/cloudfunctions/",
+  "libVersion": "3.17.3",
+  "packOptions": {
+    "ignore": [
+      {
+        "type": "folder",
+        "value": "server"
+      },
+      {
+        "type": "folder",
+        "value": "dist"
+      },
+      {
+        "type": "folder",
+        "value": "node_modules"
+      },
+      {
+        "type": "folder",
+        "value": "tests"
+      },
+      {
+        "type": "folder",
+        "value": "scripts"
+      },
+      {
+        "type": "folder",
+        "value": "docs"
+      },
+      {
+        "type": "folder",
+        "value": "artifacts"
+      },
+      {
+        "type": "file",
+        "value": "package.json"
+      },
+      {
+        "type": "file",
+        "value": "package-lock.json"
+      },
+      {
+        "type": "file",
+        "value": "README.md"
+      },
+      {
+        "type": "file",
+        "value": ".gitignore"
+      },
+      {
+        "type": "file",
+        "value": "mobile/config/local.example.js"
+      },
+      {
+        "type": "file",
+        "value": "mobile/config/local.js"
+      },
+      {
+        "type": "file",
+        "value": "mobile/services/privacy.js"
+      },
+      {
+        "type": "folder",
+        "value": "website"
+      },
+      {
+        "type": "folder",
+        "value": "output"
+      },
+      {
+        "type": "folder",
+        "value": ".playwright-cli"
+      },
+      {
+        "type": "folder",
+        "value": ".git"
+      },
+      {
+        "type": "folder",
+        "value": "android"
+      },
+      {
+        "type": "folder",
+        "value": "apps"
+      },
+      {
+        "type": "folder",
+        "value": "build"
+      },
+      {
+        "type": "folder",
+        "value": "deploy"
+      },
+      {
+        "type": "folder",
+        "value": "edge"
+      },
+      {
+        "type": "file",
+        "value": ".gitattributes"
+      },
+      {
+        "type": "file",
+        "value": ".prettierignore"
+      },
+      {
+        "type": "file",
+        "value": "anju-cloud-pivot-main.zip"
+      },
+      {
+        "type": "file",
+        "value": "安居云枢网页端(2).zip"
+      },
+      {
+        "type": "file",
+        "value": "capacitor.config.json"
+      },
+      {
+        "type": "file",
+        "value": "electron-builder.yml"
+      },
+      {
+        "type": "file",
+        "value": "mobile/assets/illustrations/fire-poster-1.jpg"
+      },
+      {
+        "type": "file",
+        "value": "mobile/assets/illustrations/fire-poster-2.jpg"
+      },
+      {
+        "type": "file",
+        "value": "mobile/assets/illustrations/fire-poster-3.jpg"
+      },
+      {
+        "type": "file",
+        "value": "mobile/assets/illustrations/fire-poster-4.jpg"
+      },
+      {
+        "type": "file",
+        "value": "mobile/assets/illustrations/fire-poster-5.jpg"
+      },
+      {
+        "type": "file",
+        "value": "mobile/assets/illustrations/hero-slide-2.jpg"
+      },
+      {
+        "type": "file",
+        "value": "mobile/assets/illustrations/hero-slide-3.jpg"
+      },
+      {
+        "type": "file",
+        "value": "mobile/assets/illustrations/home-cover-bg.png"
+      }
+    ],
+    "include": []
+  },
+  "setting": {
+    "coverView": true,
+    "es6": true,
+    "postcss": true,
+    "minified": true,
+    "enhance": true,
+    "showShadowRootInWxmlPanel": true,
+    "packNpmRelationList": [],
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    },
+    "uglifyFileName": false,
+    "uploadWithSourceMap": true,
+    "packNpmManually": false,
+    "minifyWXSS": true,
+    "localPlugins": false,
+    "condition": false,
+    "compileWorklet": false,
+    "disableUseStrict": false,
+    "minifyWXML": true,
+    "useCompilerPlugins": false
+  },
+  "condition": {},
+  "editorSetting": {
+    "tabIndent": "auto",
+    "tabSize": 2
+  },
+  "appid": "wxe4d4ba748f352ae8",
+  "simulatorPluginLibVersion": {},
+  "miniprogramRoot": "mobile/",
+  "projectname": "Anju_CloudPivot",
+  "isGameTourist": false
+}

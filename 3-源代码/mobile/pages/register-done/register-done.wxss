@@ -1,0 +1,11 @@
+.register-done-page {
+  min-height: 100vh;
+  background: transparent;
+  box-sizing: border-box;
+}
+
+.register-done-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 24rpx;
+  box-shadow: 0 10rpx 28rpx rgba(89, 141, 179, 0.08);
+}

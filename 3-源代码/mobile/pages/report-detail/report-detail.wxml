@@ -1,0 +1,10 @@
+<view class="page has-actions">
+  <ui-state loading="{{loading}}" error="{{error}}" bind:retry="retry"/>
+  <block wx:if="{{record}}">
+    <view class="hint row"><view class="icon-box" style="background:white"><line-icon name="wrench" size="34"/></view><view class="grow"><view class="strong">演示进度 · {{record.statusName}}</view><view class="field-note">{{record.isExample?'演示示例处理记录':(connected?'已保存到评审演示服务器，不会触发真实告警':'已生成本地演示记录，未提交物业')}}</view></view></view>
+    <ui-card><view class="row"><image class="report-thumb" src="{{record.cover}}" mode="aspectFill"/><view class="grow"><view class="record-title">{{record.title}}</view><view class="record-meta">{{record.location}}</view><text class="pill">{{record.typeName}}</text></view></view><view class="record-description body-text">{{record.description}}</view><view class="gap"/><view class="photo-grid"><image wx:for="{{images}}" wx:key="*this" class="photo" src="{{item}}" mode="aspectFill" data-path="{{item}}" bindtap="preview"/></view><ui-state error="{{imageError}}" bind:retry="loadImages" compact/><view class="record-meta">联系方式：{{record.contact || '未填写'}}</view></ui-card>
+    <ui-card title="处理进度"><view wx:for="{{record.events}}" wx:key="occurredAt" class="timeline-item"><view class="check-symbol"><line-icon name="{{item.status==='completed'?'check':'wrench'}}" size="30"/></view><view class="grow"><view class="strong">{{item.message}}</view><view class="record-meta">{{item.timeText}}</view></view></view></ui-card>
+    <view class="record-meta">上报编号：{{record.number}}</view><mode-banner></mode-banner>
+    <view class="fixed-actions"><ui-button label="查看我的全部上报" variant="plain" data-url="/pages/my-reports/my-reports" bind:action="go"/></view>
+  </block>
+</view>

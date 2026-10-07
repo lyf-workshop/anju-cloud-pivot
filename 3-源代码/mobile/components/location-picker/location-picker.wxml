@@ -1,0 +1,57 @@
+<ui-state
+  loading="{{loading}}"
+  error="{{error}}"
+  empty="{{!loading && !error && !communities.length}}"
+  text="社区资料尚未配置"
+  bind:retry="retry"
+  compact
+/>
+<view wx:if="{{communities.length}}" class="location">
+  <picker
+    disabled="{{disabled || loading}}"
+    range="{{communities}}"
+    range-key="name"
+    value="{{communityIndex}}"
+    data-level="community"
+    bindchange="change"
+  >
+    <view class="select">
+      {{communities[communityIndex].name}}
+      <text>⌄</text>
+    </view>
+  </picker>
+  <view class="pair">
+    <picker
+      disabled="{{disabled || loading}}"
+      range="{{buildings}}"
+      range-key="name"
+      value="{{buildingIndex}}"
+      data-level="building"
+      bindchange="change"
+    >
+      <view class="select">
+        {{buildings[buildingIndex].name || '暂无楼栋'}} ⌄
+      </view>
+    </picker>
+    <picker
+      disabled="{{disabled || loading}}"
+      range="{{units}}"
+      range-key="name"
+      value="{{unitIndex}}"
+      data-level="unit"
+      bindchange="change"
+    >
+      <view class="select">{{units[unitIndex].name || '暂无单元'}} ⌄</view>
+    </picker>
+    <picker
+      disabled="{{disabled || loading}}"
+      range="{{floors}}"
+      range-key="number"
+      value="{{floorIndex}}"
+      data-level="floor"
+      bindchange="change"
+    >
+      <view class="select">{{floors[floorIndex].number || '—'}} 层 ⌄</view>
+    </picker>
+  </view>
+</view>

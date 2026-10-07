@@ -1,0 +1,21 @@
+<view class="tab-bar">
+  <view
+    wx:for="{{list}}"
+    wx:key="pagePath"
+    class="tab-item {{selected===index?'active':''}} {{jellyIndex===index?'jelly':''}} {{index===2?'tab-main':''}}"
+    data-path="{{item.pagePath}}"
+    data-index="{{index}}"
+    bindtap="switchTab"
+  >
+    <view wx:if="{{index===2}}" class="tab-orb {{selected===2?'on':''}}">
+      <image class="tab-orb-icon" src="{{item.iconPath}}" mode="aspectFit" />
+    </view>
+    <image
+      wx:else
+      class="tab-icon"
+      src="{{selected===index ? item.selectedIconPath : item.iconPath}}"
+      mode="aspectFit"
+    />
+    <text class="tab-text">{{item.text}}</text>
+  </view>
+</view>

@@ -1,0 +1,8 @@
+<view
+  wx:if="{{loading || error || empty}}"
+  class="state {{compact?'compact':''}}"
+>
+  <view class="symbol">{{loading?'· · ·':error?'!':'—'}}</view>
+  <view class="message">{{loading?'正在加载…':error || text}}</view>
+  <button wx:if="{{error}}" bindtap="retry">重试</button>
+</view>

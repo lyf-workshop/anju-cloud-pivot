@@ -1,0 +1,70 @@
+<view class="page equip-page">
+  <view class="title">灭火器 / 消防栓</view>
+  <view class="subtitle">{{floorNumber ? floorNumber + '层位置示意' : '楼层位置示意'}} · 使用流程</view>
+
+  <view class="section"><view class="section-title">本层位置分布</view></view>
+  <view class="card equip-map">
+    <view class="row between" style="margin-bottom:12rpx">
+      <text class="strong">灭火器 / 消防栓位置分布图</text>
+      <text class="pill">点击放大</text>
+    </view>
+    <image
+      class="equip-location-image"
+      src="/assets/illustrations/equip-location-map.png"
+      mode="widthFix"
+      data-src="/assets/illustrations/equip-location-map.png"
+      bindtap="previewMap"
+      show-menu-by-longpress
+    />
+    <view class="field-note center" style="margin-top:12rpx">请以楼内实际标识为准 · 图中含灭火器与消防栓点位</view>
+  </view>
+
+  <view class="section"><view class="section-title">使用流程图</view></view>
+
+  <view class="card guide-card">
+    <view class="row between" style="margin-bottom:12rpx">
+      <text class="strong">灭火器的使用方法</text>
+      <text class="pill">点击放大</text>
+    </view>
+    <image
+      class="equip-flow-image"
+      src="/assets/illustrations/guide-extinguisher.png"
+      mode="widthFix"
+      data-src="/assets/illustrations/guide-extinguisher.png"
+      bindtap="preview"
+      show-menu-by-longpress
+    />
+  </view>
+
+  <view class="card guide-card">
+    <view class="row between" style="margin-bottom:12rpx">
+      <text class="strong">认识消防栓 · 使用方法</text>
+      <text class="pill">点击放大</text>
+    </view>
+    <image
+      class="equip-flow-image"
+      src="/assets/illustrations/guide-hydrant.png"
+      mode="widthFix"
+      data-src="/assets/illustrations/guide-hydrant.png"
+      bindtap="preview"
+      show-menu-by-longpress
+    />
+  </view>
+
+  <view class="card guide-card">
+    <view class="row between" style="margin-bottom:12rpx">
+      <text class="strong">灭火毯如何使用</text>
+      <text class="pill">点击放大</text>
+    </view>
+    <image
+      class="equip-flow-image"
+      src="/assets/illustrations/guide-blanket.png"
+      mode="widthFix"
+      data-src="/assets/illustrations/guide-blanket.png"
+      bindtap="preview"
+      show-menu-by-longpress
+    />
+  </view>
+
+  <ui-button label="返回楼栋" variant="secondary" bind:action="back" />
+</view>

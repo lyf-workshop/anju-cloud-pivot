@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>巡查检查与隐患公示 · 安居云枢</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;800&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到主要内容</a>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark" aria-hidden="true"><img src="assets/logo.png" alt="" /></span>
+        <span class="brand-text"><strong>安居云枢</strong><small>物业消防值班台</small></span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="打开菜单">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="site-nav" id="site-nav">
+        <a href="index.html">值班台</a>
+        <a href="duty.html">制度责任</a>
+        <a href="buildings.html">数字孪生</a>
+        <a href="people.html">人员台账</a>
+        <a class="is-active" href="inspection.html">巡查台账</a>
+        <a href="knowledge.html">处置预案</a>
+        <a href="report.html">隐患工单</a>
+        <a href="agent.html">处置智能体</a>
+        <a href="login.html">物业登录</a>
+        <a class="nav-cta" href="emergency.html">紧急处置</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="container page-hero">
+      <h1>巡查检查与隐患公示</h1>
+      <p>公开近期巡查结果与整改进度，接受业主监督。</p>
+    </div>
+
+    <section class="section">
+      <div class="container">
+        <header class="section-head">
+          <h2>本周防火巡查摘要</h2>
+          <p>演示数据，上线后请按真实巡查台账更新。点击任意一行可查看巡查细节。</p>
+        </header>
+        <div class="table-wrap">
+          <table class="data-table inspection-table" id="inspection-table">
+            <thead>
+              <tr>
+                <th>日期</th>
+                <th>区域</th>
+                <th>检查项</th>
+                <th>结果</th>
+                <th>处理</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="inspection-tbody">
+              <!-- 由 script 填充，点击行打开详情 -->
+            </tbody>
+          </table>
+        </div>
+        <p class="replace-note">可替换为导出的巡查 Excel/系统截图；重大隐患建议同步张贴公告栏。</p>
+        <p style="margin-top:1.25rem">
+          <a class="btn btn-primary" href="report.html">我要上报隐患</a>
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal" id="inspection-modal" hidden>
+    <div class="modal-backdrop" data-close-inspection></div>
+    <div class="modal-panel inspection-modal-panel" role="dialog" aria-modal="true" aria-labelledby="inspection-modal-title">
+      <header class="modal-head">
+        <h2 id="inspection-modal-title">巡查详情</h2>
+        <button type="button" class="modal-close" data-close-inspection aria-label="关闭">×</button>
+      </header>
+      <div class="modal-body" id="inspection-modal-body"></div>
+      <div class="modal-actions" style="padding:0 1.25rem 1.25rem">
+        <a class="btn btn-secondary" href="report.html">据此上报隐患</a>
+        <button type="button" class="btn btn-ghost" data-close-inspection>关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div>
+        <strong>安居云枢 · 阳光家园物业服务中心</strong>
+        <p>值班电话：<a href="tel:4008009000">400-800-9000</a></p>
+      </div>
+      <div><p>最后更新：2026-09-22</p></div>
+    </div>
+  </footer>
+  <a class="float-call" href="tel:4008009000">值班电话</a>
+  <script src="site.js"></script>
+</body>
+</html>

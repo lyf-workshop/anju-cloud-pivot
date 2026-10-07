@@ -1,0 +1,29 @@
+<view class="page">
+  <mode-banner></mode-banner>
+  <view class="title">社区通知</view>
+  <view class="subtitle">公告与安全提示</view>
+  <ui-state
+    loading="{{loading}}"
+    error="{{error}}"
+    empty="{{!loading && !error && !items.length}}"
+    text="暂无社区公告"
+    bind:retry="retry"
+  />
+  <ui-card wx:for="{{items}}" wx:key="id">
+    <view class="record-title">{{item.title}}</view>
+    <view class="record-meta">
+      {{item.timeText}} · {{item.source==='demo'?'演示公告':'物业公告'}}
+    </view>
+    <view class="record-description body-text">{{item.body}}</view>
+  </ui-card>
+  <ui-button
+    wx:if="{{items.length<total}}"
+    label="加载更多"
+    variant="plain"
+    bind:action="more"
+    loading="{{busy}}"
+  />
+  <view class="hint">
+    以上内容为本地示例公告，供页面展示使用。
+  </view>
+</view>
