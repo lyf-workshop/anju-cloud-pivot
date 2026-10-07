@@ -1,11 +1,11 @@
 {
-  "at": "2026-09-29T04:48:48.743Z",
+  "at": "2026-10-07T08:57:17.524Z",
   "result": "passed",
-  "productPagesChecked": 20,
+  "productPagesChecked": 22,
   "networkCalls": 0,
   "phoneCalls": 0,
   "checks": [
-    "consent and local login",
+    "consent, local login and two-step household registration",
     "all product page controllers and handlers",
     "four tab routes",
     "local filters",

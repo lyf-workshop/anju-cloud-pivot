@@ -5,45 +5,37 @@ const { define } = require("../../utils/page"),
 define({
   data: {
     user: null,
-    reportStats: { total: 0 },
+    address: null,
+    reportStats: { total: 0, processing: 0, completed: 0 },
     drillStats: { completedCount: 0 },
+    householdSummary: "",
     menus: [
-      {icon:'user',title:'个人资料',note:'管理昵称、示例资料',url:'/pages/profile/profile'},
-      {
-        icon: "report",
-        title: "我的上报",
-        note: "查看处理状态与记录",
-        url: "/pages/my-reports/my-reports",
-      },
-      {
-        icon: "pin",
-        title: "住址管理",
-        note: "管理绑定的楼栋与房号",
-        url: "/pages/addresses/addresses",
-      },
-      {
-        icon: "bell",
-        title: "社区通知",
-        note: "查看公告与安全提示",
-        url: "/pages/notices/notices",
-      },
-      {
-        icon: "settings",
-        title: "设置与帮助",
-        note: "使用说明与展示说明",
-        url: "/pages/help/help",
-      },
-      {icon:'drill',title:'演练记录',note:'回顾每一次线上练习',url:'/pages/drill-records/drill-records'},
+      { icon: "user", title: "个人资料", url: "/pages/profile/profile" },
+      { icon: "report", title: "我的上报", url: "/pages/my-reports/my-reports" },
+      { icon: "pin", title: "住址管理", url: "/pages/addresses/addresses" },
+      { icon: "bell", title: "社区通知", url: "/pages/notices/notices" },
+      { icon: "phone", title: "应急电话", url: "/pages/emergency/emergency" },
+      { icon: "drill", title: "演练记录", url: "/pages/drill-records/drill-records" },
+      { icon: "settings", title: "设置与帮助", url: "/pages/help/help" },
     ],
   },
   onShow() {
     this.load();
   },
+  onProfileTap() {
+    if (!this.data.user) {
+      this.login();
+      return;
+    }
+    wx.navigateTo({ url: "/pages/profile/profile" });
+  },
   load() {
     this.setData({
       user: null,
-      reportStats: { total: 0 },
+      address: null,
+      reportStats: { total: 0, processing: 0, completed: 0 },
       drillStats: { completedCount: 0 },
+      householdSummary: "",
     });
     if (!session.get() || session.get().expired) return;
     return this.fetch(async () => {
@@ -52,19 +44,25 @@ define({
         repo.reportStats(),
         repo.drillStats(),
       ]);
+      const household = user.household;
       this.setData({
         user,
         reportStats,
         drillStats,
         durationText: fmt.duration(drillStats.durationSeconds),
         address: user.bindings.find((b) => b.isCurrent) || null,
+        householdSummary: household
+          ? `${household.unitName || ""} ${household.floorNumber || ""}层 ${household.room || ""} · ${household.familyCount}人`
+          : "",
       });
     });
   },
   logout() {
     wx.showModal({
       title: "退出登录",
-      content: "退出后返回登录页，当前体验内容将恢复为示例数据。",
+      content: this.data.connected
+        ? "退出后会清理本机登录信息；服务器已保存的上报和演练记录仍会保留。"
+        : "退出后返回登录页，当前体验内容将恢复为示例数据。",
       success: (r) => {
         if (r.confirm)
           this.task(async () => {
@@ -73,9 +71,10 @@ define({
             } finally {
               this.setData({
                 user: null,
-                reportStats: { total: 0 },
+                reportStats: { total: 0, processing: 0, completed: 0 },
                 drillStats: { completedCount: 0 },
                 address: null,
+                householdSummary: "",
               });
               wx.reLaunch({ url: "/pages/login/login" });
             }

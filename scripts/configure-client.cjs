@@ -124,9 +124,18 @@ p.miniprogramRoot = "./";
 p.libVersion = "3.17.3";
 p.projectname = "Anju_CloudPivot";
 p.packOptions.ignore = [
-  ...(p.packOptions.ignore || []),
+  ...(p.packOptions.ignore || []).filter(item => !["services/http.js", "services/drill-clock.js"].includes(item.value)),
   ...[
     "server",
+    "安居云枢网页端(1)",
+    "output",
+    ".playwright-cli",
+    ".git",
+    "android",
+    "apps",
+    "build",
+    "deploy",
+    "edge",
     "dist",
     "node_modules",
     "tests",
@@ -141,9 +150,21 @@ p.packOptions.ignore = [
     ".gitignore",
     "config/local.example.js",
     "config/local.js",
-    "services/http.js",
-    "services/drill-clock.js",
     "services/privacy.js",
+    ".gitattributes",
+    ".prettierignore",
+    "anju-cloud-pivot-main.zip",
+    "安居云枢网页端(2).zip",
+    "capacitor.config.json",
+    "electron-builder.yml",
+    "assets/illustrations/fire-poster-1.jpg",
+    "assets/illustrations/fire-poster-2.jpg",
+    "assets/illustrations/fire-poster-3.jpg",
+    "assets/illustrations/fire-poster-4.jpg",
+    "assets/illustrations/fire-poster-5.jpg",
+    "assets/illustrations/hero-slide-2.jpg",
+    "assets/illustrations/hero-slide-3.jpg",
+    "assets/illustrations/home-cover-bg.png",
   ].map((value) => ({ type: "file", value })),
 ];
 p.packOptions.ignore = p.packOptions.ignore.filter(

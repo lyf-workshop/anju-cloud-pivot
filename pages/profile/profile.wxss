@@ -1,1 +1,14 @@
-/* Uses shared app.wxss design tokens. */
+.profile-household .situation-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+  margin-top: 18rpx;
+}
+
+.situation-chip {
+  background: #eaf3fa;
+  color: #598db3;
+  border-radius: 14rpx;
+  padding: 8rpx 14rpx;
+  font-size: 21rpx;
+}

@@ -1,1 +1,80 @@
-/* Uses shared app.wxss design tokens. */
+/* 覆盖全局 .agreement checkbox 的 transform，避免点不中 */
+
+.login-page .brand-logo {
+  width: 148rpx;
+  height: 148rpx;
+  margin: 0 auto 22rpx;
+  display: block;
+}
+
+.page .agree-hit {
+  width: 100%;
+  margin: 16rpx 0 0;
+  padding: 16rpx 8rpx;
+  background: transparent;
+  border-radius: 12rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 14rpx;
+  text-align: left;
+  line-height: 1.4;
+}
+
+.page .agree-hit::after {
+  border: 0;
+}
+
+.agree-hit-press {
+  opacity: 0.75;
+}
+
+.agree-check {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 8rpx;
+  border: 3rpx solid #8aa0b4;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.agree-check.on {
+  background: #278873;
+  border-color: #278873;
+}
+
+.agree-tick {
+  color: #ffffff;
+  font-size: 24rpx;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.agreement-text {
+  font-size: 26rpx;
+  color: #5b738a;
+}
+
+.login-page .agreement-links {
+  display: flex;
+  gap: 16rpx;
+  padding-left: 62rpx;
+  margin-bottom: 8rpx;
+}
+
+.login-page .agreement-links .link-button,
+.login-page .link-button {
+  font-size: 24rpx;
+  color: #3d7ea6;
+  padding: 4rpx 0 8rpx;
+  background: transparent;
+}
+
+.login-page .agreement-links .link-button::after {
+  border: 0;
+}

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>楼栋与疏散信息 · 安居云枢</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;800&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到主要内容</a>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark" aria-hidden="true"><img src="assets/logo.png" alt="" /></span>
+        <span class="brand-text"><strong>安居云枢</strong><small>物业消防值班台</small></span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="打开菜单">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="site-nav" id="site-nav">
+        <a href="index.html">值班台</a>
+        <a href="duty.html">制度责任</a>
+        <a class="is-active" href="buildings.html">数字孪生</a>
+        <a href="people.html">人员台账</a>
+        <a href="inspection.html">巡查台账</a>
+        <a href="knowledge.html">处置预案</a>
+        <a href="report.html">隐患工单</a>
+        <a class="nav-cta" href="emergency.html">紧急处置</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="buildings-page">
+    <div class="container page-hero page-hero-buildings">
+      <p class="page-eyebrow">楼栋档案 · 疏散指引</p>
+      <h1>楼栋与疏散信息</h1>
+      <p>了解各楼栋层数、疏散楼梯、消火栓与集合点，意外发生时按指引撤离。</p>
+      <a class="twin-link" href="index.html#ops-twin">查看园区立体示意 →</a>
+    </div>
+
+    <section class="section section-buildings">
+      <div class="container building-cards">
+        <article class="building-card" id="b1">
+          <div class="building-card-visual building-card-photo" role="img" aria-label="1号楼示意">
+            <img src="assets/placeholders/building-1.jpg" alt="1号楼外观示意" loading="lazy" />
+            <span class="building-badge">1 号楼</span>
+          </div>
+          <div class="building-card-body">
+            <h3>1 号楼</h3>
+            <p>高层住宅，南侧入口靠近中心花园集合点。</p>
+            <div class="bldg-stats">
+              <div class="bldg-stat"><strong>18</strong><span>层数</span></div>
+              <div class="bldg-stat"><strong>2</strong><span>单元</span></div>
+              <div class="bldg-stat"><strong>2</strong><span>消防电梯</span></div>
+            </div>
+            <ul class="meta-list">
+              <li><span>疏散楼梯</span><strong>每单元 1 部防烟楼梯间</strong></li>
+              <li><span>消火栓</span><strong>每层 2 处，状态完好</strong></li>
+              <li><span>集合点</span><strong>中心花园南广场</strong></li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="building-card" id="b2">
+          <div class="building-card-visual building-card-photo" role="img" aria-label="2号楼示意">
+            <img src="assets/placeholders/building-2.jpg" alt="2号楼外观示意" loading="lazy" />
+            <span class="building-badge">2 号楼</span>
+          </div>
+          <div class="building-card-body">
+            <h3>2 号楼</h3>
+            <p>最高栋，消防控制室设于一层物管侧。</p>
+            <div class="bldg-stats">
+              <div class="bldg-stat"><strong>24</strong><span>层数</span></div>
+              <div class="bldg-stat"><strong>2</strong><span>单元</span></div>
+              <div class="bldg-stat"><strong>24h</strong><span>控制室</span></div>
+            </div>
+            <ul class="meta-list">
+              <li><span>疏散楼梯</span><strong>双跑防烟楼梯</strong></li>
+              <li><span>控制室</span><strong>1 层东侧，24 小时值守</strong></li>
+              <li><span>地库出入口</span><strong>A 坡道 · 严禁占用</strong></li>
+              <li><span>集合点</span><strong>东门内侧空地</strong></li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="building-card" id="b3">
+          <div class="building-card-visual building-card-photo" role="img" aria-label="3号楼示意">
+            <img src="assets/placeholders/building-3.jpg" alt="3号楼外观示意" loading="lazy" />
+            <span class="building-badge">3 号楼</span>
+          </div>
+          <div class="building-card-body">
+            <h3>3 号楼</h3>
+            <p>靠近充电车棚，重点巡查电动车入楼风险。</p>
+            <div class="bldg-stats">
+              <div class="bldg-stat"><strong>16</strong><span>层数</span></div>
+              <div class="bldg-stat"><strong>3</strong><span>单元</span></div>
+              <div class="bldg-stat"><strong>2′</strong><span>至微型站</span></div>
+            </div>
+            <ul class="meta-list">
+              <li><span>疏散楼梯</span><strong>每单元独立疏散</strong></li>
+              <li><span>屋顶</span><strong>救援标识已核验</strong></li>
+              <li><span>最近微型站</span><strong>南门岗亭旁 · 步行约 2 分钟</strong></li>
+              <li><span>集合点</span><strong>南门内侧广场</strong></li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="building-card building-card-club" id="b4">
+          <div class="building-card-visual building-card-photo" role="img" aria-label="会所物管用房示意">
+            <img src="assets/placeholders/building-club.jpg" alt="会所物管用房外观示意" loading="lazy" />
+            <span class="building-badge">会所</span>
+          </div>
+          <div class="building-card-body">
+            <h3>会所 / 物管用房</h3>
+            <p>微型消防站联动点与应急物资存放点。</p>
+            <div class="bldg-stats">
+              <div class="bldg-stat"><strong>值守</strong><span>功能</span></div>
+              <div class="bldg-stat"><strong>联动</strong><span>对讲</span></div>
+              <div class="bldg-stat"><strong>演练</strong><span>开放日</span></div>
+            </div>
+            <ul class="meta-list">
+              <li><span>功能</span><strong>物管办公 + 应急值守</strong></li>
+              <li><span>装备</span><strong>灭火器、水带水枪、破拆工具</strong></li>
+              <li><span>对讲联动</span><strong>与各楼岗亭互通</strong></li>
+              <li><span>对外开放</span><strong>演练日可参观装备</strong></li>
+            </ul>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section section-alt buildings-facility">
+      <div class="container">
+        <header class="section-head">
+          <h2>设施与微型消防站</h2>
+          <p>关键时刻找得到、用得上。</p>
+        </header>
+        <div class="facility-layout">
+          <article class="facility-feature facility-feature-ready">
+            <div class="facility-visual facility-visual-station" role="img" aria-label="微型消防站示意">
+              <img src="assets/placeholders/mini-station.jpg" alt="微型消防站示意" loading="lazy" />
+              <span class="station-label-chip">微型站</span>
+            </div>
+            <div class="facility-copy">
+              <div class="facility-badges">
+                <span class="facility-badge">24 小时联动</span>
+                <span class="facility-badge">分机 801</span>
+              </div>
+              <h3>微型消防站 · 南门岗亭旁</h3>
+              <p>配备水枪水带、灭火器、破拆工具、应急照明与对讲设备，值班员可快速响应初起火灾。</p>
+              <ul class="facility-meta">
+                <li><span>覆盖范围</span><strong>1–3 号楼及地库出入口</strong></li>
+                <li><span>装备要点</span><strong>灭火器 · 水带水枪 · 破拆工具</strong></li>
+              </ul>
+            </div>
+          </article>
+          <div class="point-row point-row-cards">
+            <article class="point-card point-lane">
+              <span class="k-badge">通道</span>
+              <h3>消防车通道</h3>
+              <p>环形车道与地库坡道严禁停放占用。</p>
+            </article>
+            <article class="point-card point-egress">
+              <span class="k-badge">疏散</span>
+              <h3>疏散通道</h3>
+              <p>楼道、安全出口不得堆放杂物，防火门保持常闭。</p>
+            </article>
+            <article class="point-card point-gear">
+              <span class="k-badge">设施</span>
+              <h3>灭火器与消火栓</h3>
+              <p>发现缺件损坏，请立即通过隐患上报提交。</p>
+            </article>
+            <article class="point-card point-ebike">
+              <span class="k-badge">秩序</span>
+              <h3>电动车管理</h3>
+              <p>禁止入楼入户；使用集中充电车棚并规范充电。</p>
+            </article>
+          </div>
+        </div>
+        <p class="footnote">图片为示意素材，正式发布时可替换为小区实景与疏散平面图。</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div>
+        <strong>安居云枢 · 阳光家园物业服务中心</strong>
+        <p>值班电话：<a href="tel:4008009000">400-800-9000</a></p>
+      </div>
+      <div><p>最后更新：2026-09-22</p></div>
+    </div>
+  </footer>
+  <a class="float-call" href="tel:4008009000">值班电话</a>
+  <script src="site.js"></script>
+</body>
+</html>

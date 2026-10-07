@@ -1,5 +1,5 @@
 <view class="page">
-  <mode-banner />
+  <mode-banner></mode-banner>
   <ui-state loading="{{loading}}" error="{{error}}" bind:retry="retry" />
   <block wx:if="{{record}}">
     <view class="success-circle"><line-icon name="check" size="84" /></view>
@@ -24,7 +24,7 @@
     </ui-card>
     <ui-card title="本次上报"><view class="strong">{{record.typeName}} · {{record.location}}</view><view class="record-description body-text">{{record.description}}</view></ui-card>
     <view class="hint">
-      已生成本地演示记录，可在详情和“我的上报”查看。未提交到真实物业系统。
+      {{connected ? '已保存到评审演示服务器，可在详情和“我的上报”查看；不会触发真实物业告警。' : '已生成本地演示记录，可在详情和“我的上报”查看。未提交到真实物业系统。'}}
     </view>
     <ui-button
       label="查看本次上报"

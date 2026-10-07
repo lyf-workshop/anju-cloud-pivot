@@ -1,0 +1,21 @@
+.equip-map {
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.equip-location-image {
+  width: 100%;
+  display: block;
+  border-radius: 16rpx;
+  background: #f4f6f9;
+}
+
+.equip-flow-image {
+  width: 100%;
+  border-radius: 16rpx;
+  background: #eaf3fa;
+  display: block;
+}
+
+.guide-card {
+  margin-bottom: 16rpx;
+}

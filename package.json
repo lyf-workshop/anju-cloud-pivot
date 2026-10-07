@@ -1,10 +1,13 @@
 {
   "name": "anju-cloud-pivot",
-  "version": "1.0.0",
+  "version": "1.3.0",
+  "description": "安居云枢社区安全评委体验应用与演示后端",
+  "author": "安居云枢项目组",
   "private": true,
+  "main": "apps/desktop/main.cjs",
   "scripts": {
-    "dev": "node scripts/run-demo.cjs",
-    "start": "node scripts/run-demo.cjs",
+    "dev": "npm run backend:dev",
+    "start": "npm run backend:start",
     "build": "node scripts/check-client.cjs",
     "check": "node scripts/check-client.cjs",
     "test": "node scripts/check-demo.cjs",
@@ -12,27 +15,54 @@
     "backend:dev": "tsx watch --env-file-if-exists=server/.env server/src/index.ts",
     "backend:start": "node --env-file-if-exists=server/.env dist/server/src/index.js",
     "backend:build": "tsc -p server/tsconfig.json",
-    "backend:test": "tsx --test tests/api.test.ts",
+    "backend:test": "tsx --test tests/api.test.ts tests/staff.test.ts tests/camera.test.ts tests/connected-client.test.ts tests/demo-experience.test.ts",
     "backend:db:init": "tsx --env-file-if-exists=server/.env server/src/manage.ts init",
     "backend:db:reset": "tsx --env-file-if-exists=server/.env server/src/manage.ts reset-demo --confirm",
     "check:wechat": "node scripts/compile-wechat.cjs",
-    "verify": "node scripts/verify.cjs"
+    "verify": "node scripts/verify.cjs",
+    "client:local": "node scripts/client-mode.cjs local",
+    "client:remote-demo": "node scripts/client-mode.cjs remote-demo",
+    "client:cloud-demo": "node scripts/client-mode.cjs cloud-demo",
+    "client:showcase": "node scripts/client-mode.cjs showcase",
+    "backend:smoke": "node scripts/smoke-local.mjs",
+    "backend:staff:create": "tsx --env-file-if-exists=server/.env server/src/create-staff.ts",
+    "app:dev": "vite --config apps/resident/vite.config.mjs",
+    "app:build": "vite build --config apps/resident/vite.config.mjs",
+    "app:preview": "vite preview --config apps/resident/vite.config.mjs --host 127.0.0.1 --port 4173",
+    "desktop:start": "npm run app:build && electron apps/desktop/main.cjs",
+    "desktop:build": "npm run app:build && powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-windows.ps1",
+    "desktop:verify-installed": "node scripts/verify-installed-windows.mjs",
+    "android:sync": "npm run app:build && cap sync android",
+    "android:build": "npm run android:sync && powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-android.ps1",
+    "android:verify-installed": "node scripts/verify-installed-android.mjs",
+    "app:smoke": "node scripts/smoke-judge.mjs"
   },
   "engines": {
     "node": ">=22.13.0"
   },
   "dependencies": {
+    "@fastify/cookie": "^11.1.2",
+    "@fastify/cors": "^11.3.0",
     "@fastify/multipart": "^9.0.3",
     "@fastify/rate-limit": "^10.3.0",
+    "@fastify/static": "^10.1.5",
     "fastify": "^5.6.0",
     "sharp": "^0.35.5",
     "zod": "^4.1.0"
   },
   "devDependencies": {
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/app": "^8.1.1",
+    "@capacitor/cli": "^8.5.2",
+    "@capacitor/core": "^8.5.2",
     "@types/node": "^24.0.0",
+    "electron": "^44.4.5",
+    "electron-builder": "^26.15.3",
     "miniprogram-api-typings": "^4.0.0",
+    "playwright-core": "^1.63.0",
     "prettier": "^3.9.9",
     "tsx": "^4.20.0",
-    "typescript": "^5.9.0"
+    "typescript": "^5.9.0",
+    "vite": "^8.3.1"
   }
 }

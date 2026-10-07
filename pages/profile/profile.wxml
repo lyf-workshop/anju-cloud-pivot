@@ -1,8 +1,9 @@
-<view class="page">
+<view class="page profile-page">
   <view class="title">个人资料</view>
-  <view class="subtitle">昵称用于本人的账户展示</view>
+  <view class="subtitle">管理昵称与住户人口登记信息</view>
   <view class="gap" />
   <ui-state loading="{{loading}}" error="{{error}}" bind:retry="retry" />
+
   <ui-card>
     <view class="field">
       <text class="field-label">昵称</text>
@@ -15,8 +16,35 @@
         disabled="{{busy}}"
       />
     </view>
-    <ui-button label="保存资料" loading="{{busy}}" bind:action="save" />
+    <ui-button label="保存昵称" loading="{{busy}}" bind:action="save" />
   </ui-card>
+
+  <view class="section">
+    <view class="section-title">住户资料</view>
+  </view>
+  <view class="card profile-household">
+    <block wx:if="{{household}}">
+      <view class="row between">
+        <view class="grow">
+          <view class="strong">{{household.address}}</view>
+          <view class="record-meta">家庭 {{household.familyCount}} 人 · 老人 {{household.elderly}} · 小孩 {{household.children}} · 宠物 {{household.pets}}</view>
+        </view>
+        <text class="pill">已登记</text>
+      </view>
+      <view class="situation-summary" wx:if="{{situationLabels.length}}">
+        <text class="situation-chip" wx:for="{{situationLabels}}" wx:key="*this">{{item}}</text>
+      </view>
+      <view class="hint" wx:else style="margin:16rpx 0 0">暂无特殊人员情况</view>
+    </block>
+    <view class="hint" wx:else style="margin:0">尚未完成人口登记，可在此补充住址与家庭情况。</view>
+    <view class="gap" />
+    <ui-button
+      label="{{household ? '编辑资料' : '去完善资料'}}"
+      variant="secondary"
+      bind:action="editHousehold"
+    />
+  </view>
+
   <view class="hint">
     无需提供头像或手机号。上报时可单独填写必要的联系信息。
   </view>

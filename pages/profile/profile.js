@@ -1,14 +1,31 @@
-const { define, requireLogin } = require("../../utils/page"),
+const { define, requireLogin, go } = require("../../utils/page"),
   repo = require("../../services/repository");
+
 define({
-  data: { nickname: "" },
+  data: {
+    nickname: "",
+    household: null,
+    situationLabels: [],
+  },
   onShow() {
     if (requireLogin()) this.load();
   },
   load() {
-    return this.fetch(async () =>
-      this.setData({ nickname: (await repo.me()).nickname }),
-    );
+    return this.fetch(async () => {
+      const [user, options] = await Promise.all([
+        repo.me(),
+        repo.householdOptions(),
+      ]);
+      const household = user.household || null;
+      const map = Object.fromEntries(options.map((o) => [o.id, o.label]));
+      this.setData({
+        nickname: user.nickname || "",
+        household,
+        situationLabels: household
+          ? (household.situations || []).map((id) => map[id] || id)
+          : [],
+      });
+    });
   },
   input(e) {
     this.setData({ nickname: e.detail.value });
@@ -20,5 +37,8 @@ define({
       await repo.me();
       wx.showToast({ title: "资料已保存" });
     });
+  },
+  editHousehold() {
+    go("/pages/register/register?mode=edit");
   },
 });

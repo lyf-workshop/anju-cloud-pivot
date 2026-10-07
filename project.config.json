@@ -1,5 +1,6 @@
 {
   "compileType": "miniprogram",
+  "cloudfunctionRoot": "cloudfunctions/",
   "libVersion": "3.17.3",
   "packOptions": {
     "ignore": [
@@ -57,15 +58,99 @@
       },
       {
         "type": "file",
-        "value": "services/http.js"
-      },
-      {
-        "type": "file",
-        "value": "services/drill-clock.js"
-      },
-      {
-        "type": "file",
         "value": "services/privacy.js"
+      },
+      {
+        "type": "folder",
+        "value": "安居云枢网页端(1)"
+      },
+      {
+        "type": "folder",
+        "value": "output"
+      },
+      {
+        "type": "folder",
+        "value": ".playwright-cli"
+      },
+      {
+        "type": "folder",
+        "value": ".git"
+      },
+      {
+        "type": "folder",
+        "value": "android"
+      },
+      {
+        "type": "folder",
+        "value": "apps"
+      },
+      {
+        "type": "folder",
+        "value": "build"
+      },
+      {
+        "type": "folder",
+        "value": "deploy"
+      },
+      {
+        "type": "folder",
+        "value": "edge"
+      },
+      {
+        "type": "file",
+        "value": ".gitattributes"
+      },
+      {
+        "type": "file",
+        "value": ".prettierignore"
+      },
+      {
+        "type": "file",
+        "value": "anju-cloud-pivot-main.zip"
+      },
+      {
+        "type": "file",
+        "value": "安居云枢网页端(2).zip"
+      },
+      {
+        "type": "file",
+        "value": "capacitor.config.json"
+      },
+      {
+        "type": "file",
+        "value": "electron-builder.yml"
+      },
+      {
+        "type": "file",
+        "value": "assets/illustrations/fire-poster-1.jpg"
+      },
+      {
+        "type": "file",
+        "value": "assets/illustrations/fire-poster-2.jpg"
+      },
+      {
+        "type": "file",
+        "value": "assets/illustrations/fire-poster-3.jpg"
+      },
+      {
+        "type": "file",
+        "value": "assets/illustrations/fire-poster-4.jpg"
+      },
+      {
+        "type": "file",
+        "value": "assets/illustrations/fire-poster-5.jpg"
+      },
+      {
+        "type": "file",
+        "value": "assets/illustrations/hero-slide-2.jpg"
+      },
+      {
+        "type": "file",
+        "value": "assets/illustrations/hero-slide-3.jpg"
+      },
+      {
+        "type": "file",
+        "value": "assets/illustrations/home-cover-bg.png"
       }
     ],
     "include": []
@@ -99,8 +184,9 @@
     "tabIndent": "auto",
     "tabSize": 2
   },
-  "appid": "wxaf6c63bb40d31109",
+  "appid": "wxe4d4ba748f352ae8",
   "simulatorPluginLibVersion": {},
   "miniprogramRoot": "./",
-  "projectname": "Anju_CloudPivot"
+  "projectname": "Anju_CloudPivot",
+  "isGameTourist": false
 }

@@ -1,0 +1,154 @@
+<view class="page register-page {{step === 2 ? 'has-actions' : ''}}">
+  <view class="register-topbar">
+    <button class="home-btn" bindtap="goHome" hover-class="home-btn-hover" aria-label="返回首页">
+      <line-icon name="home" size="40" />
+    </button>
+  </view>
+
+  <view class="register-hero">
+    <view class="eyebrow">{{editing ? '编辑住户资料' : '您好，欢迎来到温暖社区'}}</view>
+    <view class="title">{{step === 1 ? '人口登记' : '家庭成员情况'}}</view>
+    <view class="subtitle">{{step === 1 ? '填写住址与家庭人数，方便社区应急关注' : '补充重点人群与特殊情况，便于安全服务（均可选填）'}}</view>
+    <view class="step-dots">
+      <view class="step-dot {{step === 1 ? 'active' : 'done'}}">1</view>
+      <view class="step-line {{step === 2 ? 'active' : ''}}" />
+      <view class="step-dot {{step === 2 ? 'active' : ''}}">2</view>
+    </view>
+  </view>
+
+  <ui-state loading="{{loading}}" error="{{error}}" bind:retry="retry" compact />
+
+  <!-- 第一步：住址与家庭人数（必填） -->
+  <block wx:if="{{step === 1}}">
+    <view class="card register-card">
+      <view class="field register-field">
+        <view class="field-label register-label">单元 <text class="required">*</text></view>
+        <picker range="{{unitLabels}}" value="{{unitIndex < 0 ? 0 : unitIndex}}" bindchange="pickUnit" disabled="{{busy}}">
+          <view class="picker register-picker {{fieldErrors.unit ? 'has-error' : ''}} {{unitPicked ? '' : 'is-placeholder'}}">
+            <text>{{unitPicked ? unitLabels[unitIndex] : '请选择单元'}}</text>
+            <text class="chevron">⌄</text>
+          </view>
+        </picker>
+        <view wx:if="{{fieldErrors.unit}}" class="field-error">{{fieldErrors.unit}}</view>
+      </view>
+
+      <view class="field register-field">
+        <view class="field-label register-label">层数 <text class="required">*</text></view>
+        <picker range="{{floorLabels}}" value="{{floorIndex < 0 ? 0 : floorIndex}}" bindchange="pickFloor" disabled="{{busy || !unitPicked}}">
+          <view class="picker register-picker {{fieldErrors.floor ? 'has-error' : ''}} {{floorPicked ? '' : 'is-placeholder'}}">
+            <text>{{floorPicked ? floorLabels[floorIndex] : '请选择层数'}}</text>
+            <text class="chevron">⌄</text>
+          </view>
+        </picker>
+        <view wx:if="{{fieldErrors.floor}}" class="field-error">{{fieldErrors.floor}}</view>
+      </view>
+
+      <view class="field register-field">
+        <view class="field-label register-label">房号 <text class="required">*</text></view>
+        <input
+          class="input register-input {{fieldErrors.room ? 'has-error' : ''}}"
+          value="{{room}}"
+          bindinput="inputRoom"
+          maxlength="20"
+          placeholder="请输入房间号"
+          disabled="{{busy}}"
+        />
+        <view wx:if="{{fieldErrors.room}}" class="field-error">{{fieldErrors.room}}</view>
+      </view>
+
+      <view class="field register-field register-field-last">
+        <view class="field-label register-label">家庭人数 <text class="required">*</text></view>
+        <input
+          class="input register-input {{fieldErrors.familyCount ? 'has-error' : ''}}"
+          type="number"
+          value="{{familyCount}}"
+          bindinput="inputFamily"
+          maxlength="2"
+          placeholder="请输入家庭人数"
+          disabled="{{busy}}"
+        />
+        <view wx:if="{{fieldErrors.familyCount}}" class="field-error">{{fieldErrors.familyCount}}</view>
+      </view>
+
+      <button
+        class="register-next-btn {{canNext ? 'ready' : 'pending'}}"
+        loading="{{busy}}"
+        disabled="{{busy}}"
+        hover-class="{{canNext ? 'register-next-pressed' : 'none'}}"
+        bindtap="next"
+      >
+        → 下一步
+      </button>
+    </view>
+  </block>
+
+  <!-- 第二步：重点人群 + 家庭人员情况（全部选填） -->
+  <block wx:else>
+    <view class="card register-card">
+      <view class="section-title register-section">重点人群</view>
+      <view class="muted register-hint">选填 · 默认 0，可不改</view>
+      <view class="people-grid">
+        <view class="people-tile" wx:for="{{people}}" wx:key="key">
+          <view class="people-icon-wrap">
+            <image class="people-icon-img" src="{{item.icon}}" mode="aspectFill" />
+          </view>
+          <view class="people-name">{{item.label}}</view>
+          <view class="counter">
+            <button class="counter-btn" data-key="{{item.key}}" data-delta="-1" bindtap="adjust" disabled="{{busy}}">−</button>
+            <text class="counter-value">{{item.count}}</text>
+            <button class="counter-btn" data-key="{{item.key}}" data-delta="1" bindtap="adjust" disabled="{{busy}}">+</button>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="card register-card">
+      <view class="section-title register-section">家庭人员情况</view>
+      <view class="muted register-hint">选填 · 点选图标即可，可多选</view>
+      <view class="situation-grid">
+        <button
+          wx:for="{{situationOptions}}"
+          wx:key="id"
+          class="situation-tile {{item.selected ? 'active' : ''}}"
+          data-id="{{item.id}}"
+          bindtap="toggleSituation"
+          disabled="{{busy}}"
+        >
+          <image class="situation-img" src="{{item.icon}}" mode="aspectFit" />
+          <text class="situation-label">{{item.label}}</text>
+        </button>
+      </view>
+    </view>
+
+    <!-- 底部：上一步 | 跳过此部分 | 保存 -->
+    <view class="fixed-actions register-actions">
+      <ui-button label="上一步" variant="secondary" disabled="{{busy}}" bind:action="back" />
+      <button
+        class="skip-btn"
+        loading="{{busy}}"
+        disabled="{{busy}}"
+        hover-class="skip-btn-hover"
+        bindtap="skip"
+      >
+        跳过此部分
+      </button>
+      <ui-button label="保存" loading="{{busy}}" bind:action="save" />
+    </view>
+  </block>
+
+  <!-- 隐私告知弹窗：进入第二步首次弹出，确认后关闭 -->
+  <view wx:if="{{showPrivacy}}" class="privacy-mask" catchtouchmove="noop">
+    <view class="privacy-dialog">
+      <view class="privacy-title">信息隐私说明</view>
+      <view class="privacy-body">
+        <text>本模块信息属于</text>
+        <text class="privacy-em">私密信息</text>
+        <text>，仅在发生紧急突发事件时，才会提交给社区物业用于应急救援；</text>
+      </view>
+      <view class="privacy-body">日常不会对外泄露，仅用于社区应急关怀服务。</view>
+      <button class="privacy-confirm" hover-class="privacy-confirm-hover" bindtap="ackPrivacy">
+        我已知晓
+      </button>
+    </view>
+  </view>
+</view>

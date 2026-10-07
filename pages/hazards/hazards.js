@@ -48,6 +48,6 @@ define({
     });
   },
   report() {
-    go("/pages/report/report");
+    go("/pages/report/report?camera=1");
   },
 });

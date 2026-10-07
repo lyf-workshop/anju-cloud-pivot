@@ -12,6 +12,19 @@ const types = [
   { id: "electrical", name: "用电安全" },
   { id: "other", name: "其他隐患" },
 ];
+const defaultTitles = {
+  obstruction: "消防通道堆放杂物",
+  equipment: "公共设备需要检修",
+  electrical: "公共用电设施隐患",
+  fire: "消防设施安全隐患",
+  other: "其他社区隐患",
+};
+const defaultCovers = {
+  obstruction: "obstruction",
+  equipment: "equipment",
+  electrical: "electrical",
+  fire: "fire",
+};
 function date(value) {
   if (!value) return "暂无记录";
   const d = new Date(value);
@@ -36,11 +49,39 @@ function duration(seconds) {
   );
 }
 function report(r) {
+  let hazardTypes;
+  try {
+    hazardTypes = require("./hazard-types");
+  } catch (_) {
+    hazardTypes = null;
+  }
+  const hit =
+    hazardTypes && r.hazardId ? hazardTypes.findItem(r.hazardId) : null;
+  const title =
+    r.title ||
+    r.hazardName ||
+    (hit && hit.item && hit.item.name) ||
+    defaultTitles[r.type] ||
+    "社区隐患";
+  const exampleCover =
+    (hit && hit.item && hit.item.image) ||
+    "/assets/illustrations/" +
+      (defaultCovers[r.type] || "obstruction") +
+      ".png";
   return Object.assign({}, r, {
-    title: r.title || ({obstruction:'消防通道堆放杂物',equipment:'公共设备需要检修',electrical:'公共用电设施隐患',fire:'消防设施安全隐患',other:'其他社区隐患'}[r.type] || '社区隐患'),
-    cover: (r.photos || [])[0] || '/assets/illustrations/' + ({obstruction:'obstruction',equipment:'equipment',electrical:'electrical',fire:'fire'}[r.type] || 'obstruction') + '.png',
-    typeName: (types.find((t) => t.id === r.type) || {}).name || r.type,
+    title,
+    cover: (r.photos || [])[0] || exampleCover,
+    typeName:
+      r.hazardName ||
+      (hit && hit.item && hit.item.name) ||
+      (types.find((t) => t.id === r.type) || {}).name ||
+      r.type,
+    categoryName:
+      r.categoryName ||
+      (hit && hit.category && hit.category.name) ||
+      "",
     statusName: statusNames[r.status],
+    contact: r.contact === "00000" ? "" : r.contact,
     timeText: date(r.createdAt),
     events: (r.events || []).map((e) =>
       Object.assign({}, e, { timeText: date(e.occurredAt) }),

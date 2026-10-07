@@ -12,22 +12,25 @@ const defaultSelection = {
   floorId: "floor-1-1-6",
 };
 const updatedAt = "2026-09-28T01:30:00.000Z";
+const makeFloors = (buildingNo, unitNo) =>
+  Array.from({ length: 18 }, (_, i) => ({
+    id: `floor-${buildingNo}-${unitNo}-${i + 1}`,
+    number: i + 1,
+    exitText:
+      "本层东西两侧各有一处楼梯间安全出口。请先认识出口标识，再了解社区集合点。",
+  }));
 const buildings = [1, 2, 3].map((n) => ({
   id: `building-${n}`,
   communityId: community.id,
   name: `${n}号楼`,
-  units: [
-    {
-      id: `unit-${n}-1`,
-      name: "1单元",
-      floors: Array.from({ length: 18 }, (_, i) => ({
-        id: `floor-${n}-1-${i + 1}`,
-        number: i + 1,
-        exitText:
-          "本层东西两侧各有一处楼梯间安全出口。请先认识出口标识，再了解社区集合点。",
-      })),
-    },
-  ],
+  units: Array.from({ length: 10 }, (_, i) => {
+    const u = i + 1;
+    return {
+      id: `unit-${n}-${u}`,
+      name: `${u}单元`,
+      floors: makeFloors(n, u),
+    };
+  }),
 }));
 const binding = {
   id: "binding-demo",
@@ -41,11 +44,44 @@ const binding = {
   communityName: community.name,
   address: `${community.name} 1号楼 1单元 6层 601室`,
 };
+const householdOptions = [
+  {
+    id: "bedridden",
+    label: "卧床",
+    icon: "/assets/illustrations/situation-bedridden.png",
+  },
+  {
+    id: "wheelchair",
+    label: "轮椅",
+    icon: "/assets/illustrations/situation-wheelchair.png",
+  },
+  {
+    id: "mobility",
+    label: "行动不便",
+    icon: "/assets/illustrations/situation-mobility.png",
+  },
+  {
+    id: "vision",
+    label: "视力障碍",
+    icon: "/assets/illustrations/situation-vision.png",
+  },
+  {
+    id: "hearing",
+    label: "听力障碍",
+    icon: "/assets/illustrations/situation-hearing.png",
+  },
+  {
+    id: "pregnant",
+    label: "孕妇",
+    icon: "/assets/illustrations/situation-pregnant.png",
+  },
+];
 const user = {
   id: "resident-demo",
   nickname: "林小安",
   mode: "showcase",
   bindings: [binding],
+  household: null,
 };
 const announcements = [
   {
@@ -60,6 +96,13 @@ const announcements = [
     title: "给自己两分钟，熟悉身边的安全出口",
     body: "打开楼栋页面，跟随线上模拟演练，认识本层安全出口与社区集合点。",
     publishedAt: "2026-09-26T01:00:00.000Z",
+    source: "demo",
+  },
+  {
+    id: "notice-3",
+    title: "电动车请规范停放与充电",
+    body: "请勿将电动车电瓶带入楼栋充电，共同守护消防安全。",
+    publishedAt: "2026-09-24T01:00:00.000Z",
     source: "demo",
   },
 ];
@@ -276,5 +319,6 @@ module.exports = {
   drills,
   config,
   defaultSelection,
+  householdOptions,
   scene,
 };

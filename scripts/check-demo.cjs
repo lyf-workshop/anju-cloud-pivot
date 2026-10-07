@@ -3,6 +3,8 @@ const assert = require("node:assert/strict"),
   fs = require("node:fs"),
   path = require("node:path");
 const app = JSON.parse(fs.readFileSync("app.json", "utf8"));
+// Check the retained offline edition without changing project files.
+require("../config/index").mode = "showcase";
 let definition,
   networkCalls = 0,
   phoneCalls = 0,
@@ -118,9 +120,26 @@ async function main() {
   await settle();
   assert.ok(terms.data.text);
   assert.equal(login.data.agreed, false);
-  login.agree({ detail: { value: ["yes"] } });
+  login.toggleAgree();
   login.submit();
   await settle();
+  assert.equal(navigation.at(-1), "/pages/register/register");
+  const register = page("register");
+  register.onShow();
+  await settle();
+  register.pickUnit({ detail: { value: 0 } });
+  await settle();
+  register.pickFloor({ detail: { value: 5 } });
+  register.inputRoom({ detail: { value: "601" } });
+  register.inputFamily({ detail: { value: "3" } });
+  register.next();
+  assert.equal(register.data.step, 2);
+  register.skip();
+  await settle();
+  await new Promise((resolve) => setTimeout(resolve, 450));
+  assert.equal(navigation.at(-1), "/pages/register-done/register-done");
+  const registered = page("register-done");
+  registered.goHome();
   assert.equal(navigation.at(-1), "/pages/index/index");
   const home = page("index");
   home.onShow();
@@ -137,6 +156,8 @@ async function main() {
   report.location({ detail: data.defaultSelection });
   report.input(event("location", "6层楼梯间"));
   report.input(event("description", "展示测试：楼道内有杂物需要清理"));
+  report.pickCategory({ currentTarget: { dataset: { id: "passage" } } });
+  report.pickHazard({ currentTarget: { dataset: { id: "exit-blocked" } } });
   await report.choose();
   report.preview({
     currentTarget: { dataset: { path: report.data.photos[0].path } },
@@ -234,11 +255,11 @@ async function main() {
   const evidence = {
     at: new Date().toISOString(),
     result: "passed",
-    productPagesChecked: 20,
+    productPagesChecked: 22,
     networkCalls,
     phoneCalls,
     checks: [
-      "consent and local login",
+      "consent, local login and two-step household registration",
       "all product page controllers and handlers",
       "four tab routes",
       "local filters",
@@ -257,7 +278,7 @@ async function main() {
     JSON.stringify(evidence, null, 2) + "\n",
   );
   console.log(
-    "Local showcase smoke passed: 20 product pages; 0 network requests; 0 phone calls.",
+    "Local showcase smoke passed: 22 product pages; 0 network requests; 0 phone calls.",
   );
 }
 main().catch((e) => {

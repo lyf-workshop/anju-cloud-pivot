@@ -7,7 +7,7 @@ define({
   },
   load() {
     return this.fetch(async () => {
-      const [config, user] = await Promise.all([repo.config(), repo.me()]);
+      const [config, user] = await Promise.all([repo.config(), repo.me().catch(() => ({ bindings: [] }))]);
       const address = user.bindings.find((b) => b.isCurrent);
       this.setData({ config, address: address ? address.address : "" });
     });
@@ -20,7 +20,7 @@ define({
     if (!data) return;
     wx.setClipboardData({
       data,
-      success: () => wx.showToast({ title: "示例住址已复制", icon: "none" }),
+      success: () => wx.showToast({ title: "住址已复制", icon: "none" }),
       fail: () => this.setData({ error: "复制失败，请重试" }),
     });
   },

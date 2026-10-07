@@ -1,8 +1,79 @@
-<view class="page">
-  <ui-state loading="{{loading}}" error="{{error}}" bind:retry="retry" compact/>
-  <view class="row profile-header"><view class="profile-avatar"><line-icon name="user-white" size="48"/></view><view class="grow"><view class="hero-title">{{user?user.nickname:'欢迎来到安居云枢'}}</view><view class="record-meta">{{address?address.address:'登录后体验社区服务'}}</view><view class="gap" style="height:8rpx"/><text wx:if="{{user}}" class="save-badge">本地演示住户</text><button wx:else class="link-button" bindtap="login">点击登录 ›</button></view></view>
-  <ui-card wx:if="{{user}}"><view class="stats"><view class="stat"><view class="stat-number accent">{{reportStats.total}}</view><view class="stat-label">我的上报</view></view><view class="stat"><view class="stat-number">{{reportStats.processing}}</view><view class="stat-label">处理中</view></view><view class="stat"><view class="stat-number">{{reportStats.completed}}</view><view class="stat-label">已完成</view></view></view></ui-card>
-  <view class="card profile-menus"><block wx:for="{{menus}}" wx:key="url"><view wx:if="{{index===3}}" class="profile-group-gap"/><button class="list-row" data-url="{{item.url}}" bindtap="go"><view class="icon-box"><line-icon name="{{item.icon}}" size="34"/></view><view class="grow"><view class="strong">{{item.title}}</view><view class="muted">{{item.note}}</view></view><text class="chevron">›</text></button></block></view>
-  <button wx:if="{{user}}" class="link-button full center" loading="{{busy}}" bindtap="logout">退出登录</button>
-  <view class="center muted">隐私政策 · 用户协议</view><mode-banner/>
+<view class="page me-page">
+  <!-- 顶部：图二门头消防蓝氛围 + 居中头像登录 -->
+  <view class="me-cover">
+    <image
+      class="me-cover-bg"
+      src="/assets/illustrations/me-gate-cover.jpg"
+      mode="aspectFill"
+    />
+    <view class="me-cover-veil" aria-hidden="true" />
+    <view class="me-cover-profile" bindtap="onProfileTap">
+      <view class="me-avatar">
+        <line-icon name="user-white" size="52" />
+      </view>
+      <view class="me-name">{{user ? user.nickname : '点击登录'}}</view>
+      <view class="me-desc">
+        {{user ? (address ? address.address : (householdSummary || '本地演示住户')) : '登录后体验社区安全服务'}}
+      </view>
+    </view>
+    <view class="me-cover-wave" aria-hidden="true" />
+  </view>
+
+  <!-- 下方：图一式线图标菜单列表 -->
+  <view class="me-sheet">
+    <ui-state loading="{{loading}}" error="{{error}}" bind:retry="retry" compact />
+
+    <view wx:if="{{user}}" class="me-stats">
+      <view class="me-stat">
+        <view class="me-stat-num">{{reportStats.total || 0}}</view>
+        <view class="me-stat-label">我的上报</view>
+      </view>
+      <view class="me-stat-line" />
+      <view class="me-stat">
+        <view class="me-stat-num">{{reportStats.processing || 0}}</view>
+        <view class="me-stat-label">处理中</view>
+      </view>
+      <view class="me-stat-line" />
+      <view class="me-stat">
+        <view class="me-stat-num">{{reportStats.completed || 0}}</view>
+        <view class="me-stat-label">已完成</view>
+      </view>
+    </view>
+
+    <view class="me-menu">
+      <button
+        wx:for="{{menus}}"
+        wx:key="url"
+        class="me-menu-row"
+        hover-class="me-menu-hover"
+        data-url="{{item.url}}"
+        bindtap="go"
+      >
+        <view class="me-menu-icon">
+          <line-icon name="{{item.icon}}" size="36" />
+        </view>
+        <text class="me-menu-label">{{item.title}}</text>
+        <view class="me-menu-tail">
+          <line-icon name="cloud" size="22" />
+        </view>
+      </button>
+    </view>
+
+    <button
+      wx:if="{{user}}"
+      class="me-logout"
+      loading="{{busy}}"
+      bindtap="logout"
+    >
+      退出登录
+    </button>
+
+    <view class="me-legal">
+      <text data-url="/pages/legal/legal?type=privacy" bindtap="go">隐私政策</text>
+      <text class="me-legal-dot">·</text>
+      <text data-url="/pages/legal/legal?type=terms" bindtap="go">用户协议</text>
+    </view>
+
+    <mode-banner></mode-banner>
+  </view>
 </view>

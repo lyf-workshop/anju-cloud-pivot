@@ -31,7 +31,7 @@ define({
       const user = await repo.me();
       this.setData({ items: user.bindings, room: "" });
       selection.set(this.data.selection);
-      wx.showToast({ title: "示例住址已更新", icon: "none" });
+      wx.showToast({ title: this.data.connected ? "已绑定，待物业审核" : "示例住址已更新", icon: "none" });
     });
   },
   current(e) {

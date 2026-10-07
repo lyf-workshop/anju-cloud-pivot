@@ -1,6 +1,8 @@
 const { define, go } = require("./page");
 const repo = require("../services/repository");
 const fmt = require("../services/format");
+const connected = require("../config/index").mode !== "showcase";
+const clock = connected ? require("../services/drill-clock") : null;
 module.exports = (step) =>
   define({
     data: { record: null, step, durationText: "00:00" },
@@ -10,6 +12,13 @@ module.exports = (step) =>
     onShow() {
       this.load();
     },
+    onHide() {
+      if (clock && clock.load(this.id)) {
+        clock.pause();
+        if (clock.load(this.id).status === "in_progress") repo.progress(this.id, clock.payload(this.id)).catch(e => this.setData({error: e.message}));
+      }
+    },
+    onUnload() { if (clock) clock.reset(); },
     load() {
       return this.fetch(async () => {
         const record = await repo.drill(this.id);
@@ -19,12 +28,15 @@ module.exports = (step) =>
           });
           return;
         }
-        // Page progress follows the two display steps; no background sync or resume machinery.
-        if (step === "assembly") await repo.confirmStep(this.id, "exit");
+        if (step === "assembly" && !record.completedSteps.some(s => (s.id || s) === "exit")) {
+          wx.redirectTo({ url: "/pages/drill/drill?id=" + this.id });
+          return;
+        }
+        if (clock) { clock.importRecord(record); clock.start(this.id); }
         this.setData({
           record,
           durationText: fmt.duration(
-            Math.max(0, (Date.now() - Date.parse(record.startedAt)) / 1000),
+            clock ? clock.payload(this.id).durationMs / 1000 : Math.max(0, (Date.now() - Date.parse(record.startedAt)) / 1000),
           ),
         });
       });
@@ -45,7 +57,7 @@ module.exports = (step) =>
     leave() {
       wx.showModal({
         title: "离开本次演练？",
-        content: "本次为线上模拟体验，可以从楼栋页面重新开始。",
+        content: "确认后中止本次线上演练。记录将保留，可从楼栋页面开始新演练。",
         confirmText: "离开演练",
         success: (r) => {
           if (r.confirm)

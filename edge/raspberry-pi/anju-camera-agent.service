@@ -1,0 +1,23 @@
+[Unit]
+Description=Anju Cloud Pivot Raspberry Pi fire/smoke camera agent
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pi
+Group=pi
+SupplementaryGroups=video
+WorkingDirectory=/opt/anju-camera-agent
+EnvironmentFile=/etc/anju-camera-agent.env
+ExecStart=/usr/bin/python3 /opt/anju-camera-agent/fire_camera_agent.py
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadOnlyPaths=/home/pi/models
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,29 @@
+<view class="page escape-page">
+  <view class="title">安全通道结构图</view>
+  <view class="subtitle">{{floorNumber ? floorNumber + '层 · ' : ''}}消防疏散示意图</view>
+
+  <view class="card escape-card">
+    <view class="row between" style="margin-bottom:14rpx">
+      <text class="strong">疏散平面图</text>
+      <text class="pill">可点击放大</text>
+    </view>
+    <image
+      class="escape-plan-image"
+      src="/assets/illustrations/guide-escape-plan.png"
+      mode="widthFix"
+      bindtap="preview"
+      show-menu-by-longpress
+    />
+    <view class="field-note center" style="margin-top:12rpx">点击图片可放大查看 · 请以楼内实际标识为准</view>
+  </view>
+
+  <view class="card">
+    <view class="strong">疏散要点</view>
+    <view class="gap" style="height:12rpx" />
+    <view class="escape-tip">1. 保持冷静，沿出口标识向最近楼梯撤离</view>
+    <view class="escape-tip">2. 勿乘坐电梯，低姿前行，湿毛巾捂口鼻</view>
+    <view class="escape-tip">3. 到达社区集合点后清点人数并等候指引</view>
+  </view>
+
+  <ui-button label="返回楼栋" variant="secondary" bind:action="back" />
+</view>

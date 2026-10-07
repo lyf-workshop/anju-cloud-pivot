@@ -1,0 +1,7 @@
+{
+  "navigationBarTextStyle": "white",
+  "navigationBarTitleText": "登记完成",
+  "navigationBarBackgroundColor": "#0B5CAB",
+  "backgroundColor": "#EAF3FA",
+  "enablePullDownRefresh": false
+}

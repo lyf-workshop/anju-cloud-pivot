@@ -1,4 +1,5 @@
 const session = require("../services/session");
+const config = require("../config/index");
 const tabs = [
   "/pages/index/index",
   "/pages/hazards/hazards",
@@ -23,8 +24,24 @@ function error(page, e) {
     busy: false,
   });
 }
+function syncTabBar(page) {
+  if (typeof page.getTabBar !== "function") return;
+  const bar = page.getTabBar();
+  if (!bar) return;
+  const route = "/" + (page.route || "");
+  const index = tabs.indexOf(route);
+  if (index >= 0) bar.setData({ selected: index });
+}
 const common = {
-  data: { loading: false, error: "", busy: false },
+  data: {
+    loading: false,
+    error: "",
+    busy: false,
+    connected: config.mode !== "showcase",
+    localBackend:
+      config.mode === "local" && config.loginMode !== "demo-session",
+    remoteDemo: config.loginMode === "demo-session",
+  },
   go(e) {
     go(e.currentTarget.dataset.url);
   },
@@ -68,6 +85,11 @@ function define(spec) {
   obj.resetPrivateView = function () {
     this.setData(JSON.parse(JSON.stringify(initial)));
     this.draftKey = null;
+  };
+  const userOnShow = obj.onShow;
+  obj.onShow = function () {
+    syncTabBar(this);
+    if (typeof userOnShow === "function") return userOnShow.call(this);
   };
   Page(obj);
 }

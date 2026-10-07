@@ -27,6 +27,8 @@ const session = require("../services/session"),
   repo = require("../services/repository"),
   clock = require("../services/drill-clock"),
   config = require("../config/index");
+config.transport = "direct";
+config.loginMode = "dev-login";
 test("consent, failed login, mode guards, no fake fallback and cache isolation", async () => {
   await assert.rejects(repo.login(false, "draft"));
   assert.equal(requestCount, 0);
@@ -39,14 +41,16 @@ test("consent, failed login, mode guards, no fake fallback and cache isolation",
   await assert.rejects(repo.login(true, "draft"));
   assert.equal(session.get(), null);
   config.mode = "api";
+  config.loginMode = "wechat";
   networkFails = true;
   await assert.rejects(repo.login(true, "draft"), /连接失败/);
   assert.equal(loginCount, 1);
   assert.equal(session.get(), null);
-  config.mode = "demo";
+  config.mode = "local";
+  config.loginMode = "dev-login";
   networkFails = false;
   wx.getAccountInfoSync = () => ({ miniProgram: { envVersion: "release" } });
-  await assert.rejects(repo.login(true, "draft"), /禁止演示/);
+  await assert.rejects(repo.login(true, "draft"), /仅允许开发版和比赛体验版/);
   wx.getAccountInfoSync = () => ({ miniProgram: { envVersion: "develop" } });
   session.set({ token: "a", user: { id: "a" } });
   wx.setStorageSync(session.privateKey("report-draft"), { secret: "a" });

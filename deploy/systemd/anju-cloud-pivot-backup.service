@@ -1,0 +1,13 @@
+[Unit]
+Description=Back up Anju Cloud Pivot demo database and attachments
+After=anju-cloud-pivot.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/anju-cloud-pivot-backup
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadOnlyPaths=/var/lib/anju-cloud-pivot
+ReadWritePaths=/var/backups/anju-cloud-pivot

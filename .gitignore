@@ -7,6 +7,7 @@ coverage/
 .env.*
 !.env.example
 config/local.js
+config/appid.local.js
 *.local
 server/data/
 project.private.config.json
@@ -27,3 +28,31 @@ artifacts/compiler/wcsc.js
 
 .DS_Store
 Thumbs.db
+**/__pycache__/
+**/*.py[cod]
+
+# Large local demo media is packaged separately from source control.
+**/assets/demo/*.mp4
+
+# Generated installers and local signing material.
+/output/
+*.jks
+*.keystore
+.secrets/
+android/.gradle/
+android/local.properties
+android/app/release/
+android/app/build/
+
+# Browser automation session state may contain authentication cookies.
+.playwright-cli/
+
+# Local handoff archives and merge staging; merged source lives in the normal project paths.
+/anju-cloud-pivot-main.zip
+/安居云枢网页端(2).zip
+/artifacts/member-web-merge-20260929/
+/artifacts/member-merge-*/
+/artifacts/connected-backend/
+/artifacts/connected-devtools/
+/artifacts/deployment/
+/artifacts/deployment/*.tar.gz

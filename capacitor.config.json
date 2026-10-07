@@ -1,0 +1,21 @@
+{
+  "appId": "com.anjuyunshu.judge",
+  "appName": "安居云枢",
+  "webDir": "dist/client",
+  "backgroundColor": "#eaf3fa",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "backgroundColor": "#eaf3fa",
+    "allowMixedContent": false,
+    "captureInput": true
+  },
+  "plugins": {
+    "SystemBars": {
+      "insetsHandling": "native",
+      "style": "LIGHT",
+      "hidden": false
+    }
+  }
+}

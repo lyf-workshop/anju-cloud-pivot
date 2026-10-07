@@ -1,12 +1,41 @@
 <view class="page login-page">
-  <view class="brand"><view class="brand-symbol"><line-icon name="shield-white" size="48" /></view><view class="brand-title">安居云枢</view><view class="subtitle">让社区安全，看得见，也触手可及。</view></view>
-  <view class="login-illustration"><image src="/assets/illustrations/building.png" mode="aspectFit" /></view>
-  <view class="login-intro center"><view class="title">欢迎加入安心社区</view><view class="subtitle">登录后查看楼栋信息、上报隐患<view/>并保存你的演练记录</view></view>
-  <ui-state loading="{{loading}}" error="{{error}}" bind:retry="retry" compact />
-  <ui-button id="login-button" label="微信一键登录" variant="green" disabled="{{!agreed || !config}}" loading="{{busy}}" bind:action="submit" />
-  <view class="agreement">
-    <checkbox-group bindchange="agree"><label><checkbox id="consent" value="yes" checked="{{agreed}}" color="#278873" /></label></checkbox-group>
-    <view class="agreement-copy"><text>我已阅读并同意</text><view class="agreement-links"><button class="link-button" data-url="/pages/legal/legal?type=terms" bindtap="go">《用户协议》</button><button class="link-button" data-url="/pages/legal/legal?type=privacy" bindtap="go">《隐私政策》</button></view></view>
+  <view class="brand">
+    <image class="brand-logo" src="/assets/illustrations/login-logo.png" mode="aspectFit" />
+    <view class="brand-title">安居云枢</view>
+    <view class="subtitle">让社区安全，看得见，也触手可及。</view>
   </view>
-  <view class="login-footer"><view class="muted">本次为本地展示，无需微信授权</view><view class="muted">关注隐患 · 让安全更简单</view><button class="link-button" data-url="/pages/emergency/emergency" bindtap="go">紧急求助 ›</button></view>
+  <view class="login-illustration">
+    <image src="/assets/illustrations/building.png" mode="aspectFit" />
+  </view>
+  <view class="login-intro center">
+    <view class="title">欢迎加入安心社区</view>
+    <view class="subtitle">登录后查看楼栋信息、上报隐患并保存你的演练记录</view>
+  </view>
+  <ui-state loading="{{loading}}" error="{{error}}" bind:retry="retry" compact />
+  <ui-button
+    id="login-button"
+    label="{{remoteDemo ? '直接体验' : '微信一键登录'}}"
+    variant="green"
+    disabled="{{!agreed}}"
+    loading="{{busy}}"
+    bind:action="submit"
+  />
+
+  <!-- 用 button 保证点击区域可靠（原生 checkbox + transform 在模拟器上常点不到） -->
+  <button class="agree-hit" hover-class="agree-hit-press" bindtap="toggleAgree">
+    <view class="agree-check {{agreed ? 'on' : ''}}">
+      <text wx:if="{{agreed}}" class="agree-tick">✓</text>
+    </view>
+    <text class="agreement-text">我已阅读并同意</text>
+  </button>
+  <view class="agreement-links">
+    <button class="link-button" data-url="/pages/legal/legal?type=terms" catchtap="go">《用户协议》</button>
+    <button class="link-button" data-url="/pages/legal/legal?type=privacy" catchtap="go">《隐私政策》</button>
+  </view>
+
+  <view class="login-footer">
+    <view class="muted">{{remoteDemo ? '公网演示登录，不读取真实微信资料' : (connected ? (localBackend ? '评审联调登录，不读取真实微信资料' : '登录凭证仅用于建立安全体验会话') : '本次为本地展示，无需微信授权')}}</view>
+    <view class="muted">关注隐患 · 让安全更简单</view>
+    <button class="link-button" data-url="/pages/emergency/emergency" bindtap="go">紧急求助 ›</button>
+  </view>
 </view>

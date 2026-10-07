@@ -24,15 +24,15 @@
   line-height: 1.5;
 }
 page {
-  --bg: #f5f6f8;
+  --bg: #eaf3fa;
   --ink: #203047;
-  --muted: #7b8696;
+  --muted: #5b738a;
   --red: #ec695e;
   --red-light: #fff0ed;
   --green: #439b78;
   --line: #ebeef2;
   --radius: 28rpx;
-  background: var(--bg);
+  background-color: #eaf3fa;
   color: var(--ink);
   font-family:
     -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei",
@@ -630,7 +630,7 @@ image {
   align-items: center;
 }
 .agreement checkbox {
-  transform: scale(0.78);
+  transform: none;
 }
 .agreement .link-button {
   font-size: 23rpx;

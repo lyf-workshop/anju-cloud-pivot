@@ -2,6 +2,7 @@ import { DatabaseSync } from "node:sqlite";
 import fs from "node:fs";
 import path from "node:path";
 import type { Settings } from "./config.js";
+import { migrateProperty } from "./migrations.js";
 
 export class Store {
   db: DatabaseSync;
@@ -12,14 +13,15 @@ export class Store {
     this.db.exec(
       "PRAGMA foreign_keys=ON; PRAGMA journal_mode=WAL; PRAGMA busy_timeout=5000;",
     );
-    this.migrate();
-    const mode = this.one("SELECT value FROM metadata WHERE key=?", "mode");
+    const hasMetadata = this.one("SELECT name FROM sqlite_master WHERE type='table' AND name='metadata'");
+    const mode = hasMetadata ? this.one("SELECT value FROM metadata WHERE key=?", "mode") : null;
     if (mode && mode.value !== cfg.mode) {
       this.close();
       throw new Error(
         "Database mode mismatch; demo and production must be isolated",
       );
     }
+    this.migrate();
     this.run("INSERT OR IGNORE INTO metadata VALUES (?,?)", "mode", cfg.mode);
     if (cfg.mode === "demo") this.seed(demoCatalog);
     else if (cfg.catalogFile)
@@ -72,8 +74,8 @@ export class Store {
       CREATE INDEX IF NOT EXISTS hazard_user_time ON hazard_reports(user_id,created_at DESC);
       CREATE INDEX IF NOT EXISTS drill_user_time ON drill_sessions(user_id,started_at DESC);
       CREATE INDEX IF NOT EXISTS device_reading_time ON readings(device_id,collected_at DESC);
-      PRAGMA user_version=1;
     `);
+    migrateProperty(this.db);
   }
   seed(catalog: any) {
     if (

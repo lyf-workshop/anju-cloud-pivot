@@ -1,0 +1,182 @@
+/* Reuse the original site palette, navigation, panels and tables for connected data. */
+body:not([data-ready]) main {
+  visibility: hidden;
+}
+/* The original command-board homepage locked the viewport to one screen.
+   API records and forms need normal document scrolling. */
+body.page-home[data-ready] {
+  overflow: auto;
+}
+body[data-ready] .float-call {
+  display: none;
+}
+.connection-bar {
+  background: #eaf3f7;
+  color: #233f52;
+  padding: 12px 24px;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.connection-bar label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.connection-bar select {
+  max-width: 280px;
+}
+.connection-bar button {
+  margin-left: auto;
+}
+.api-main {
+  padding: 28px 0 60px;
+  min-height: 65vh;
+}
+.api-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: 20px;
+}
+.api-card {
+  min-width: 0;
+  border: 1px solid var(--line, #dde5ed);
+  border-radius: 16px;
+  padding: 22px;
+  background: white;
+  margin: 18px 0;
+}
+.api-card h2 {
+  font-size: 1.15rem;
+  margin-top: 0;
+}
+.api-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+.api-metrics strong {
+  display: block;
+  font-size: 2rem;
+  color: var(--ink, #233f52);
+}
+.api-toolbar {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 16px 0;
+}
+.api-toolbar select,
+.connection-bar select {
+  padding: 8px;
+  border: 1px solid #ccd8e1;
+  border-radius: 8px;
+}
+.api-message {
+  padding: 12px 16px;
+  background: #fff1ee;
+  color: #96311c;
+  border-radius: 10px;
+  margin: 16px 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.api-message:empty {
+  display: none;
+}
+.api-success {
+  background: #eaf7f1;
+  color: #24745a;
+}
+.api-empty {
+  padding: 24px;
+  color: #617388;
+  text-align: center;
+}
+.api-detail {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.api-photos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.api-photos img {
+  width: 140px;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+.api-card input,
+.api-card textarea,
+.api-card select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #cbd5df;
+  border-radius: 8px;
+  background: white;
+}
+.api-card label {
+  display: block;
+  margin: 12px 0;
+}
+.api-card button {
+  min-height: 42px;
+}
+.api-card .inline-check {
+  width: auto;
+}
+.api-card .table-wrap {
+  overflow: auto;
+}
+.api-card .data-table td {
+  overflow-wrap: anywhere;
+}
+.api-login {
+  max-width: 460px;
+  margin: 36px auto;
+}
+.api-status {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: #eaf3f7;
+  white-space: nowrap;
+}
+.api-status.pending {
+  background: #fff3d9;
+  color: #946318;
+}
+.api-status.completed {
+  background: #e8f6ef;
+  color: #24745a;
+}
+.api-secondary {
+  color: #64748b;
+  font-size: 0.9rem;
+}
+.api-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin: 18px 0;
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+@media (max-width: 640px) {
+  .connection-bar {
+    padding: 10px 16px;
+  }
+  .api-card {
+    padding: 16px;
+  }
+  .api-main {
+    padding-top: 16px;
+  }
+}

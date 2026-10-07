@@ -1,5 +1,5 @@
 <view class="page">
-  <mode-banner />
+  <mode-banner></mode-banner>
   <view class="title">社区通知</view>
   <view class="subtitle">公告与安全提示</view>
   <ui-state

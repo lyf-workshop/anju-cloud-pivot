@@ -1,1 +1,221 @@
-/* Uses shared app.wxss design tokens. */
+/* 我的：图二门头消防蓝顶图 + 图一线图标列表 */
+
+.me-page {
+  padding: 0;
+  background: #f7fafc;
+}
+
+/* —— 顶部门头封面 —— */
+.me-cover {
+  position: relative;
+  min-height: 420rpx;
+  padding: 48rpx 36rpx 88rpx;
+  box-sizing: border-box;
+  overflow: hidden;
+  background: #0b5cab;
+}
+
+.me-cover-bg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  display: block;
+}
+
+/* 消防蓝罩层，保证白字可读 */
+.me-cover-veil {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    180deg,
+    rgba(8, 58, 120, 0.35) 0%,
+    rgba(11, 92, 171, 0.42) 42%,
+    rgba(8, 58, 120, 0.55) 100%
+  );
+}
+
+.me-cover-profile {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 28rpx;
+}
+
+.me-avatar {
+  width: 148rpx;
+  height: 148rpx;
+  border-radius: 50%;
+  background: rgba(11, 92, 171, 0.88);
+  border: 6rpx solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 10rpx 28rpx rgba(4, 40, 86, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.me-name {
+  margin-top: 22rpx;
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: 1rpx;
+}
+
+.me-desc {
+  margin-top: 8rpx;
+  max-width: 86%;
+  font-size: 22rpx;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.86);
+  text-align: center;
+}
+
+/* 底部波浪：衔接白底内容区 */
+.me-cover-wave {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1rpx;
+  height: 56rpx;
+  z-index: 3;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 375 40' preserveAspectRatio='none'%3E%3Cpath d='M0 18C48 34 96 4 150 14C204 24 246 36 300 22C336 12 360 18 375 24V40H0Z' fill='%23f7fafc'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+/* —— 下方内容区 —— */
+.me-sheet {
+  position: relative;
+  z-index: 2;
+  margin-top: -8rpx;
+  padding: 8rpx 0 calc(48rpx + env(safe-area-inset-bottom));
+  background: #f7fafc;
+  min-height: 52vh;
+}
+
+.me-stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  margin: 8rpx 36rpx 20rpx;
+  padding: 22rpx 12rpx;
+  background: #ffffff;
+  border-radius: 20rpx;
+  box-shadow: 0 8rpx 24rpx rgba(11, 92, 171, 0.06);
+}
+
+.me-stat {
+  flex: 1;
+  text-align: center;
+}
+
+.me-stat-num {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #0b5cab;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+
+.me-stat-label {
+  margin-top: 6rpx;
+  font-size: 20rpx;
+  color: #5b738a;
+}
+
+.me-stat-line {
+  width: 1rpx;
+  height: 48rpx;
+  background: #e4ecf4;
+  flex-shrink: 0;
+}
+
+/* 图一式：左线图标 + 文案 + 右侧淡装饰 */
+.me-menu {
+  margin: 12rpx 0 8rpx;
+  padding: 8rpx 0;
+}
+
+.page .me-menu-row {
+  width: 100%;
+  margin: 0;
+  padding: 28rpx 44rpx;
+  background: transparent;
+  border-radius: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 22rpx;
+  line-height: 1.4;
+  text-align: left;
+  box-sizing: border-box;
+}
+
+.page .me-menu-row::after {
+  border: 0;
+}
+
+.me-menu-hover {
+  background: rgba(11, 92, 171, 0.04) !important;
+}
+
+.me-menu-icon {
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.me-menu-label {
+  flex: 1;
+  font-size: 30rpx;
+  font-weight: 500;
+  color: #1a3a5c;
+  letter-spacing: 0.5rpx;
+}
+
+.me-menu-tail {
+  width: 40rpx;
+  height: 40rpx;
+  opacity: 0.28;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.me-logout {
+  margin: 28rpx 44rpx 0;
+  height: 84rpx;
+  line-height: 84rpx;
+  border-radius: 42rpx;
+  background: #ffffff;
+  color: #0b5cab;
+  font-size: 28rpx;
+  font-weight: 500;
+  border: 2rpx solid rgba(11, 92, 171, 0.28);
+}
+
+.me-logout::after {
+  border: 0;
+}
+
+.me-legal {
+  margin-top: 28rpx;
+  text-align: center;
+  font-size: 22rpx;
+  color: #8a9aab;
+}
+
+.me-legal-dot {
+  margin: 0 10rpx;
+}

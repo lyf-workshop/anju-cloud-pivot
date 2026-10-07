@@ -1,12 +1,164 @@
-<view class="page">
-  <view class="row between building-heading"><button class="link-button" bindtap="toggleLocation"><text class="strong" style="color:#23364d">{{buildingName || '选择楼栋'}} · {{unitName}} ⌄</text></button><text class="pill">演示数据</text></view>
-  <view wx:if="{{showLocation}}" class="card"><location-picker value="{{preferred}}" bind:change="changed"/></view>
-  <view class="building-stage"><view class="row between"><text class="pill" style="background:white">楼栋示意</text><line-icon name="cube" size="28"/></view><view class="building-scene"><image class="building-art" src="/assets/illustrations/building.png" mode="aspectFit"/><view class="floor-rail"><button wx:for="{{floorOptions}}" wx:key="*this" class="floor-button {{floorNumber===item?'active':''}}" data-number="{{item}}" bindtap="floor">{{item}}F</button></view></view><text class="pill" style="background:white">{{floorNumber}}F · 当前楼层</text></view>
-  <view class="field-note" style="margin-top:14rpx">点击楼层查看状态 · 示意模型，无真实设备连接</view>
-  <ui-state loading="{{loading}}" error="{{error}}" bind:retry="retry" compact/>
-  <view class="card building-stats"><view class="row between"><text class="strong">{{floorNumber}}层安全提示</text><text class="save-badge">本地示例</text></view><view class="gap"/><view class="stats"><view class="stat"><view class="stat-number">{{deviceTotal || 0}}</view><view class="stat-label">感知设备</view></view><view class="stat"><view class="stat-number accent">{{unknownTotal || 0}}</view><view class="stat-label">离线 / 未知</view></view><view class="stat"><view class="stat-number">{{onlineTotal || 0}}</view><view class="stat-label">在线示例</view></view></view><button id="view-devices" class="link-button full" bindtap="devices">查看本层感知设备 ›</button></view>
-  <view class="action-row"><ui-button id="start-drill" label="模拟演练" variant="plain" loading="{{busy}}" disabled="{{!selection.floorId}}" bind:action="start"/><ui-button label="紧急求助" data-url="/pages/emergency/emergency" bind:action="go"/></view>
+<view class="page building-page">
+  <view class="row between building-heading">
+    <button class="link-button" bindtap="toggleLocation">
+      <text class="strong" style="color:#23364d">{{buildingName || '选择楼栋'}} · {{unitName}} ⌄</text>
+    </button>
+    <text class="pill">演示数据</text>
+  </view>
+  <view wx:if="{{showLocation}}" class="card">
+    <location-picker value="{{preferred}}" bind:change="changed" />
+  </view>
+
+  <!-- 立体楼房：站立立方体（透视 rotateY），非斜切楼板 -->
+  <view class="iso-stage">
+    <view class="row between iso-stage-head">
+      <text class="pill" style="background:white">立体楼房 · 示意</text>
+      <switch checked="{{demoFire}}" color="#d44730" bindchange="toggleFire" />
+    </view>
+    <view class="row between" style="margin-top:8rpx">
+      <text class="field-note">开启右侧开关可演示「AI 识别火情」落点</text>
+      <text class="field-note">{{demoFire ? '火情演示中' : '无火情'}}</text>
+    </view>
+
+    <view class="iso-viewport">
+      <view class="tower-viewport">
+        <view class="tower-world">
+          <!-- CSS 3D 立方体：楼体竖直站立，轻微转角露出侧面 -->
+          <view class="tower-cube">
+            <view class="cube-top" />
+            <view class="cube-front">
+              <view
+                wx:for="{{isoFloors}}"
+                wx:key="number"
+                class="tower-level {{floorNumber===item.number?'active':''}} {{item.hasFire?'on-fire':''}}"
+                data-number="{{item.number}}"
+                bindtap="floor"
+              >
+                <text class="tower-level-no">{{item.number}}F</text>
+                <view class="tower-windows">
+                  <view class="tower-win" /><view class="tower-win" /><view class="tower-win" /><view class="tower-win" />
+                </view>
+                <view
+                  wx:if="{{item.hasFire}}"
+                  class="iso-fire"
+                  style="left:{{item.fireX}}%;top:{{item.fireY}}%;width:{{item.fireSize}}rpx;height:{{item.fireSize}}rpx;"
+                >
+                  <text class="iso-fire-text">火</text>
+                </view>
+                <view class="iso-dot exit" style="left:8%;top:55%;" />
+                <view class="iso-dot exit" style="left:88%;top:55%;" />
+                <view class="iso-dot extinguisher" style="left:28%;top:70%;" wx:if="{{showEquipDots}}" />
+                <view class="iso-dot hydrant" style="left:72%;top:70%;" wx:if="{{showEquipDots}}" />
+              </view>
+              <view class="tower-lobby">
+                <view class="tower-door" />
+              </view>
+            </view>
+            <view class="cube-side">
+              <view
+                wx:for="{{isoFloors}}"
+                wx:key="number"
+                class="tower-side-level {{floorNumber===item.number?'active':''}} {{item.hasFire?'on-fire':''}}"
+              >
+                <view class="tower-side-win" /><view class="tower-side-win" />
+              </view>
+              <view class="tower-side-lobby" />
+            </view>
+          </view>
+          <view class="tower-ground" />
+        </view>
+      </view>
+
+      <view class="floor-rail iso-rail">
+        <button
+          wx:for="{{floorOptions}}"
+          wx:key="*this"
+          class="floor-button {{floorNumber===item?'active':''}}"
+          data-number="{{item}}"
+          bindtap="floor"
+        >{{item}}F</button>
+      </view>
+    </view>
+
+    <view class="iso-legend row">
+      <view class="iso-legend-item"><view class="iso-dot exit mini" /><text>安全通道</text></view>
+      <view class="iso-legend-item"><view class="iso-dot extinguisher mini" /><text>灭火器</text></view>
+      <view class="iso-legend-item"><view class="iso-dot hydrant mini" /><text>消防栓</text></view>
+      <view class="iso-legend-item"><view class="iso-dot fire mini" /><text>火情</text></view>
+    </view>
+
+    <!-- 楼体下方：左紧急求助 · 右安全通道 / 灭火器 -->
+    <view class="tower-actions">
+      <button class="emergency-entry" hover-class="emergency-entry-press" bindtap="goEmergency">
+        <image class="emergency-entry-img" src="/assets/illustrations/emergency-call.png" mode="aspectFit" />
+        <text class="emergency-entry-text">紧急求助</text>
+      </button>
+      <view class="tower-action-links">
+        <button class="equip-entry compact chat-entry" hover-class="equip-entry-press" bindtap="goChat">
+          <view class="equip-entry-icon chat"><line-icon name="bell" size="34" /></view>
+          <view class="grow">
+            <view class="equip-entry-title">火情业主群</view>
+            <view class="equip-entry-desc">实时互通 · AI 汇总火情</view>
+          </view>
+          <text class="chevron">›</text>
+        </button>
+        <button class="equip-entry compact" hover-class="equip-entry-press" bindtap="goEscape">
+          <view class="equip-entry-icon escape"><line-icon name="exit" size="34" /></view>
+          <view class="grow">
+            <view class="equip-entry-title">安全通道结构图</view>
+            <view class="equip-entry-desc">出口与疏散示意</view>
+          </view>
+          <text class="chevron">›</text>
+        </button>
+        <button class="equip-entry compact" hover-class="equip-entry-press" bindtap="goEquipment">
+          <view class="equip-entry-icon gear"><line-icon name="shield" size="34" /></view>
+          <view class="grow">
+            <view class="equip-entry-title">灭火器 / 消防栓</view>
+            <view class="equip-entry-desc">位置分布与使用流程</view>
+          </view>
+          <text class="chevron">›</text>
+        </button>
+      </view>
+    </view>
+  </view>
+
+  <view class="field-note" style="margin-top:8rpx">点击楼层查看状态 · 3D 为示意模型，火情点位后续由 AI 识别接入</view>
+  <ui-state loading="{{loading}}" error="{{error}}" bind:retry="retry" compact />
+
+  <view class="card building-stats">
+    <view class="row between">
+      <text class="strong">{{floorNumber}}层安全提示</text>
+      <text class="save-badge">本地示例</text>
+    </view>
+    <view class="gap" />
+    <view class="stats">
+      <view class="stat"><view class="stat-number">{{deviceTotal || 0}}</view><view class="stat-label">感知设备</view></view>
+      <view class="stat"><view class="stat-number accent">{{unknownTotal || 0}}</view><view class="stat-label">离线 / 未知</view></view>
+      <view class="stat"><view class="stat-number">{{onlineTotal || 0}}</view><view class="stat-label">在线示例</view></view>
+    </view>
+    <button id="view-devices" class="link-button full" bindtap="devices">查看本层感知设备 ›</button>
+  </view>
+
+  <view class="action-row">
+    <ui-button id="start-drill" label="模拟演练" variant="plain" loading="{{busy}}" disabled="{{!selection.floorId}}" bind:action="start" />
+  </view>
   <view class="field-note" style="margin-top:18rpx">本层出口：{{exitText}}</view>
-  <view wx:for="{{active}}" wx:key="id" class="card" style="margin-top:18rpx"><view class="row"><view class="grow"><view class="strong">继续上次线上练习</view><view class="record-meta">{{item.snapshot.buildingName}} · {{item.timeText}}</view></view><button class="link-button" data-id="{{item.id}}" bindtap="resume">继续 ›</button></view></view>
-  <mode-banner/>
+  <view wx:for="{{active}}" wx:key="id" class="card" style="margin-top:18rpx">
+    <view class="row">
+      <view class="grow">
+        <view class="strong">继续上次线上练习</view>
+        <view class="record-meta">{{item.snapshot.buildingName}} · {{item.timeText}}</view>
+      </view>
+      <button class="link-button" data-id="{{item.id}}" bindtap="resume">继续 ›</button>
+    </view>
+  </view>
+  <mode-banner></mode-banner>
+
+  <!-- 右下角 AI 悬浮入口 -->
+  <view class="ai-fab-wrap">
+    <button class="ai-fab" hover-class="ai-fab-press" bindtap="openAi">
+      <image class="ai-fab-img" src="/assets/illustrations/ai-fab-fire.png" mode="aspectFit" />
+    </button>
+    <text class="ai-fab-label">AI 火情助手</text>
+  </view>
 </view>

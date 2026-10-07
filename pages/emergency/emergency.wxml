@@ -1,5 +1,5 @@
 <view class="page">
-  <mode-banner />
+  <mode-banner></mode-banner>
   <view class="eyebrow">EMERGENCY CONTACT</view>
   <view class="title">紧急求助</view>
   <view class="subtitle">重要的联系方式，就在身边</view>

@@ -8,9 +8,9 @@ function device(d) {
       d.connectionStatus
     ],
     eventLabel: {
-      alarm: "示例状态：告警提示",
-      cleared: "示例状态：未触发告警",
-      unknown: "示例状态：暂无事件信息",
+      alarm: "最近事件：告警（与在线状态独立）",
+      cleared: "最近事件：已收到解除事件",
+      unknown: "最近事件：暂无事件信息",
     }[d.eventStatus],
     seenText: fmt.date(d.lastSeenAt),
     readingTime: d.reading ? fmt.date(d.reading.collectedAt) : "暂无采集时间",

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>安居云枢 · 物业消防值班台</title>
+  <meta name="description" content="安居云枢物业端：监控联动、YOLO/烟雾告警、火情分级处置、数字孪生与业主协助信息。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;800&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+</head>
+<body class="page-home">
+  <a class="skip-link" href="#main">跳到主要内容</a>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html" aria-label="安居云枢首页">
+        <span class="brand-mark" aria-hidden="true"><img src="assets/logo.png" alt="" /></span>
+        <span class="brand-text">
+          <strong>安居云枢</strong>
+          <small>物业消防值班台</small>
+        </span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="打开菜单">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="site-nav" id="site-nav" aria-label="主导航">
+        <a class="is-active" href="index.html">值班台</a>
+        <a href="duty.html">制度责任</a>
+        <a href="buildings.html">数字孪生</a>
+        <a href="people.html">人员台账</a>
+        <a href="inspection.html">巡查台账</a>
+        <a href="knowledge.html">处置预案</a>
+        <a href="report.html">隐患工单</a>
+        <a class="nav-cta" href="emergency.html">紧急处置</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="home-board">
+    <div class="container board-grid">
+      <!-- 左列：值班状态 -->
+      <aside class="board-left" aria-label="值班仪表盘">
+        <div class="platform-lockup">
+          <span class="brand-mark brand-mark-lg" aria-hidden="true"><img src="assets/logo.png" alt="" /></span>
+          <div>
+            <p class="page-eyebrow lockup-eyebrow">物业值班 · 火情处置</p>
+            <h1>安居云枢</h1>
+            <p>面向物业值班员的火情监测与处置台</p>
+          </div>
+        </div>
+
+        <section class="dash-panel">
+          <h2>今日运行状态</h2>
+          <div class="status-row"><span>树莓派 YOLO（测试）</span><span class="pill-ok" id="ai-status">连接中</span></div>
+          <div class="status-row"><span>火焰 / 烟雾识别</span><span class="pill-ok" id="smoke-status">待连接</span></div>
+          <div class="status-row"><span>微型消防站</span><span class="pill-ok">值守中</span></div>
+          <div class="status-row"><span>当前火情</span><span class="pill-warn" id="fire-status-pill">告警中</span></div>
+        </section>
+
+        <section class="dash-panel dash-panel-demo">
+          <h2>演示控制</h2>
+          <p class="field-hint" style="margin:0 0 0.65rem">火灾预警演练：页面加载即从「已发现火情」开始；监控区循环播放现场视频素材。</p>
+          <div class="dash-actions">
+            <button class="btn btn-primary" type="button" id="btn-simulate-fire">重新开始演练</button>
+            <button class="btn btn-ghost" type="button" id="btn-clear-fire">恢复正常监控</button>
+          </div>
+        </section>
+
+        <section class="dash-panel">
+          <h2>最近巡查</h2>
+          <table class="mini-table">
+            <thead>
+              <tr><th>时间</th><th>区域</th><th>结果</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>08:20</td><td>南门通道</td><td class="tag-ok">正常</td></tr>
+              <tr><td>10:05</td><td>2 号楼地库</td><td class="tag-warn">待整改</td></tr>
+              <tr><td>14:40</td><td>微型站</td><td class="tag-ok">完好</td></tr>
+            </tbody>
+          </table>
+        </section>
+      </aside>
+
+      <!-- 中列：监控 + 数字孪生 -->
+      <section class="board-center ops-center" aria-label="监控与火情定位主屏">
+        <div class="ops-split">
+          <!-- 左：摄像头 -->
+          <div class="ops-pane ops-camera">
+            <div class="ops-pane-head">
+              <div>
+                <strong id="camera-title">火情关联摄像头</strong>
+                <span id="camera-sub">YOLO26 + 烟雾识别命中 · 已切换具体画面</span>
+              </div>
+              <span class="cam-badge is-alert" id="cam-badge">ALERT</span>
+            </div>
+
+            <div class="camera-viewport" id="camera-viewport" data-mode="alert">
+              <div class="camera-feed camera-feed-wide" id="camera-feed" role="img" aria-label="小区全域监控画面占位"></div>
+              <video
+                class="camera-video"
+                id="camera-video"
+                src="assets/demo/fire-alert.mp4"
+                muted
+                loop
+                playsinline
+                preload="none"
+                aria-label="火情现场监控画面（演练素材循环播放）"
+              ></video>
+              <div class="camera-access-state" id="camera-access-state" role="status" aria-live="polite">正在连接安全视频通道…</div>
+              <div class="camera-overlay" id="camera-overlay">
+                <span class="yolo-tag">YOLO26</span>
+                <span class="smoke-tag">烟雾识别</span>
+                <div class="detect-box" aria-hidden="true"></div>
+                <p class="detect-label" id="detect-label">疑似火情 · 2号楼 1801 附近</p>
+              </div>
+              <div class="camera-meta">
+                <span id="camera-name">CAM-12 2号楼东立面</span>
+                <span id="camera-time">--:--:--</span>
+              </div>
+            </div>
+
+            <div class="ops-pane-actions">
+              <button class="btn btn-primary btn-block" type="button" id="btn-handle-fire">处理火情</button>
+              <div class="fire-timer-bar" id="fire-timer-bar">
+                <div class="timer-row">
+                  <span>发现火情计时</span>
+                  <strong id="fire-timer">00:00</strong>
+                </div>
+                <p class="urge-msg" id="urge-msg" role="status" aria-live="polite">已开始计时，请尽快完成误报研判与分级处置。</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 右：火情定位 -->
+          <div class="ops-pane ops-twin" id="ops-twin">
+            <div class="ops-pane-head">
+              <div>
+                <strong>火情定位</strong>
+                <span id="twin-sub">火情定位：2 号楼 · 户号 2-1801</span>
+              </div>
+              <span class="locate-badge is-alert" id="locate-badge">告警点</span>
+            </div>
+
+            <div class="locate-panel" id="locate-panel" data-mode="alert">
+              <div class="locate-visual">
+                <img src="assets/placeholders/building-2.jpg" alt="2 号楼外观示意" id="locate-photo" />
+                <span class="locate-pin" id="fire-marker">2-1801</span>
+              </div>
+              <div class="locate-body">
+                <div class="locate-title-row">
+                  <h3 id="locate-building">2 号楼</h3>
+                  <a class="locate-link" href="buildings.html#b2">楼栋档案 →</a>
+                </div>
+                <dl class="locate-meta">
+                  <div><dt>涉事户号</dt><dd id="locate-unit">2-1801</dd></div>
+                  <div><dt>集合点</dt><dd>东门内侧空地</dd></div>
+                  <div><dt>微型站</dt><dd>南门岗亭旁 · 约 3 分钟</dd></div>
+                  <div><dt>优先协助</dt><dd class="locate-special">含行动不便特殊人群</dd></div>
+                </dl>
+                <p class="locate-note" id="locate-note">结合左侧监控研判后，可查看业主信息并启动分级处置。</p>
+              </div>
+            </div>
+
+            <div class="ops-pane-actions">
+              <button class="btn btn-secondary btn-block" type="button" id="btn-owner-info">查看业主信息</button>
+              <p class="field-hint" id="owner-hint">涉事户：2-1801 · 含行动不便特殊人群，请优先协助。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 右列：资源与联络 -->
+      <aside class="board-right" aria-label="资源与联络">
+        <section class="dash-panel">
+          <h2>处置力量</h2>
+          <div class="stat-grid">
+            <div class="stat-cell"><strong>12</strong><span>在岗秩序员</span></div>
+            <div class="stat-cell"><strong>1</strong><span>微型消防站</span></div>
+            <div class="stat-cell"><strong>6</strong><span>消火栓重点点</span></div>
+            <div class="stat-cell"><strong>24h</strong><span>控制室值守</span></div>
+          </div>
+        </section>
+
+        <section class="dash-panel">
+          <h2>机动车 / 通道</h2>
+          <div class="stat-grid">
+            <div class="stat-cell"><strong data-count="942">0</strong><span>登记车辆</span></div>
+            <div class="stat-cell"><strong data-count="12">0</strong><span>本周通道劝离</span></div>
+          </div>
+        </section>
+
+        <section class="dash-panel">
+          <h2>电动车风险</h2>
+          <div class="stat-grid">
+            <div class="stat-cell"><strong data-count="615">0</strong><span>登记电动车</span></div>
+            <div class="stat-cell"><strong data-count="2">0</strong><span>入楼待复核</span></div>
+          </div>
+        </section>
+
+        <section class="dash-panel">
+          <h3>一键联络</h3>
+          <div class="contact-list">
+            <a class="contact-item contact-hot" href="tel:119"><span>火警 119</span><strong>拨打</strong></a>
+            <a class="contact-item" href="tel:13800003333"><span>工程维修</span><strong>138-0000-3333</strong></a>
+            <a class="contact-item" href="tel:13800002222"><span>秩序主管</span><strong>138-0000-2222</strong></a>
+          </div>
+        </section>
+      </aside>
+    </div>
+  </main>
+
+  <!-- 处理火情弹窗 -->
+  <div class="modal" id="fire-modal" hidden>
+    <div class="modal-backdrop" data-close-modal></div>
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="fire-modal-title">
+      <header class="modal-head">
+        <h2 id="fire-modal-title">处理火情</h2>
+        <button type="button" class="modal-close" data-close-modal aria-label="关闭">×</button>
+      </header>
+      <div class="modal-body">
+        <div class="fire-step" data-step="1">
+          <p class="step-lead">第一步：确认是否误报（结合监控画面与现场反馈）</p>
+          <div class="choice-grid">
+            <button type="button" class="choice-card" data-false-alarm="yes">
+              <strong>判定为误报</strong>
+              <span>关闭告警，恢复全域监控，写入误报台账</span>
+            </button>
+            <button type="button" class="choice-card" data-false-alarm="no">
+              <strong>确认为火情</strong>
+              <span>进入火情分级，启动对应处置流程</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="fire-step" data-step="2" hidden>
+          <p class="step-lead">第二步：选择火情等级</p>
+          <div class="choice-grid three">
+            <button type="button" class="choice-card" data-level="small">
+              <strong>小火</strong>
+              <span>人工可就地初步控制，联系物业相关部门到场处理</span>
+            </button>
+            <button type="button" class="choice-card" data-level="medium">
+              <strong>中火</strong>
+              <span>启用灭火器、消火栓等器材，微型站拉动支援</span>
+            </button>
+            <button type="button" class="choice-card" data-level="large">
+              <strong>大火</strong>
+              <span>立即拨打 119，组织疏散，同步通知责任人</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="fire-step" data-step="3" hidden>
+          <p class="step-lead" id="level-lead">处置指引</p>
+          <ul class="action-list" id="level-actions"></ul>
+          <div class="modal-actions">
+            <a class="btn btn-primary" id="level-primary-action" href="#">执行主操作</a>
+            <button type="button" class="btn btn-ghost" data-close-modal>返回继续值守</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 业主信息弹窗 -->
+  <div class="modal" id="owner-modal" hidden>
+    <div class="modal-backdrop" data-close-owner></div>
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="owner-modal-title">
+      <header class="modal-head">
+        <h2 id="owner-modal-title">涉事业主信息</h2>
+        <button type="button" class="modal-close" data-close-owner aria-label="关闭">×</button>
+      </header>
+      <div class="modal-body" id="owner-modal-body"></div>
+      <div class="modal-actions" style="padding:0 1.25rem 1.25rem">
+        <a class="btn btn-secondary" href="people.html">打开完整人员台账</a>
+        <button type="button" class="btn btn-ghost" data-close-owner>关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="urge-toast" id="urge-toast" hidden role="alert"></div>
+
+  <a class="float-call float-alarm" href="emergency.html" aria-label="紧急报警">紧急报警</a>
+  <script src="site.js"></script>
+</body>
+</html>

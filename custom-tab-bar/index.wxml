@@ -1,0 +1,13 @@
+<view class="tab-bar">
+  <view
+    wx:for="{{list}}"
+    wx:key="pagePath"
+    class="tab-item {{selected===index?'active':''}} {{jellyIndex===index?'jelly':''}}"
+    data-path="{{item.pagePath}}"
+    data-index="{{index}}"
+    bindtap="switchTab"
+  >
+    <image class="tab-icon" src="{{selected===index ? item.selectedIconPath : item.iconPath}}" mode="aspectFit" />
+    <text class="tab-text">{{item.text}}</text>
+  </view>
+</view>

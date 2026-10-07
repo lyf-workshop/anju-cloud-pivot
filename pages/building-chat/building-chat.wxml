@@ -1,0 +1,52 @@
+<view class="page chat-page">
+  <!-- 顶部 AI 火情汇总（参考高德车友群路况条） -->
+  <view class="ai-summary">
+    <view class="ai-summary-head">
+      <view class="ai-badge">AI 汇总</view>
+      <text class="ai-time">{{aiSummary.updatedAt}}</text>
+    </view>
+    <view class="ai-summary-title">{{aiSummary.title}}</view>
+    <view class="ai-summary-body">{{aiSummary.content}}</view>
+    <view class="ai-tags">
+      <text wx:for="{{aiSummary.tags}}" wx:key="*this" class="ai-tag">{{item}}</text>
+    </view>
+  </view>
+
+  <scroll-view
+    class="chat-scroll"
+    scroll-y
+    scroll-into-view="{{scrollInto}}"
+    scroll-with-animation
+  >
+    <view class="chat-tip">本群为演示火情互通 · 消息不会真实发送</view>
+
+    <view
+      wx:for="{{messages}}"
+      wx:key="id"
+      id="msg-{{item.id}}"
+      class="chat-row {{item.mine ? 'mine' : ''}}"
+    >
+      <view wx:if="{{!item.mine}}" class="chat-avatar {{item.role}}">{{item.avatar}}</view>
+      <view class="chat-bubble-wrap">
+        <view wx:if="{{!item.mine}}" class="chat-name">{{item.name}} · {{item.floor}}</view>
+        <view class="chat-bubble {{item.role}}">{{item.text}}</view>
+        <view class="chat-meta">{{item.time}}</view>
+      </view>
+      <view wx:if="{{item.mine}}" class="chat-avatar mine">我</view>
+    </view>
+    <view id="msg-end" style="height:20rpx" />
+  </scroll-view>
+
+  <view class="chat-composer">
+    <input
+      class="chat-input"
+      value="{{draft}}"
+      bindinput="onDraft"
+      maxlength="120"
+      placeholder="补充你看到的火情位置…"
+      confirm-type="send"
+      bindconfirm="send"
+    />
+    <button class="chat-send" bindtap="send" disabled="{{!draft}}">发送</button>
+  </view>
+</view>

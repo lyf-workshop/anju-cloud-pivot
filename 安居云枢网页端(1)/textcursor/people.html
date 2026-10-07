@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>人员信息 · 安居云枢</title>
+  <meta name="description" content="各楼栋住户登记信息：老人、小孩、成人及行动不便等特殊人群，用于应急疏散协助。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;800&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+</head>
+<body class="page-people">
+  <a class="skip-link" href="#main">跳到主要内容</a>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html" aria-label="安居云枢首页">
+        <span class="brand-mark" aria-hidden="true"><img src="assets/logo.png" alt="" /></span>
+        <span class="brand-text">
+          <strong>安居云枢</strong>
+          <small>物业消防值班台</small>
+        </span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="打开菜单">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="site-nav" id="site-nav" aria-label="主导航">
+        <a href="index.html">值班台</a>
+        <a href="duty.html">制度责任</a>
+        <a href="buildings.html">数字孪生</a>
+        <a class="is-active" href="people.html">人员台账</a>
+        <a href="inspection.html">巡查台账</a>
+        <a href="knowledge.html">处置预案</a>
+        <a href="report.html">隐患工单</a>
+        <a class="nav-cta" href="emergency.html">紧急处置</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="container page-hero page-hero-people">
+      <p class="page-eyebrow">值班 · 疏散优先</p>
+      <h1>人员台账</h1>
+      <p>按楼栋与户号登记老人、小孩、成人，并标注行动不便等特殊人群，火情处置时优先协助。</p>
+    </div>
+
+    <section class="section section-people">
+      <div class="container">
+        <div class="people-board">
+          <div class="people-board-head">
+            <div>
+              <h2>全区登记概览</h2>
+              <p>演示数据已脱敏；正式环境请接入物业实名台账并做权限管控。</p>
+            </div>
+            <p class="people-board-note">3 栋 · 3–32 层 · 每层 4 户</p>
+          </div>
+
+          <div class="people-summary" aria-label="人员统计">
+            <article>
+              <span>登记住户人数</span>
+              <strong data-count="1020">0</strong>
+            </article>
+            <article>
+              <span>老人（60+）</span>
+              <strong data-count="153">0</strong>
+            </article>
+            <article>
+              <span>小孩（14−）</span>
+              <strong data-count="230">0</strong>
+            </article>
+            <article>
+              <span>成人</span>
+              <strong data-count="637">0</strong>
+            </article>
+            <article class="is-special">
+              <span>特殊人群户</span>
+              <strong data-count="39">0</strong>
+            </article>
+          </div>
+
+          <div class="people-filters" aria-label="台账筛选">
+            <div class="people-filter-head">
+              <h3>筛选条件</h3>
+              <button type="button" class="people-chip-reset" id="people-filter-reset">恢复默认</button>
+            </div>
+
+            <div class="people-toolbar" role="tablist" aria-label="按楼栋筛选">
+              <button type="button" class="people-tab" data-building-filter="all" role="tab" aria-selected="false">全部楼栋</button>
+              <button type="button" class="people-tab is-active" data-building-filter="1" role="tab" aria-selected="true">1 号楼</button>
+              <button type="button" class="people-tab" data-building-filter="2" role="tab" aria-selected="false">2 号楼</button>
+              <button type="button" class="people-tab" data-building-filter="3" role="tab" aria-selected="false">3 号楼</button>
+            </div>
+
+            <div class="people-filter-row">
+              <label class="people-field">
+                <span>楼层段</span>
+                <select id="floor-band" aria-label="按楼层段筛选">
+                  <option value="low" selected>低层 3–10</option>
+                  <option value="mid">中层 11–20</option>
+                  <option value="high">高层 21–32</option>
+                  <option value="all">全部楼层</option>
+                </select>
+              </label>
+
+              <label class="people-field">
+                <span>指定楼层</span>
+                <select id="floor-exact" aria-label="按指定楼层筛选">
+                  <option value="all">不限</option>
+                </select>
+              </label>
+
+              <label class="people-field people-field-grow">
+                <span>户号 / 户主</span>
+                <input id="people-search" type="search" placeholder="如 1801 或 韩*" autocomplete="off" />
+              </label>
+            </div>
+
+            <div class="people-chip-row" role="group" aria-label="住户类型">
+              <span class="people-chip-label">住户类型</span>
+              <button type="button" class="people-chip" data-type-filter="elderly" aria-pressed="false">有老人</button>
+              <button type="button" class="people-chip" data-type-filter="child" aria-pressed="false">有小孩</button>
+              <button type="button" class="people-chip" data-type-filter="special" aria-pressed="false">特殊人群</button>
+            </div>
+          </div>
+
+          <div class="people-ledger">
+            <div class="people-ledger-head">
+              <h3>住户明细</h3>
+              <p class="people-result-meta" id="people-result-meta">正在加载台账…</p>
+            </div>
+
+            <div class="table-wrap people-table-wrap">
+              <table class="data-table people-table" id="people-table">
+                <thead>
+                  <tr>
+                    <th>楼栋</th>
+                    <th>户号</th>
+                    <th>户主（脱敏）</th>
+                    <th>老人</th>
+                    <th>小孩</th>
+                    <th>成人</th>
+                    <th>合计</th>
+                    <th>特殊人群 / 行动不便</th>
+                    <th>备注（疏散协助）</th>
+                  </tr>
+                </thead>
+                <tbody id="people-tbody">
+                  <!-- 由 script 填充演示数据 -->
+                </tbody>
+              </table>
+            </div>
+
+            <div class="people-pager" id="people-pager" aria-label="分页">
+              <button type="button" class="people-pager-btn" id="people-prev" disabled>上一页</button>
+              <span class="people-pager-info" id="people-page-info">第 1 页</span>
+              <button type="button" class="people-pager-btn" id="people-next" disabled>下一页</button>
+            </div>
+          </div>
+        </div>
+
+        <p class="footnote">说明：默认展示 1 号楼低层；可用楼栋、楼层段、住户类型与户号搜索缩小范围。特殊人群含行动不便、视力/听力障碍、独居老人等，报警与疏散时优先核对。</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div>
+        <strong>安居云枢 · 阳光家园物业服务中心</strong>
+        <p>值班电话：<a href="tel:4008009000">400-800-9000</a></p>
+      </div>
+      <div><p>最后更新：2026-09-22 · 备案号：待填写</p></div>
+    </div>
+  </footer>
+  <a class="float-call" href="emergency.html">紧急报警</a>
+  <script src="site.js"></script>
+</body>
+</html>

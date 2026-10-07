@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { settings } from "./config.js";
 import { Store } from "./db.js";
+import { seedStaff } from "./staff.js";
 const cfg = settings();
 if (process.argv[2] === "reset-demo") {
   const allowed = path.resolve("server/data/demo.sqlite");
@@ -20,6 +21,7 @@ if (process.argv[2] === "reset-demo") {
   fs.rmSync(`${allowed}.uploads`, { recursive: true, force: true });
 }
 const store = new Store(cfg);
+seedStaff(store, cfg);
 store.close();
 console.log(
   `Database initialized (${cfg.mode}); existing business rows preserved unless explicit reset requested.`,

@@ -5,5 +5,5 @@
   <ui-state loading="{{loading}}" error="{{error}}" empty="{{!loading && !error && !items.length}}" text="还没有该状态的记录" bind:retry="retry"/>
   <view wx:for="{{items}}" wx:key="id" class="card report-card" data-url="/pages/report-detail/report-detail?id={{item.id}}" bindtap="go"><view class="row"><image class="report-thumb" src="{{item.cover}}" mode="aspectFill"/><view class="grow"><view class="record-title">{{item.title}}</view><view class="record-meta">{{item.location}}</view><status-tag status="{{item.status}}" label="{{item.statusName}}"/></view></view><view class="record-footer"><text>{{item.timeText}}</text><text class="view-link">查看进度 ›</text></view></view>
   <ui-button wx:if="{{items.length<total}}" label="加载更多" variant="plain" loading="{{busy}}" bind:action="more"/>
-  <mode-banner/><view class="fixed-actions"><ui-button label="继续上报新隐患" data-url="/pages/report/report" bind:action="go"/></view>
+  <mode-banner></mode-banner><view class="fixed-actions"><ui-button label="继续上报新隐患" data-url="/pages/report/report" bind:action="go"/></view>
 </view>

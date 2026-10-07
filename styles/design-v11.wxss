@@ -1,7 +1,38 @@
 /* V1.1 overview reference: docs/design/安居云枢_小程序设计总览.png */
-page { --bg:#f4f6f9; --ink:#23364d; --muted:#8290a3; --red:#d44730; --red-light:#fff0eb; --green:#278873; --blue:#598db3; --navy:#234159; --radius:22rpx; background:var(--bg); font-size:26rpx; }
-.page { padding:24rpx 36rpx calc(36rpx + env(safe-area-inset-bottom)); }
-.page.has-actions { padding-bottom:calc(166rpx + env(safe-area-inset-bottom)); }
+/* 全站消防蓝渐变底（浅色可读版） */
+page {
+  --bg: #eaf3fa;
+  --ink: #23364d;
+  --muted: #5b738a;
+  --red: #d44730;
+  --red-light: #fff0eb;
+  --green: #278873;
+  --blue: #0b5cab;
+  --navy: #084a8c;
+  --fire-blue: #0b5cab;
+  --radius: 22rpx;
+  min-height: 100%;
+  background-color: #eaf3fa;
+  background-image: linear-gradient(
+    180deg,
+    #dcebf7 0%,
+    #e8f3fb 28%,
+    #f4f6f9 62%,
+    #eaf3fa 100%
+  );
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  font-size: 26rpx;
+}
+.page {
+  padding: 24rpx 36rpx calc(120rpx + env(safe-area-inset-bottom));
+  min-height: 100vh;
+  box-sizing: border-box;
+  background: transparent;
+}
+.page.has-actions {
+  padding-bottom: calc(166rpx + env(safe-area-inset-bottom));
+}
 .page button { margin-left:0; margin-right:0; width:auto; }
 .page .full,.page .list-row { width:100%; }
 .title { font-size:38rpx; line-height:1.45; letter-spacing:0; }
@@ -43,7 +74,7 @@ page { --bg:#f4f6f9; --ink:#23364d; --muted:#8290a3; --red:#d44730; --red-light:
 .login-intro .subtitle { font-size:23rpx; }
 .agreement { margin:20rpx 0 6rpx; gap:10rpx; justify-content:flex-start; flex-wrap:nowrap; }
 .agreement label { min-height:72rpx; }
-.agreement checkbox { transform:scale(.72); margin-left:-10rpx; }
+.agreement checkbox { margin-left:0; }
 .agreement-copy { font-size:20rpx; padding-top:8rpx; line-height:1.6; }
 .agreement-links { display:flex; gap:12rpx; }
 .agreement .link-button { font-size:20rpx; padding:4rpx 0 14rpx; }
@@ -131,7 +162,7 @@ page { --bg:#f4f6f9; --ink:#23364d; --muted:#8290a3; --red:#d44730; --red-light:
 @media (max-width:350px) {
  .page { padding-left:28rpx; padding-right:28rpx; }
  .title { font-size:35rpx; }.brand { padding-top:20rpx; }
- .login-illustration { height:260rpx; }.brand-symbol { width:94rpx;height:94rpx; }
+ .login-illustration { height:260rpx; }.login-page .brand-logo { width:120rpx;height:120rpx; }
  .home-hero image { width:210rpx; }.home-hero .hero-title { font-size:35rpx; }
  .fixed-actions { padding-left:28rpx; padding-right:28rpx; }
  .campus-building { width:130rpx; }.report-thumb { width:156rpx; }

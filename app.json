@@ -1,9 +1,14 @@
 {
   "pages": [
     "pages/login/login",
+    "pages/register/register",
+    "pages/register-done/register-done",
     "pages/index/index",
     "pages/hazards/hazards",
     "pages/building/building",
+    "pages/building-escape/building-escape",
+    "pages/building-equipment/building-equipment",
+    "pages/building-chat/building-chat",
     "pages/me/me",
     "pages/report/report",
     "pages/report-result/report-result",
@@ -23,15 +28,16 @@
     "pages/logs/logs"
   ],
   "window": {
-    "navigationBarTextStyle": "black",
+    "navigationBarTextStyle": "white",
     "navigationBarTitleText": "安居云枢",
-    "navigationBarBackgroundColor": "#F4F6F9",
-    "backgroundColor": "#F4F6F9",
+    "navigationBarBackgroundColor": "#0B5CAB",
+    "backgroundColor": "#EAF3FA",
     "backgroundTextStyle": "dark"
   },
   "tabBar": {
+    "custom": true,
     "color": "#8893A3",
-    "selectedColor": "#D44730",
+    "selectedColor": "#0B5CAB",
     "backgroundColor": "#FFFFFF",
     "borderStyle": "white",
     "list": [

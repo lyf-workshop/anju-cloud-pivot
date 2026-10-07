@@ -1,11 +1,12 @@
 import Fastify, { type FastifyRequest } from "fastify";
 import multipart from "@fastify/multipart";
 import rateLimit from "@fastify/rate-limit";
+import cookie from "@fastify/cookie";
+import staticFiles from "@fastify/static";
+import cors from "@fastify/cors";
 import { z, ZodError } from "zod";
 import {
-  randomUUID,
   randomBytes,
-  createHash,
   timingSafeEqual,
 } from "node:crypto";
 import fs from "node:fs";
@@ -13,23 +14,9 @@ import path from "node:path";
 import sharp from "sharp";
 import { Store } from "./db.js";
 import { settings, type Settings } from "./config.js";
-
-const now = () => new Date().toISOString();
-const hash = (s: string) => createHash("sha256").update(s).digest("hex");
-const id = () => randomUUID();
-class ApiError extends Error {
-  constructor(
-    public status: number,
-    public code: string,
-    message: string,
-  ) {
-    super(message);
-  }
-}
-const fail = (status: number, code: string, message: string): never => {
-  throw new ApiError(status, code, message);
-};
-const text = (min = 1, max = 200) => z.string().trim().min(min).max(max);
+import { ApiError, fail, hash, id, now, text } from "./core.js";
+import { registerStaff } from "./staff.js";
+import { registerCamera } from "./camera.js";
 const key = text(8, 100);
 const iso = z.iso.datetime();
 const paging = z.object({
@@ -66,17 +53,53 @@ const progressSchema = z
 const draftTerms =
   "安居云枢用户协议（待业务审核草稿）\n本服务提供社区信息、隐患上报及线上安全知识演练。线上演练不证明已经到达现场，不替代应急部门指挥。上报不等于救援受理；紧急情况请主动拨打公共紧急电话。正式运营主体、服务范围、争议解决和联系方式须由运营方审核配置。";
 const draftPrivacy =
-  "隐私说明（待业务审核草稿）\n登录使用微信身份标识建立业务账户，不强制获取手机号或头像。主动提交的住址、联系信息、图片和描述用于处理上报；演练记录用于个人历史回看。附件仅限本人访问，社区列表不公开联系方式或私人位置。图片由服务端重编码移除元数据。保存期限、删除渠道、运营主体及第三方处理情况须由运营方审核配置。";
+  "隐私说明（待业务审核草稿）\n登录使用微信身份标识建立业务账户，不强制获取手机号或头像。主动提交的住址、联系信息、图片和描述用于处理上报；演练记录用于个人历史回看。上报附件仅限本人和本社区授权物业访问，社区列表不公开联系方式或私人位置。图片由服务端重编码移除元数据。本地联调请使用测试资料。保存期限、删除渠道、运营主体及第三方处理情况须由运营方审核配置。";
 
 export async function buildApp(cfg: Settings = settings()) {
   const app = Fastify({ logger: false, bodyLimit: 128 * 1024 });
   const db = new Store(cfg);
   app.addHook("onClose", async () => db.close());
-  await app.register(rateLimit, { max: 240, timeWindow: "1 minute" });
+  await app.register(cookie);
+  await app.register(rateLimit, {
+    max: 240,
+    timeWindow: "1 minute",
+    // HTML, CSS, images and byte-range video requests are public static
+    // resources. Keep the shared limiter for API traffic only.
+    allowList: (req) => !req.url.startsWith("/api/"),
+  });
+  await app.register(cors, {
+    origin(origin, callback) {
+      if (!origin || cfg.clientOrigins.includes(origin)) callback(null, true);
+      else callback(null, false);
+    },
+    allowedHeaders: [
+      "Authorization",
+      "Content-Type",
+      "X-Data-Mode",
+      "X-Anju-Client",
+    ],
+    methods: ["GET", "HEAD", "POST", "PUT", "PATCH", "OPTIONS"],
+    maxAge: 86400,
+  });
   app.addHook("onRequest", async (req) => {
     const requested = req.headers["x-data-mode"];
     if (requested && requested !== cfg.mode)
       fail(409, "MODE_MISMATCH", "客户端与后端数据模式不一致，请检查配置");
+    // Browser writes are same-origin and carry a non-simple header. No CORS wildcard.
+    // Protect login too, to prevent login CSRF; bearer requests from wx do not use cookies.
+    if (!["GET", "HEAD", "OPTIONS"].includes(req.method) &&
+        (req.cookies.anju_session || req.url.startsWith("/api/staff/"))) {
+      if (req.headers["x-anju-request"] !== "1" ||
+          (req.headers.origin && !cfg.webOrigins.includes(req.headers.origin)))
+        fail(403, "CSRF_REJECTED", "网页请求来源无效，请从本地站点重新打开");
+    }
+  });
+  app.addHook("onSend", async (req, reply, payload) => {
+    reply.header("X-Content-Type-Options", "nosniff");
+    reply.header("Referrer-Policy", "same-origin");
+    reply.header("X-Frame-Options", "DENY");
+    if (req.url.startsWith("/api/")) reply.header("Cache-Control", "no-store");
+    return payload;
   });
   await app.register(multipart, {
     limits: { fileSize: 5 * 1024 * 1024, files: 1, fields: 0, parts: 1 },
@@ -101,7 +124,7 @@ export async function buildApp(cfg: Settings = settings()) {
     });
   });
   const auth = (req: FastifyRequest): any => {
-    const token = req.headers.authorization?.replace(/^Bearer /, "") || "";
+    const token = req.headers.authorization?.replace(/^Bearer /, "") || req.cookies.anju_session || "";
     const user = db.one(
       "SELECT u.* FROM users u JOIN sessions s ON s.user_id=u.id WHERE s.token_hash=? AND s.expires_at>?",
       hash(token),
@@ -116,13 +139,14 @@ export async function buildApp(cfg: Settings = settings()) {
     ) || fail(404, "NOT_FOUND", "楼层不存在");
   const scope = (userId: string, floorId: string) => {
     const f = floor(floorId);
+    if (db.one("SELECT m.user_id FROM staff_memberships m JOIN staff_accounts a ON a.user_id=m.user_id WHERE m.user_id=? AND m.community_id=? AND m.role IN ('manager','operator') AND a.active=1", userId, f.community_id)) return f;
     const binding = db.one(
-      "SELECT bi.id FROM bindings bi JOIN residences r ON bi.residence_id=r.id JOIN floors f ON r.floor_id=f.id JOIN units u ON f.unit_id=u.id WHERE bi.user_id=? AND u.building_id=?",
+      "SELECT bi.id FROM bindings bi JOIN residences r ON bi.residence_id=r.id JOIN floors f ON r.floor_id=f.id JOIN units u ON f.unit_id=u.id WHERE bi.user_id=? AND u.building_id=? AND bi.verification<>'rejected'" + (cfg.mode === "production" ? " AND bi.verification='verified'" : ""),
       userId,
       f.building_id,
     );
     if (!binding)
-      fail(403, "BUILDING_SCOPE", "请先绑定该楼栋住址；绑定不代表住户认证");
+      fail(403, "BUILDING_SCOPE", cfg.mode === "production" ? "请先绑定并通过该楼栋住址审核" : "请先绑定该楼栋住址；绑定不代表住户认证");
     return f;
   };
   const bindings = (userId: string) =>
@@ -141,6 +165,17 @@ export async function buildApp(cfg: Settings = settings()) {
     bindings: bindings(u.id),
     mode: cfg.mode,
   });
+  const issueSession = (user: any, hours = cfg.sessionHours) => {
+    const token = randomBytes(32).toString("hex");
+    const expiresAt = new Date(Date.now() + hours * 3600000).toISOString();
+    db.run(
+      "INSERT INTO sessions VALUES (?,?,?)",
+      hash(token),
+      user.id,
+      expiresAt,
+    );
+    return { token, expiresAt, user: userView(user) };
+  };
   const login = (identity: string, version: string) => {
     let user = db.one("SELECT * FROM users WHERE identity=?", identity);
     if (!user) {
@@ -155,17 +190,7 @@ export async function buildApp(cfg: Settings = settings()) {
       user = db.one("SELECT * FROM users WHERE identity=?", identity);
     }
     db.run("UPDATE users SET legal_version=? WHERE id=?", version, user.id);
-    const token = randomBytes(32).toString("hex");
-    const expiresAt = new Date(
-      Date.now() + cfg.sessionHours * 3600000,
-    ).toISOString();
-    db.run(
-      "INSERT INTO sessions VALUES (?,?,?)",
-      hash(token),
-      user.id,
-      expiresAt,
-    );
-    return { token, expiresAt, user: userView(user) };
+    return issueSession(user);
   };
   const ownReport = (userId: string, reportId: string) =>
     db.one(
@@ -184,6 +209,9 @@ export async function buildApp(cfg: Settings = settings()) {
     createdAt: r.created_at,
     floorId: r.floor_id,
     deviceId: r.device_id,
+    buildingName: floor(r.floor_id).building_name,
+    communityId: floor(r.floor_id).community_id,
+    source: cfg.mode,
     events: db.all(
       "SELECT status,message,occurred_at occurredAt FROM report_events WHERE report_id=? ORDER BY occurred_at,id",
       r.id,
@@ -313,19 +341,85 @@ export async function buildApp(cfg: Settings = settings()) {
             : "unknown",
     };
   };
-  const route = (method: any, url: string, fn: (r: any, p: any) => any) =>
+  const route = (
+    method: any,
+    url: string,
+    fn: (r: any, p: any) => any,
+    options: Record<string, unknown> = {},
+  ) =>
     app.route({
       method,
       url: "/api" + url,
+      ...options,
       handler: async (r, p) => {
         const out = await fn(r, p);
         if (!p.sent) return { data: out };
       },
     });
+  const homePayload = (communityId?: string) => {
+    const c = communityId
+      ? db.one("SELECT * FROM communities WHERE id=?", communityId)
+      : db.one("SELECT * FROM communities ORDER BY id LIMIT 1");
+    if (!c)
+      return {
+        community: null,
+        buildings: [],
+        announcements: [],
+        reportCount: 0,
+        deviceCount: 0,
+      };
+    return {
+      community: { id: c.id, name: c.name, source: c.source },
+      buildings: db.all(
+        "SELECT id,name FROM buildings WHERE community_id=?",
+        c.id,
+      ),
+      announcements: db.all(
+        "SELECT id,title,body,published_at publishedAt,source FROM announcements WHERE community_id=? ORDER BY published_at DESC LIMIT 3",
+        c.id,
+      ),
+      reportCount: db.one(
+        "SELECT COUNT(*) n FROM hazard_reports h JOIN floors f ON h.floor_id=f.id JOIN units u ON f.unit_id=u.id JOIN buildings b ON u.building_id=b.id WHERE b.community_id=?",
+        c.id,
+      ).n,
+      deviceCount: db.one(
+        "SELECT COUNT(*) n FROM devices d JOIN floors f ON d.floor_id=f.id JOIN units u ON f.unit_id=u.id JOIN buildings b ON u.building_id=b.id WHERE b.community_id=?",
+        c.id,
+      ).n,
+    };
+  };
+  const reportStatsPayload = (userId: string) => {
+    const out: any = { total: 0, pending: 0, processing: 0, completed: 0 };
+    for (const row of db.all(
+      "SELECT status,COUNT(*) n FROM hazard_reports WHERE user_id=? GROUP BY status",
+      userId,
+    )) {
+      out[row.status] = row.n;
+      out.total += row.n;
+    }
+    return out;
+  };
+  const drillStatsPayload = (userId: string) => {
+    const stats = db.one(
+      "SELECT COUNT(*) completedCount,COALESCE(SUM(duration_ms),0) durationMs FROM drill_sessions WHERE user_id=? AND status='completed'",
+      userId,
+    );
+    return {
+      ...stats,
+      durationSeconds: Math.floor(stats.durationMs / 1000),
+      completedSteps: db.one(
+        "SELECT COUNT(*) n FROM drill_steps st JOIN drill_sessions d ON st.session_id=d.id WHERE d.user_id=? AND d.status='completed'",
+        userId,
+      ).n,
+    };
+  };
   route("GET", "/health", () => ({ status: "ok", mode: cfg.mode }));
   route("GET", "/config", () => ({
     mode: cfg.mode,
-    developmentLogin: cfg.mode === "demo" && !cfg.production,
+    publicDemo: cfg.publicDemo,
+    demoExperience: cfg.demoExperience,
+    developmentLogin: cfg.mode === "demo" && !cfg.production && !cfg.publicDemo,
+    staffDemoLogin: cfg.mode === "demo" && !cfg.production && !cfg.publicDemo,
     legalVersion: cfg.legalVersion,
     legalApproved: cfg.legalApproved,
     terms: cfg.legal?.terms || draftTerms,
@@ -337,6 +431,84 @@ export async function buildApp(cfg: Settings = settings()) {
     onlineSeconds: cfg.onlineSeconds,
     freshSeconds: cfg.freshSeconds,
   }));
+  route(
+    "POST",
+    "/auth/demo-session",
+    (r) => {
+      if (!cfg.demoExperience)
+        fail(403, "DEMO_EXPERIENCE_DISABLED", "当前环境未开放匿名体验");
+      const p = z
+        .object({
+          installationKey: z
+            .string()
+            .regex(/^[A-Za-z0-9_-]{32,128}$/),
+          platform: z.enum(["windows", "android", "web"]),
+          clientVersion: text(1, 40),
+        })
+        .strict()
+        .parse(r.body);
+      const installHash = hash(p.installationKey);
+      const user = db.tx(() => {
+        let row = db.one(
+          "SELECT u.* FROM demo_installations d JOIN users u ON u.id=d.user_id WHERE d.install_hash=?",
+          installHash,
+        );
+        if (!row) {
+          const userId = id();
+          const createdAt = now();
+          db.run(
+            "INSERT INTO users VALUES (?,?,?,?,?)",
+            userId,
+            "demoapp:" + id(),
+            `评委体验 ${userId.slice(0, 4).toUpperCase()}`,
+            createdAt,
+            "demo-experience",
+          );
+          const demoFloor = floor("floor-1-1-6");
+          const room = `体验-${userId.slice(0, 8)}`;
+          const residenceId = id();
+          db.run(
+            "INSERT INTO residences VALUES (?,?,?)",
+            residenceId,
+            demoFloor.id,
+            room,
+          );
+          db.run(
+            "INSERT INTO bindings VALUES (?,?,?,?,?,?)",
+            id(),
+            userId,
+            residenceId,
+            "demo",
+            1,
+            createdAt,
+          );
+          db.run(
+            "INSERT INTO demo_installations VALUES (?,?,?,?,?,?)",
+            installHash,
+            userId,
+            p.platform,
+            p.clientVersion,
+            createdAt,
+            createdAt,
+          );
+          row = db.one("SELECT * FROM users WHERE id=?", userId);
+        } else {
+          db.run(
+            "UPDATE demo_installations SET platform=?,client_version=?,last_seen_at=? WHERE install_hash=?",
+            p.platform,
+            p.clientVersion,
+            now(),
+            installHash,
+          );
+        }
+        db.run("DELETE FROM sessions WHERE expires_at<=?", now());
+        db.run("DELETE FROM sessions WHERE user_id=?", row.id);
+        return row;
+      });
+      return issueSession(user, cfg.demoSessionHours);
+    },
+    { config: { rateLimit: { max: 30, timeWindow: "1 minute" } } },
+  );
   const loginBody = z
     .object({
       agreed: z.literal(true),
@@ -346,7 +518,7 @@ export async function buildApp(cfg: Settings = settings()) {
     })
     .strict();
   route("POST", "/auth/dev-login", (r) => {
-    if (cfg.mode !== "demo" || cfg.production)
+    if (cfg.mode !== "demo" || cfg.production || cfg.publicDemo)
       fail(403, "DEV_LOGIN_DISABLED", "正式环境禁止演示登录");
     const p = loginBody.parse(r.body);
     if (p.legalVersion !== cfg.legalVersion)
@@ -384,6 +556,18 @@ export async function buildApp(cfg: Settings = settings()) {
     return login("wx:" + result.openid, p.legalVersion);
   });
   route("GET", "/me", (r) => userView(auth(r)));
+  route("GET", "/app/bootstrap", (r) => {
+    const user = auth(r);
+    const query = z.object({ communityId: text().optional() }).parse(r.query);
+    return {
+      user: userView(user),
+      home: homePayload(query.communityId),
+      reportStats: reportStatsPayload(user.id),
+      drillStats: drillStatsPayload(user.id),
+      serverTime: now(),
+      mode: cfg.mode,
+    };
+  });
   route("PATCH", "/me", (r) => {
     const u = auth(r);
     const p = z
@@ -397,7 +581,7 @@ export async function buildApp(cfg: Settings = settings()) {
     auth(r);
     db.run(
       "DELETE FROM sessions WHERE token_hash=?",
-      hash(r.headers.authorization.replace(/^Bearer /, "")),
+      hash(r.headers.authorization?.replace(/^Bearer /, "") || r.cookies.anju_session || ""),
     );
     return { loggedOut: true };
   });
@@ -502,39 +686,25 @@ export async function buildApp(cfg: Settings = settings()) {
   });
   route("GET", "/home", (r) => {
     const q = z.object({ communityId: text().optional() }).parse(r.query);
-    const c = q.communityId
-      ? db.one("SELECT * FROM communities WHERE id=?", q.communityId)
-      : db.one("SELECT * FROM communities ORDER BY id LIMIT 1");
-    if (!c)
-      return {
-        community: null,
-        buildings: [],
-        announcements: [],
-        reportCount: 0,
-        deviceCount: 0,
-      };
-    return {
-      community: { id: c.id, name: c.name, source: c.source },
-      buildings: db.all(
-        "SELECT id,name FROM buildings WHERE community_id=?",
-        c.id,
-      ),
-      announcements: db.all(
-        "SELECT id,title,body,published_at publishedAt,source FROM announcements WHERE community_id=? ORDER BY published_at DESC LIMIT 3",
-        c.id,
-      ),
-      reportCount: db.one(
-        "SELECT COUNT(*) n FROM hazard_reports h JOIN floors f ON h.floor_id=f.id JOIN units u ON f.unit_id=u.id JOIN buildings b ON u.building_id=b.id WHERE b.community_id=?",
-        c.id,
-      ).n,
-      deviceCount: db.one(
-        "SELECT COUNT(*) n FROM devices d JOIN floors f ON d.floor_id=f.id JOIN units u ON f.unit_id=u.id JOIN buildings b ON u.building_id=b.id WHERE b.community_id=?",
-        c.id,
-      ).n,
-    };
+    return homePayload(q.communityId);
   });
   route("POST", "/attachments", async (r) => {
     const u = auth(r);
+    if (u.identity.startsWith("demoapp:")) {
+      const recent = db.one(
+        "SELECT COUNT(*) n FROM attachments WHERE user_id=? AND created_at>?",
+        u.id,
+        new Date(Date.now() - 3600000).toISOString(),
+      ).n;
+      const stored = db.one(
+        "SELECT COALESCE(SUM(size),0) n FROM attachments WHERE user_id=?",
+        u.id,
+      ).n;
+      if (recent >= 20)
+        fail(429, "UPLOAD_RATE", "体验会话每小时最多上传20张图片");
+      if (stored >= 25 * 1024 * 1024)
+        fail(413, "UPLOAD_QUOTA", "体验会话图片空间已达25MB上限");
+    }
     const part = await r.file();
     if (!part) fail(400, "FILE_REQUIRED", "请选择图片");
     if (!["image/jpeg", "image/png", "image/webp"].includes(part.mimetype))
@@ -580,15 +750,18 @@ export async function buildApp(cfg: Settings = settings()) {
       throw e;
     }
     return { id: aid, mime: "image/jpeg", size: output!.length };
-  });
+  }, { config: { rateLimit: { max: 20, timeWindow: "1 minute" } } });
   route("GET", "/attachments/:id", async (r, p) => {
     const u = auth(r);
-    const a = db.one(
-      "SELECT * FROM attachments WHERE id=? AND user_id=?",
-      r.params.id,
-      u.id,
-    );
+    const a = db.one("SELECT * FROM attachments WHERE id=?", r.params.id);
     if (!a) fail(404, "NOT_FOUND", "图片不存在或无权访问");
+    if (a.user_id !== u.id && !db.one(`SELECT ra.attachment_id FROM report_attachments ra
+      JOIN hazard_reports h ON h.id=ra.report_id JOIN floors f ON f.id=h.floor_id
+      JOIN units un ON un.id=f.unit_id JOIN buildings b ON b.id=un.building_id
+      JOIN staff_memberships m ON m.community_id=b.community_id
+      JOIN staff_accounts sa ON sa.user_id=m.user_id
+      WHERE ra.attachment_id=? AND m.user_id=? AND sa.active=1`, a.id, u.id))
+      fail(404, "NOT_FOUND", "图片不存在或无权访问");
     p.header("Cache-Control", "private, no-store")
       .type(a.mime)
       .send(fs.readFileSync(path.join(cfg.uploadDir, a.storage_name)));
@@ -612,6 +785,15 @@ export async function buildApp(cfg: Settings = settings()) {
           );
         return reportView(existing);
       }
+      if (
+        u.identity.startsWith("demoapp:") &&
+        db.one(
+          "SELECT COUNT(*) n FROM hazard_reports WHERE user_id=? AND created_at>?",
+          u.id,
+          new Date(Date.now() - 86400000).toISOString(),
+        ).n >= 30
+      )
+        fail(429, "REPORT_RATE", "体验会话每天最多提交30条隐患记录");
       scope(u.id, p.floorId);
       if (
         p.deviceId &&
@@ -664,7 +846,7 @@ export async function buildApp(cfg: Settings = settings()) {
         id(),
         rid,
         "pending",
-        "居民提交上报，等待处理",
+        "已收到上报，等待物业处理",
         date,
       );
       return reportView(ownReport(u.id, rid));
@@ -718,16 +900,7 @@ export async function buildApp(cfg: Settings = settings()) {
     };
   });
   route("GET", "/reports/stats", (r) => {
-    const u = auth(r);
-    const out: any = { total: 0, pending: 0, processing: 0, completed: 0 };
-    for (const s of db.all(
-      "SELECT status,COUNT(*) n FROM hazard_reports WHERE user_id=? GROUP BY status",
-      u.id,
-    )) {
-      out[s.status] = s.n;
-      out.total += s.n;
-    }
-    return out;
+    return reportStatsPayload(auth(r).id);
   });
   route("GET", "/reports/submission/:key", (r) => {
     const u = auth(r),
@@ -738,6 +911,14 @@ export async function buildApp(cfg: Settings = settings()) {
       );
     if (!record) fail(404, "NOT_FOUND", "该提交尚未创建记录");
     return reportView(record);
+  });
+  // Public detail is a separate projection: never share private report/attachment handlers.
+  route("GET", "/reports/public/:id", (r) => {
+    const report = db.one(`SELECT h.id,h.number,h.type,h.status,h.created_at createdAt,b.name buildingName
+      FROM hazard_reports h JOIN floors f ON f.id=h.floor_id JOIN units un ON un.id=f.unit_id
+      JOIN buildings b ON b.id=un.building_id WHERE h.id=?`, r.params.id);
+    if (!report) fail(404, "NOT_FOUND", "记录不存在");
+    return { ...report, public: true, events: [], attachmentIds: [] };
   });
   route("GET", "/reports/:id", (r) =>
     reportView(ownReport(auth(r).id, r.params.id)),
@@ -788,6 +969,15 @@ export async function buildApp(cfg: Settings = settings()) {
           fail(409, "IDEMPOTENCY_CONFLICT", "重复标识对应其他场景");
         return drillView(existing);
       }
+      if (
+        u.identity.startsWith("demoapp:") &&
+        db.one(
+          "SELECT COUNT(*) n FROM drill_sessions WHERE user_id=? AND started_at>?",
+          u.id,
+          new Date(Date.now() - 86400000).toISOString(),
+        ).n >= 30
+      )
+        fail(429, "DRILL_RATE", "体验会话每天最多创建30次演练");
       const f = scope(u.id, p.floorId),
         did = id();
       const snapshot = {
@@ -836,19 +1026,7 @@ export async function buildApp(cfg: Settings = settings()) {
     saveProgress(auth(r).id, r.params.id, r.body, "abort"),
   );
   route("GET", "/drills/stats", (r) => {
-    const u = auth(r);
-    const s = db.one(
-      "SELECT COUNT(*) completedCount,COALESCE(SUM(duration_ms),0) durationMs FROM drill_sessions WHERE user_id=? AND status='completed'",
-      u.id,
-    );
-    return {
-      ...s,
-      durationSeconds: Math.floor(s.durationMs / 1000),
-      completedSteps: db.one(
-        "SELECT COUNT(*) n FROM drill_steps st JOIN drill_sessions d ON st.session_id=d.id WHERE d.user_id=? AND d.status='completed'",
-        u.id,
-      ).n,
-    };
+    return drillStatsPayload(auth(r).id);
   });
   route("GET", "/drills", (r) => {
     const u = auth(r),
@@ -966,5 +1144,15 @@ export async function buildApp(cfg: Settings = settings()) {
       return { eventId: p.eventId, receivedAt, duplicate: false };
     });
   });
+  registerStaff(app, { db, cfg, auth, reportView, deviceView, drillView });
+  registerCamera(app, { db, cfg });
+  app.get("/", async (_req, reply) => reply.redirect("/index.html"));
+  if (fs.existsSync(cfg.webRoot)) await app.register(staticFiles, {
+    root: cfg.webRoot,
+    prefix: "/",
+    index: "index.html",
+    allowedPath: (name) => /\.(html|css|js|png|jpg|jpeg|svg|webp|ico|mp4)$/i.test(name),
+  });
+  app.setNotFoundHandler((req, reply) => reply.code(404).send({ error: { code: "NOT_FOUND", message: "地址不存在", requestId: req.id } }));
   return app;
 }

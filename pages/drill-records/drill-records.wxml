@@ -5,6 +5,6 @@
   <ui-state loading="{{loading}}" error="{{error}}" empty="{{!loading && !error && !items.length}}" text="还没有演练记录，开始一次线上练习吧" bind:retry="retry"/>
   <view wx:for="{{items}}" wx:key="id" class="card" data-id="{{item.id}}" bindtap="open"><view class="row between"><view class="record-title grow">{{item.snapshot.title}}</view><status-tag status="{{item.status}}" label="{{item.statusName}}"/></view><view class="record-meta">{{item.snapshot.communityName}} · {{item.snapshot.buildingName}} · {{item.snapshot.floorNumber}}层</view><view class="divider"/><view class="record-footer"><text>{{item.timeText}}</text><text>{{item.durationText}} · {{item.completedCount}}/{{item.totalSteps}}步骤</text></view><view class="record-footer"><text class="pill">线上模拟</text><text class="view-link">{{item.status==='in_progress'?'继续体验':'查看总结'}} ›</text></view></view>
   <ui-button wx:if="{{items.length<total}}" label="加载更多" loading="{{busy}}" variant="plain" bind:action="more"/>
-  <mode-banner/>
+  <mode-banner></mode-banner>
   <view class="fixed-actions"><ui-button label="开始一次新演练" variant="plain" data-url="/pages/building/building" bind:action="go"/></view>
 </view>

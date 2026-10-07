@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">安居云枢</string>
+    <string name="title_activity_main">安居云枢</string>
+    <string name="package_name">com.anjuyunshu.judge</string>
+    <string name="custom_url_scheme">com.anjuyunshu.judge</string>
+</resources>

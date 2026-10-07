@@ -1,10 +1,147 @@
-<view class="page {{keyboardOpen?'':'has-actions'}}">
-  <view class="hint row" style="background:#fff0eb;color:#d44730;margin-top:0"><line-icon name="camera-active" size="28"/><text>发现身边隐患，拍照反馈更清晰</text></view>
-  <view class="field"><view class="field-label">隐患类型<text class="required">*</text></view><view class="type-options"><button wx:for="{{types}}" wx:key="id" class="type-option {{typeIndex===index?'active':''}}" data-index="{{index}}" bindtap="type" disabled="{{busy}}">{{item.name}}</button></view></view>
-  <view class="field"><view class="field-label">隐患位置<text class="required">*</text></view><view class="picker" style="background:white;border:0" bindtap="toggleLocation"><text class="grow">{{locationText || '选择所在楼栋和楼层'}}</text><text>›</text></view><view wx:if="{{showLocation}}" class="floor-controls"><location-picker value="{{preferred}}" disabled="{{busy}}" bind:change="location"/></view><view class="gap" style="height:12rpx"/><input class="input" disabled="{{busy}}" value="{{form.location}}" data-field="location" bindinput="input" bindkeyboardheightchange="keyboard" maxlength="160" placeholder="补充位置，如东侧公共走廊" adjust-position cursor-spacing="32"/></view>
-  <view class="field"><view class="row between field-label"><text>现场照片</text><text class="muted">{{photos.length}} / 3</text></view><view class="photo-grid"><view class="photo-box" wx:for="{{photos}}" wx:key="path"><image class="photo" src="{{item.path}}" mode="aspectFill" data-path="{{item.path}}" bindtap="preview"/><button class="photo-remove" data-index="{{index}}" bindtap="remove" disabled="{{busy}}">×</button></view><button wx:if="{{photos.length<3}}" class="photo-add" bindtap="choose" disabled="{{busy}}"><line-icon name="camera" size="40"/><text>拍照 / 相册</text></button></view><view class="field-note">选填，仅在本机预览，不会上传。</view></view>
-  <view class="field"><view class="field-label">情况描述<text class="required">*</text></view><textarea class="textarea" value="{{form.description}}" disabled="{{busy}}" data-field="description" bindinput="input" bindkeyboardheightchange="keyboard" maxlength="500" placeholder="描述发现的问题，至少5个字" adjust-position cursor-spacing="60"/><view class="field-note" style="text-align:right">{{form.description.length}} / 500</view></view>
-  <view class="field"><view class="row between field-label"><text>联系电话</text><text class="muted">选填，演示填写即可</text></view><input class="input" value="{{form.contact}}" disabled="{{busy}}" data-field="contact" bindinput="input" bindkeyboardheightchange="keyboard" maxlength="30" placeholder="无需提供真实手机号" adjust-position cursor-spacing="80"/></view>
-  <ui-state error="{{error}}" bind:retry="retry" compact/><mode-banner/>
-  <view class="{{keyboardOpen?'':'fixed-actions'}}"><ui-button id="submit-report" label="提交演示上报" loading="{{busy}}" bind:action="submit"/></view>
+<view class="page report-page {{keyboardOpen?'':'has-actions'}}">
+  <!-- 顶部：与隐患 Tab 一致 -->
+  <view class="row report-top">
+    <view class="grow">
+      <view class="title">一起守护社区安全</view>
+      <view class="subtitle">拍照上报 · 分类选择隐患类型</view>
+    </view>
+    <view class="icon-box" style="background:#fff0eb">
+      <line-icon name="shield-active" size="38" />
+    </view>
+  </view>
+
+  <!-- 现场照片：红色长条，左文右相机 -->
+  <view class="photo-banner" hover-class="photo-banner-press" bindtap="chooseSource">
+    <view class="grow">
+      <view class="photo-banner-title">发现隐患？先拍照再选类型</view>
+      <view class="photo-banner-desc">已选 {{photos.length}} / 3 张 · 点击可选拍照或相册</view>
+    </view>
+    <view class="camera-tile">
+      <line-icon name="camera-active" size="44" />
+    </view>
+  </view>
+
+  <view wx:if="{{photos.length}}" class="photo-preview-row">
+    <view class="photo-box" wx:for="{{photos}}" wx:key="path">
+      <image class="photo" src="{{item.path}}" mode="aspectFill" data-path="{{item.path}}" bindtap="preview" />
+      <button class="photo-remove" data-index="{{index}}" bindtap="remove" disabled="{{busy}}">×</button>
+    </view>
+  </view>
+
+  <!-- 隐患类型：一排分类，点选后才显示通栏示例图 -->
+  <view class="field hazard-field">
+    <view class="field-label report-label">隐患类型<text class="required">*</text></view>
+
+    <scroll-view class="hazard-cat-scroll" scroll-x enable-flex>
+      <view class="hazard-cat-row">
+        <button
+          wx:for="{{categories}}"
+          wx:key="id"
+          class="hazard-cat {{categoryId===item.id?'active':''}} {{tapCatId===item.id?'pop':''}}"
+          data-id="{{item.id}}"
+          bindtap="pickCategory"
+          disabled="{{busy}}"
+        >{{item.name}}</button>
+      </view>
+    </scroll-view>
+
+    <view wx:if="{{!categoryId}}" class="hazard-empty-tip">点选上方分类后，再选择具体隐患示例图</view>
+
+    <view wx:if="{{categoryId}}" class="hazard-reveal {{revealOn?'in':''}}">
+      <button
+        wx:for="{{typeItems}}"
+        wx:key="id"
+        class="hazard-type-card {{hazardId===item.id?'active':''}} {{tapHazardId===item.id?'pop':''}}"
+        style="animation-delay: {{index * 70}}ms"
+        data-id="{{item.id}}"
+        bindtap="pickHazard"
+        disabled="{{busy}}"
+      >
+        <image class="hazard-type-card-img" src="{{item.image}}" mode="aspectFit" />
+        <view class="hazard-type-caption">{{item.name}}</view>
+      </button>
+    </view>
+
+    <view wx:if="{{isCustom}}" class="custom-box">
+      <view class="field-label report-label" style="margin-bottom:10rpx">补充隐患名称<text class="required">*</text></view>
+      <input
+        class="input report-input"
+        disabled="{{busy}}"
+        value="{{customName}}"
+        bindinput="customInput"
+        bindkeyboardheightchange="keyboard"
+        maxlength="40"
+        placeholder="例如：楼道堆放易燃物、灭火器压力不足…"
+        adjust-position
+        cursor-spacing="32"
+      />
+    </view>
+    <view wx:elif="{{hazardName}}" class="selected-tip">已选：{{categoryName}} · {{hazardName}}</view>
+  </view>
+
+  <view class="field">
+    <view class="field-label report-label">隐患位置<text class="required">*</text></view>
+    <view class="picker report-picker" bindtap="toggleLocation">
+      <text class="grow">{{locationText || '选择所在楼栋和楼层'}}</text>
+      <text>›</text>
+    </view>
+    <view wx:if="{{showLocation}}" class="floor-controls">
+      <location-picker value="{{preferred}}" disabled="{{busy}}" bind:change="location" />
+    </view>
+    <view class="gap" style="height:12rpx" />
+    <input
+      class="input report-input"
+      disabled="{{busy}}"
+      value="{{form.location}}"
+      data-field="location"
+      bindinput="input"
+      bindkeyboardheightchange="keyboard"
+      maxlength="160"
+      placeholder="补充位置，如东侧公共走廊"
+      adjust-position
+      cursor-spacing="32"
+    />
+  </view>
+
+  <view class="field">
+    <view class="field-label report-label">情况描述<text class="required">*</text></view>
+    <textarea
+      class="textarea report-input"
+      value="{{form.description}}"
+      disabled="{{busy}}"
+      data-field="description"
+      bindinput="input"
+      bindkeyboardheightchange="keyboard"
+      maxlength="500"
+      placeholder="描述发现的问题，至少5个字"
+      adjust-position
+      cursor-spacing="60"
+    />
+    <view class="field-note" style="text-align:right">{{form.description.length}} / 500</view>
+  </view>
+
+  <view class="field">
+    <view class="row between field-label report-label">
+      <text>联系电话</text>
+      <text class="muted">选填，演示填写即可</text>
+    </view>
+    <input
+      class="input report-input"
+      value="{{form.contact}}"
+      disabled="{{busy}}"
+      data-field="contact"
+      bindinput="input"
+      bindkeyboardheightchange="keyboard"
+      maxlength="30"
+      placeholder="无需提供真实手机号"
+      adjust-position
+      cursor-spacing="80"
+    />
+  </view>
+
+  <ui-state error="{{error}}" bind:retry="retry" compact />
+  <mode-banner></mode-banner>
+  <view class="{{keyboardOpen?'':'fixed-actions'}}">
+    <ui-button id="submit-report" label="提交演示上报" loading="{{busy}}" bind:action="submit" />
+  </view>
 </view>
