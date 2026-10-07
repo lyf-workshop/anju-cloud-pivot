@@ -5,6 +5,7 @@
     "pages/register-done/register-done",
     "pages/index/index",
     "pages/hazards/hazards",
+    "pages/assist/assist",
     "pages/building/building",
     "pages/building-escape/building-escape",
     "pages/building-equipment/building-equipment",
@@ -52,6 +53,12 @@
         "text": "隐患",
         "iconPath": "assets/icons/hazard.png",
         "selectedIconPath": "assets/icons/hazard-active.png"
+      },
+      {
+        "pagePath": "pages/assist/assist",
+        "text": "助手",
+        "iconPath": "assets/icons/help.png",
+        "selectedIconPath": "assets/icons/help-active.png"
       },
       {
         "pagePath": "pages/building/building",

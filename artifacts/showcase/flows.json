@@ -1,13 +1,13 @@
 {
-  "at": "2026-10-07T08:57:17.524Z",
+  "at": "2026-10-07T10:04:29.264Z",
   "result": "passed",
-  "productPagesChecked": 22,
+  "productPagesChecked": 23,
   "networkCalls": 0,
   "phoneCalls": 0,
   "checks": [
     "consent, local login and two-step household registration",
     "all product page controllers and handlers",
-    "four tab routes",
+    "five tab routes, including resident safety assistant",
     "local filters",
     "selected photo preview",
     "new report/result/detail consistency",

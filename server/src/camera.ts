@@ -221,4 +221,44 @@ export function registerCamera(
     raw.on("close", close);
     raw.on("error", close);
   });
+
+  return {
+    inspect(id: string) {
+      const parsed = cameraId.safeParse(id);
+      if (!parsed.success)
+        return {
+          cameraId: id,
+          available: false,
+          reason: "invalid_id",
+        };
+      const frame = frames.get(parsed.data);
+      if (!frame)
+        return {
+          cameraId: parsed.data,
+          available: false,
+          online: false,
+          reason: "no_frame",
+          notice:
+            "摄像头尚未上传画面。confirmed 仅表示模型连续帧疑似，须人工复核，不会自动派单或报警。",
+        };
+      const meta = publicMetadata(frame);
+      return {
+        cameraId: meta.cameraId,
+        available: true,
+        online: meta.online,
+        alarmState: meta.alarmState,
+        consecutiveHits: meta.consecutiveHits,
+        detections: meta.detections,
+        isTest: meta.isTest,
+        source: meta.source,
+        model: meta.model?.name,
+        reviewRequired: meta.reviewRequired,
+        receivedAt: meta.receivedAt,
+        notice:
+          meta.alarmState === "clear"
+            ? "当前无连续命中。模型结果须人工复核，不是已核实火警。"
+            : "模型连续帧疑似烟火，须人工复核，不是已核实火警，也不会自动派单。",
+      };
+    },
+  };
 }

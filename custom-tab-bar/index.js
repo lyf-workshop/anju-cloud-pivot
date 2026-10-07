@@ -16,6 +16,12 @@ Component({
         selectedIconPath: "/assets/icons/hazard-active.png",
       },
       {
+        pagePath: "/pages/assist/assist",
+        text: "助手",
+        iconPath: "/assets/icons/help-white.png",
+        selectedIconPath: "/assets/icons/help-white.png",
+      },
+      {
         pagePath: "/pages/building/building",
         text: "楼栋",
         iconPath: "/assets/icons/cube.png",

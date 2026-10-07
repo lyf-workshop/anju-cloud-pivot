@@ -37,6 +37,16 @@ const devices = await call("GET", "/devices?floorId=floor-1-1-6", undefined, tok
 assert.ok(devices.data.items.length >= 2);
 assert.ok(devices.data.items.every((item) => item.source === "demo"));
 
+const radar = await call("GET", "/agent/resident-radar", undefined, token);
+assert.match(radar.data.address, /云栖|1号楼|6层/);
+const assisted = await call("POST", "/agent/resident-assist", {
+  role: "identify",
+  messages: [{ role: "user", content: "走廊堆了纸箱挡住疏散通道" }],
+}, token);
+assert.equal(assisted.data.card.riskLevel, "high");
+assert.equal(assisted.data.card.reportDraft.type, "obstruction");
+assert.ok(assisted.data.card.nextSteps.some((step) => step.url === "/pages/report/report"));
+
 const report = await call("POST", "/reports", {
   idempotencyKey: `judge-smoke-report-${randomUUID()}`,
   floorId: "floor-1-1-6",
@@ -85,6 +95,8 @@ console.log(JSON.stringify({
   userRestored: true,
   isolatedUser: true,
   deviceCount: devices.data.total,
+  assistantProvider: assisted.data.model.provider,
+  assistantDraftType: assisted.data.card.reportDraft.type,
   reportId: report.data.id,
   reportNumber: report.data.number,
   drillId: drill.data.id,

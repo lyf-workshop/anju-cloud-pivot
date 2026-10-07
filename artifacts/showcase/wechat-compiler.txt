@@ -1,2 +1,2 @@
-wcc: 28 files, exit 0
-wcsc: 31 files, exit 0
+wcc: 34 files, exit 0
+wcsc: 37 files, exit 0

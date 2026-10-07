@@ -1,3 +1,5 @@
+import { assistChips, assistRoles } from "./assistant.js";
+
 const A = "./assets";
 
 const statusNames = {
@@ -120,12 +122,14 @@ const empty = (text) =>
 const nav = [
   ["home", "home", "首页"],
   ["hazards", "hazard", "隐患"],
+  ["assist", "help", "助手"],
   ["building", "cube", "楼栋"],
   ["me", "user", "我的"],
 ];
 
 function activeRoot(route) {
   if (["hazards", "report", "my-reports"].includes(route) || route.startsWith("report/")) return "hazards";
+  if (route === "assist") return "assist";
   if (route === "building" || route === "devices" || route.startsWith("building-")) return "building";
   if (["me", "profile", "drill-records", "notices", "help", "emergency"].includes(route)) return "me";
   if (route.startsWith("drill") || route.startsWith("summary/")) return "building";
@@ -135,7 +139,7 @@ function activeRoot(route) {
 function navItems(active) {
   return nav
     .map(
-      ([route, name, label]) => `<button class="nav-item ${active === route ? "active" : ""}" data-route="${route}">
+      ([route, name, label]) => `<button class="nav-item ${route === "assist" ? "nav-main" : ""} ${active === route ? "active" : ""}" data-route="${route}">
         ${icon(name, active === route)}<span>${label}</span>
       </button>`,
     )
@@ -242,7 +246,7 @@ export function registerDoneView() {
 
 export function appShell(state, content) {
   const active = activeRoot(state.route);
-  const roots = ["home", "hazards", "building", "me"];
+  const roots = ["home", "hazards", "assist", "building", "me"];
   const onboarding = state.route === "register" || state.route === "register-done";
   const connected = state.online && state.backendHealthy === true;
   const connectionLabel = !state.online
@@ -302,6 +306,57 @@ export function homeView(state) {
       <div class="section-heading community-heading"><h2>我的社区</h2><button data-route="building">查看楼栋 ›</button></div>
       <button class="community-card" data-route="building"><span class="community-building">${icon("cube")}</span><span><strong>${esc(building?.name || "1号楼")}</strong><small>${esc(home.community?.name || "云栖花园")} · 当前住址</small></span><em>›</em></button>
       <button class="property-contact" data-action="placeholder" data-label="物业联系"><span>${icon("phone")}<span><strong>联系物业服务中心</strong><small>演示入口，不会真实拨号</small></span></span><em>›</em></button>
+    </div>
+  </section>`;
+}
+
+const assistRiskNames = {
+  none: "提示",
+  low: "低风险",
+  medium: "中风险",
+  high: "高风险",
+  emergency: "紧急",
+};
+
+function assistCard(card, messageId) {
+  if (!card) return "";
+  const findings = card.findings || [];
+  const questions = card.questions || [];
+  const actions = card.actions || [];
+  const avoid = card.avoid || [];
+  const nextSteps = card.nextSteps || [];
+  return `<article class="assist-action-card risk-${esc(card.riskLevel || "none")}">
+    <header><span>${esc(assistRiskNames[card.riskLevel] || "提示")}</span><strong>${esc(card.title || "安全提示")}</strong></header>
+    ${findings.length ? `<section><h3>识别要点</h3><ul>${findings.map((line) => `<li>${esc(line)}</li>`).join("")}</ul></section>` : ""}
+    ${questions.length ? `<section><h3>还想确认</h3><div class="assist-question-list">${questions.map((line) => `<button data-action="assist-quick" data-text="${esc(line)}">${esc(line)}</button>`).join("")}</div></section>` : ""}
+    ${actions.length ? `<section><h3>建议处置</h3><ol>${actions.map((item) => `<li><b>${esc(item.title)}</b><span>${esc(item.detail)}</span></li>`).join("")}</ol></section>` : ""}
+    ${avoid.length ? `<section class="assist-avoid"><h3>请不要</h3>${avoid.map((line) => `<p>${esc(line)}</p>`).join("")}</section>` : ""}
+    ${nextSteps.length ? `<footer>${nextSteps.map((step, index) => `<button class="${index === 0 ? "primary-button" : "secondary-button"}" data-action="assist-step" data-message-id="${esc(messageId)}" data-step-index="${index}">${esc(step.label)}</button>`).join("")}</footer>` : ""}
+  </article>`;
+}
+
+export function assistView(state) {
+  const radar = state.assistRadar || {};
+  const messages = state.assistMessages || [];
+  const chips = assistChips[state.assistRole] || [];
+  return `<section class="page resident-assist-page">
+    <header class="assist-hero">
+      <small>安居云枢 · 业主安全助手</small>
+      <h1>看见隐患，马上问清楚</h1>
+      <p>识险 · 处置 · 文书，建议仅供参考</p>
+      <div class="assist-role-switch">${assistRoles.map((item) => `<button class="${state.assistRole === item.id ? "active" : ""}" data-action="assist-role" data-role="${item.id}"><strong>${item.name}</strong><span>${item.note}</span></button>`).join("")}</div>
+    </header>
+    <section class="assist-radar ${radar.offline ? "offline" : ""}">
+      <span class="assist-radar-mark">${icon("shield-white")}</span>
+      <div><small>本楼风险雷达 · 待跟进 ${Number(radar.openReports || 0)}</small><strong>${esc(radar.address || "绑定住址后可生成楼层提示")}</strong><p>${esc(radar.advice || "正在读取本楼提示…")}</p></div>
+      <em>${radar.offline ? "离线建议" : "服务器数据"}</em>
+    </section>
+    <p class="assist-emergency-tip">紧急情况请先确保安全，并人工联系物业或 119</p>
+    <div class="assist-message-list">${messages.map((message) => `<div class="assist-message ${message.role}"><span class="assist-avatar">${message.role === "user" ? "我" : "助"}</span><div><p>${esc(message.text)}</p>${assistCard(message.card, message.id)}</div></div>`).join("")}${state.assistBusy ? '<div class="assist-message assistant"><span class="assist-avatar">助</span><div><p class="assist-typing">正在整理建议…</p></div></div>' : ""}</div>
+    ${state.assistError ? `<div class="error-box" role="alert">${esc(state.assistError)}</div>` : ""}
+    <div class="assist-composer-dock">
+      <div class="assist-quick-list">${chips.map((text) => `<button data-action="assist-quick" data-text="${esc(text)}">${esc(text)}</button>`).join("")}</div>
+      <form id="assist-form"><input name="message" maxlength="2000" value="${esc(state.assistDraft || "")}" placeholder="描述你看到的现象，如走廊堆物、烟味" autocomplete="off" /><button class="primary-button" type="submit" ${state.assistBusy ? "disabled" : ""}>${state.assistBusy ? "处理中" : "发送"}</button></form>
     </div>
   </section>`;
 }

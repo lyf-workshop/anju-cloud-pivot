@@ -59,10 +59,17 @@ export function settings(env: NodeJS.ProcessEnv = process.env) {
       .map((s) => s.trim()),
     clientOrigins: (
       env.CLIENT_ORIGINS ||
-      "app://anju,https://localhost,http://localhost,http://127.0.0.1:4173,http://localhost:4173"
+      "app://anju,https://localhost,http://localhost,http://127.0.0.1:4173,http://localhost:4173,http://127.0.0.1:5173,http://localhost:5173"
     )
       .split(",")
       .map((s) => s.trim()),
     demoStaffPassword: env.DEMO_STAFF_PASSWORD || "AnjuLocal2026!",
+    llmApiKey: env.ZHIZENGZENG_API_KEY || env.LLM_API_KEY || "",
+    llmBaseUrl: (env.LLM_BASE_URL || "https://api.zhizengzeng.com/v1").replace(
+      /\/$/,
+      "",
+    ),
+    llmModel: env.LLM_MODEL || "qwen-plus",
+    agentCameraId: env.AGENT_CAMERA_ID || "CAM-RPI-01",
   };
 }

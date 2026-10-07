@@ -1,18 +1,18 @@
 {
-  "at": "2026-09-29T04:48:48.813Z",
+  "at": "2026-10-07T10:04:29.675Z",
   "toolDirectory": "D:\\DevTools\\wechat_devtools\\微信web开发者工具\\resources\\app.asar.unpacked\\node_modules\\wcc-exec",
   "scope": "WXML and WXSS compilation only; no simulator screenshots or phone validation",
   "results": [
     {
       "tool": "wcc",
-      "fileCount": 28,
+      "fileCount": 34,
       "exitCode": 0,
       "stdout": "",
       "stderr": ""
     },
     {
       "tool": "wcsc",
-      "fileCount": 31,
+      "fileCount": 37,
       "exitCode": 0,
       "stdout": "",
       "stderr": ""

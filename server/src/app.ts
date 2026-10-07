@@ -17,6 +17,7 @@ import { settings, type Settings } from "./config.js";
 import { ApiError, fail, hash, id, now, text } from "./core.js";
 import { registerStaff } from "./staff.js";
 import { registerCamera } from "./camera.js";
+import { residentAssistSchema, runResidentAgent } from "./resident-agent.js";
 const key = text(8, 100);
 const iso = z.iso.datetime();
 const paging = z.object({
@@ -556,6 +557,55 @@ export async function buildApp(cfg: Settings = settings()) {
     return login("wx:" + result.openid, p.legalVersion);
   });
   route("GET", "/me", (r) => userView(auth(r)));
+  route("GET", "/agent/resident-radar", (r) => {
+    const u = auth(r);
+    const list = bindings(u.id);
+    const binding = list.find((item) => item.isCurrent) || list[0];
+    const stats = reportStatsPayload(u.id);
+    const openReports =
+      Number(stats.pending || 0) + Number(stats.processing || 0);
+    const home = homePayload(binding?.communityId);
+    const notice = home.announcements?.[0]?.title || "";
+    return {
+      configured: Boolean(cfg.llmApiKey),
+      address: binding
+        ? `${binding.communityName} ${binding.buildingName}${binding.unitName}${binding.floorNumber}层${binding.room || ""}`
+        : "",
+      openReports,
+      notice,
+      advice: binding
+        ? openReports
+          ? "您有待跟进的上报，可让助手整理下一步，或查看我的上报。"
+          : "本址暂无待办隐患。发现通道占用、设施遮挡可随时问助手或上报。"
+        : "绑定住址后，助手会结合本楼信息给出更贴身的建议。",
+    };
+  });
+  app.post(
+    "/api/agent/resident-assist",
+    { config: { rateLimit: { max: 20, timeWindow: "1 minute" } } },
+    async (r) => {
+      const u = auth(r);
+      const p = residentAssistSchema.parse(r.body);
+      const list = bindings(u.id);
+      const binding = list.find((item) => item.isCurrent) || list[0];
+      const stats = reportStatsPayload(u.id);
+      const home = homePayload(binding?.communityId);
+      return {
+        data: await runResidentAgent(
+          {
+            cfg,
+            address: binding
+              ? `${binding.communityName} ${binding.buildingName}${binding.unitName}${binding.floorNumber}层${binding.room || ""}`
+              : "",
+            openReports:
+              Number(stats.pending || 0) + Number(stats.processing || 0),
+            notice: home.announcements?.[0]?.title || "",
+          },
+          p,
+        ),
+      };
+    },
+  );
   route("GET", "/app/bootstrap", (r) => {
     const user = auth(r);
     const query = z.object({ communityId: text().optional() }).parse(r.query);
@@ -1144,8 +1194,16 @@ export async function buildApp(cfg: Settings = settings()) {
       return { eventId: p.eventId, receivedAt, duplicate: false };
     });
   });
-  registerStaff(app, { db, cfg, auth, reportView, deviceView, drillView });
-  registerCamera(app, { db, cfg });
+  const cameras = registerCamera(app, { db, cfg });
+  registerStaff(app, {
+    db,
+    cfg,
+    auth,
+    reportView,
+    deviceView,
+    drillView,
+    cameraInspect: cameras.inspect,
+  });
   app.get("/", async (_req, reply) => reply.redirect("/index.html"));
   if (fs.existsSync(cfg.webRoot)) await app.register(staticFiles, {
     root: cfg.webRoot,

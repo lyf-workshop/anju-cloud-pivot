@@ -32,6 +32,8 @@ Base URL：`http://127.0.0.1:3000/api`；正式部署 HTTPS。JSON UTF-8。业�
 | POST /auth/login | 公开/正式数据 | `{agreed:true,legalVersion,code}` | 服务端向微信换取身份，再返回业务会话；未配置微信或审核协议503；微信失败401/502 |
 | GET /me | 用户 | 无 | `{id,nickname,bindings,mode}` |
 | GET /app/bootstrap | 用户 | `communityId?` | 一次返回 `{user,home,reportStats,drillStats,serverTime,mode}`，供安装版启动时建立可见的云端同步状态 |
+| GET /agent/resident-radar | 用户 | 无 | 返回本人当前住址、本人待跟进上报数量、最近公告标题和提示；不返回其他居民记录 |
+| POST /agent/resident-assist | 用户 | `{role:identify\|action\|document,messages:[{role,content}]}` | 返回风险卡片、建议步骤和可选上报草稿；限频20次/分钟，不会自动上报、派单或拨号；未配置大模型时使用服务端本地规则 |
 | PATCH /me | 用户 | `{nickname}`，1–30字 | 更新后的用户资料 |
 | POST /auth/logout | 用户 | `{}` | `{loggedOut:true}`，使当前 token 失效 |
 | GET /bindings | 用户 | 无 | 本人绑定列表，不返回其他人住址 |
@@ -201,6 +203,8 @@ Base URL：`http://127.0.0.1:3000/api`；正式部署 HTTPS。JSON UTF-8。业�
 | POST /staff/auth/logout | 物业 | `{}`；删除会话并清Cookie |
 | GET /staff/members | 社区只读 | 本社区有效员工 `{id,nickname,role}[]` |
 | GET /staff/overview | 社区只读 | 社区、上报/待办/绑定居民/完成演练/设备数量，来源数据库；`hardwareConnected:false` 表示本轮未验证任何真实硬件连接 |
+| GET /staff/agent/status | 物业 | 无 | 返回服务端智能体模型是否配置，不暴露 API 密钥 |
+| POST /staff/agent/chat | 本社区物业 | `{communityId?,cameraId?,messages}` | 只读取该社区工单和授权摄像头；最多返回待人工确认的工单动作草稿，不直接写入、派单或报警；限频20次/分钟 |
 | GET /staff/reports | 社区只读 | 支持 `status=pending|processing|completed`；含工单完整数据、`version`、`assigneeId` |
 | GET /staff/reports/:id | 记录所属社区只读 | 工单详情、照片ID和处理时间线 |
 | POST /staff/reports/:id/actions | manager/operator | 见下方处理DTO；更新工单、版本、时间线、审计并在同一事务中保存幂等键 |

@@ -58,6 +58,14 @@
       },
       {
         "type": "file",
+        "value": "config/appid.example.js"
+      },
+      {
+        "type": "file",
+        "value": "config/appid.local.js"
+      },
+      {
+        "type": "file",
         "value": "services/privacy.js"
       },
       {

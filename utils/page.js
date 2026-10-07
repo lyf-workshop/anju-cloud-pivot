@@ -3,6 +3,7 @@ const config = require("../config/index");
 const tabs = [
   "/pages/index/index",
   "/pages/hazards/hazards",
+  "/pages/assist/assist",
   "/pages/building/building",
   "/pages/me/me",
 ];

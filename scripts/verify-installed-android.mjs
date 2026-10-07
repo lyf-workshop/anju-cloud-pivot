@@ -15,7 +15,7 @@ const cdpPort = "9222";
 const artifactDir = path.join(root, "output", "android-verification");
 const screenshot = path.join(artifactDir, "installed-history.png");
 const deviceScreenshot = path.join(artifactDir, "installed-history-device.png");
-const photoPickerScreenshot = path.join(artifactDir, "image-picker-open-1.3.0.png");
+const photoPickerScreenshot = path.join(artifactDir, "image-picker-open-1.4.0.png");
 const sampleImageBase64 = fs.readFileSync(
   path.join(root, "assets", "illustrations", "hazard-exit-blocked.png"),
 ).toString("base64");
@@ -202,6 +202,15 @@ try {
   await first.clickText("进入首页");
   await first.waitForText("把安全");
 
+  await first.click('.bottom-nav button[data-route="assist"]');
+  await first.clickText("走廊堆了纸箱");
+  await first.waitForText("疏散通道可能被占用");
+  await first.clickText("去上报");
+  assert.match(
+    await first.evaluate('document.querySelector(\'textarea[name="description"]\').value'),
+    /疏散通道/,
+  );
+
   await first.click('.bottom-nav button[data-route="building"]');
   await first.clickText("查看本层感知设备");
   await first.waitForText("走廊烟雾传感器");
@@ -283,6 +292,7 @@ console.log(JSON.stringify({
   directEntryObserved: true,
   onboardingCompleted: true,
   deviceView: true,
+  assistantDraftPrefill: true,
   systemPhotoPicker: true,
   photoPickerScreenshot,
   reportPersisted: reportNumber,

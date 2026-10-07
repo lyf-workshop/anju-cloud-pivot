@@ -16,6 +16,7 @@ import {
   registerDoneView,
   homeView,
   hazardsView,
+  assistView,
   reportView,
   buildingView,
   meView,
@@ -35,6 +36,7 @@ import {
   errorView,
   hazardCategories,
 } from "./views.js";
+import { localAssist, localRadar } from "./assistant.js";
 
 const app = document.querySelector("#app");
 const DRAFT_KEY = "anju-report-draft-v2";
@@ -101,6 +103,19 @@ const state = {
   chatDraft: "",
   chatMessages: seedMessages,
   aiSummary: "综合业主演示消息：火情主要集中在2号楼，3层有明火迹象，3单元5层出现浓烟；建议沿安全楼梯撤离，勿乘电梯，低姿捂口鼻。",
+  assistRole: "identify",
+  assistDraft: "",
+  assistRadar: null,
+  assistBusy: false,
+  assistError: "",
+  assistMessages: [
+    {
+      id: "assist-hello",
+      role: "assistant",
+      text: "我是业主助手。可先识险、再给处置建议，最后帮你写成上报描述。紧急情况请先保证安全。",
+      card: null,
+    },
+  ],
   onboardingInitialized: false,
   onboardingStep: 1,
   onboardingErrors: {},
@@ -124,6 +139,7 @@ function renderContent() {
   if (state.route === "register-done") return registerDoneView(state);
   if (state.route === "home") return homeView(state);
   if (state.route === "hazards") return hazardsView(state);
+  if (state.route === "assist") return assistView(state);
   if (state.route === "report") return reportView(state);
   if (state.route === "building") return buildingView(state);
   if (state.route === "me") return meView(state);
@@ -163,6 +179,7 @@ function pageTitle(route) {
   if (route === "register-done") return "登记完成";
   if (route === "home") return "安居云枢";
   if (route === "hazards") return "社区隐患";
+  if (route === "assist") return "业主安全助手";
   if (route === "report") return "隐患上报";
   if (route === "building") return "楼栋安全";
   if (route === "me") return "我的";
@@ -358,6 +375,18 @@ async function loadHistory() {
   markSynced();
 }
 
+async function loadAssist() {
+  state.assistError = "";
+  try {
+    state.assistRadar = await api.get("/agent/resident-radar");
+    markSynced();
+  } catch (error) {
+    state.backendHealthy = false;
+    state.assistRadar = localRadar(state.user);
+    state.assistError = `服务器助手暂不可用：${error.message}。当前显示本地安全建议。`;
+  }
+}
+
 async function loadRoute(route) {
   if (!state.session) {
     state.route = "welcome";
@@ -381,6 +410,8 @@ async function loadRoute(route) {
       const reports = await api.get(`/reports/mine?pageSize=50${query}`);
       state.reports = reports.items || [];
       markSynced();
+    } else if (route === "assist") {
+      await loadAssist();
     } else if (route === "building") {
       await loadDevices();
     } else if (route === "me") {
@@ -426,7 +457,7 @@ async function issueSession(existing = null) {
   const issued = await api.post("/auth/demo-session", {
     installationKey,
     platform: platformName(),
-    clientVersion: "1.3.0",
+    clientVersion: "1.4.0",
   });
   state.session = {
     ...issued,
@@ -475,6 +506,74 @@ function persistDraft() {
   try {
     localStorage.setItem(DRAFT_KEY, JSON.stringify(state.reportDraft));
   } catch {}
+}
+
+async function sendAssist(rawText) {
+  const text = String(rawText || "").trim();
+  if (!text || state.assistBusy) return;
+  const userMessage = { id: `assist-u-${Date.now()}`, role: "user", text, card: null };
+  state.assistMessages.push(userMessage);
+  state.assistDraft = "";
+  state.assistBusy = true;
+  state.assistError = "";
+  render();
+  const history = state.assistMessages
+    .filter((item) => item.id !== "assist-hello")
+    .map((item) => ({ role: item.role, content: item.text }))
+    .slice(-8);
+  let result;
+  try {
+    result = await api.post("/agent/resident-assist", {
+      role: state.assistRole,
+      messages: history,
+    });
+    markSynced();
+  } catch (error) {
+    state.backendHealthy = false;
+    const card = localAssist(state.assistRole, text, state.user);
+    result = {
+      reply: `${card.reply}（网络不可用，已使用本地安全建议）`,
+      card,
+    };
+    state.assistError = `服务器助手暂不可用：${error.message}`;
+  } finally {
+    state.assistBusy = false;
+  }
+  state.assistMessages.push({
+    id: `assist-a-${Date.now()}`,
+    role: "assistant",
+    text: result.reply || result.card?.reply || "已生成安全建议。",
+    card: result.card || null,
+  });
+  render();
+  requestAnimationFrame(() => window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" }));
+}
+
+function openAssistStep(messageId, stepIndex) {
+  const message = state.assistMessages.find((item) => item.id === messageId);
+  const card = message?.card;
+  const step = card?.nextSteps?.[Number(stepIndex)];
+  if (!step) return;
+  const routes = {
+    "/pages/report/report": "report",
+    "/pages/emergency/emergency": "emergency",
+    "/pages/building-escape/building-escape": "building-escape",
+    "/pages/my-reports/my-reports": "my-reports",
+  };
+  if (step.url === "/pages/report/report" && card.reportDraft) {
+    const draft = card.reportDraft;
+    Object.assign(state.reportDraft, {
+      categoryId: "other",
+      hazardId: "custom",
+      hazardName: draft.hazardName || "助手建议",
+      customName: draft.hazardName || "助手建议",
+      type: draft.type || "other",
+      location: draft.location || state.reportDraft.location,
+      description: draft.description || "",
+    });
+    persistDraft();
+  }
+  navigate(routes[step.url] || "home");
 }
 
 function updateDraftFromForm(form) {
@@ -709,6 +808,14 @@ app.addEventListener("click", async (event) => {
   } else if (action === "filter-hazards") {
     state.hazardFilter = target.dataset.status || "";
     await loadRoute("hazards");
+  } else if (action === "assist-role") {
+    state.assistRole = target.dataset.role || "identify";
+    state.assistError = "";
+    render();
+  } else if (action === "assist-quick") {
+    await sendAssist(target.dataset.text);
+  } else if (action === "assist-step") {
+    openAssistStep(target.dataset.messageId, target.dataset.stepIndex);
   } else if (action === "select-hazard-category") {
     const category = hazardCategories.find((item) => item.id === target.dataset.id);
     if (!category) return;
@@ -780,6 +887,9 @@ app.addEventListener("submit", async (event) => {
     state.showOnboardingPrivacy = true;
     render();
   } else if (event.target.id === "report-form") await submitReport(event.target);
+  else if (event.target.id === "assist-form") {
+    await sendAssist(new FormData(event.target).get("message"));
+  }
   else if (event.target.id === "profile-form") {
     const nickname = String(new FormData(event.target).get("nickname") || "").trim();
     if (!nickname) return;
@@ -826,6 +936,7 @@ app.addEventListener("input", (event) => {
     persistDraft();
   }
   if (event.target.form?.id === "chat-form") state.chatDraft = event.target.value;
+  if (event.target.form?.id === "assist-form") state.assistDraft = event.target.value;
 });
 
 app.addEventListener("change", async (event) => {
@@ -903,7 +1014,7 @@ installBackHandler(() => {
     navigate("register", true);
     return true;
   }
-  if (["home", "hazards", "building", "me"].includes(state.route)) return false;
+  if (["home", "hazards", "assist", "building", "me"].includes(state.route)) return false;
   history.back();
   return true;
 });

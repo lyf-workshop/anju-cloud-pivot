@@ -94,6 +94,8 @@ npm run dev
 
 ## 模式切换与失败行为
 
+居民助手与物业智能体默认不依赖外部大模型即可工作。需要联调 OpenAI 兼容模型时，只在 `server/.env` 配置 `LLM_API_KEY`（或 `ZHIZENGZENG_API_KEY`）、`LLM_BASE_URL`、`LLM_MODEL`；这些值不得写入小程序、共享安装版、网页或 Git。模型不可用时服务端返回明确标注的本地安全建议，居民提交和物业工单动作仍分别需要用户、值班员确认。
+
 ```powershell
 npm run client:showcase   # 原离线展示，不需要启动后端
 npm run client:local      # 当前默认，本机后端 + 持久demo数据

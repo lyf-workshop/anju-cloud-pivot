@@ -4,6 +4,7 @@ import { z } from "zod";
 import type { Store } from "./db.js";
 import type { Settings } from "./config.js";
 import { fail, hash, id, now, text } from "./core.js";
+import { agentChatSchema, runStaffAgent } from "./agent.js";
 
 export const passwordHash = (password: string) => {
   const salt = randomBytes(16).toString("hex");
@@ -56,9 +57,11 @@ type Dependencies = {
   reportView: (row: any) => any;
   deviceView: (row: any) => any;
   drillView: (row: any) => any;
+  cameraInspect: (id: string) => unknown;
 };
 export function registerStaff(app: FastifyInstance, deps: Dependencies) {
-  const { db, cfg, auth, reportView, deviceView, drillView } = deps;
+  const { db, cfg, auth, reportView, deviceView, drillView, cameraInspect } =
+    deps;
   seedStaff(db, cfg);
   const staff = (r: FastifyRequest) => {
     const u = auth(r);
@@ -645,4 +648,50 @@ export function registerStaff(app: FastifyInstance, deps: Dependencies) {
     );
     return { id: rid, saved: true };
   });
+  route("GET", "/agent/status", (r) => {
+    staff(r);
+    return {
+      configured: Boolean(cfg.llmApiKey),
+      model: cfg.llmModel,
+      provider: "zhizengzeng",
+    };
+  });
+  app.post(
+    "/api/staff/agent/chat",
+    { config: { rateLimit: { max: 20, timeWindow: "1 minute" } } },
+    async (r) => {
+      const u = staff(r);
+      const p = agentChatSchema.parse(r.body);
+      const cid = p.communityId || memberships(u.id)[0]?.communityId || "";
+      if (!cid) fail(403, "COMMUNITY_SCOPE", "未分配社区");
+      membership(u, cid);
+      const openStatuses = (status?: string) =>
+        status ? [status] : ["pending", "processing"];
+      return {
+        data: await runStaffAgent(
+          {
+            cfg,
+            communityId: cid,
+            inspectCamera: (cameraId) => {
+              if (cid !== cfg.cameraCommunityId)
+                fail(403, "COMMUNITY_SCOPE", "无权查看该社区摄像头");
+              return cameraInspect(cameraId);
+            },
+            listReports: (status) => {
+              const statuses = openStatuses(status);
+              return db
+                .all(
+                  `SELECT h.*,b.community_id FROM hazard_reports h JOIN floors f ON f.id=h.floor_id JOIN units un ON un.id=f.unit_id JOIN buildings b ON b.id=un.building_id WHERE b.community_id=? AND h.status IN (${statuses.map(() => "?").join(",")}) ORDER BY h.created_at DESC,h.id DESC LIMIT 20`,
+                  cid,
+                  ...statuses,
+                )
+                .map(workView);
+            },
+            getReport: (rid) => workView(reportRow(u, rid)),
+          },
+          p,
+        ),
+      };
+    },
+  );
 }

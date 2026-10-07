@@ -1,3 +1,16 @@
+# 当前验证：队友智能体合并与三端 1.4.0（2026-10-07）
+
+- 在独立集成分支上选择性合并队友新增的居民安全助手、物业处置智能体与模型适配层；保留当前根目录原生小程序、住户登记流程、正式 AppID 配置、共享安装版和既有网页。没有复制队友旧包中假定 `mobile/website` 目录的构建配置。
+- 原生小程序现为五个一级标签，新增“助手”页；`npm run check`、`npm test`、`npm run check:wechat` 全部通过，WCC 编译 34 个文件、WCSC 编译 37 个文件。后端构建通过，自动测试 13/13 通过，覆盖居民会话鉴权、物业社区范围、只生成待确认草稿和不自动写工单。
+- 共享前端在 390×844 生产构建预览中完成“直接体验 → 登记可跳过 → 助手 → 风险卡 → 去上报 → 草稿预填”，在 1366×768 验证桌面侧栏与助手布局。手机截图见 [助手页面](../output/playwright/assistant-mobile-production.png)，桌面截图见 [Windows 布局](../output/playwright/assistant-windows-production.png)。
+- 后端已发布到 `/opt/anju-cloud-pivot/releases/20261007-assistant-v14`；公网健康、助手网页均为 200，居民/物业助手未登录均为 401。公网真实烟雾测试通过匿名会话恢复与隔离、助手 `obstruction` 草稿、上报 `AJ20261007-CDBB630D`、两步演练完成和历史读回。物业登录、智能体状态和对话均为 200；当前未配置外部模型密钥，明确返回 `local-fallback`，不会自动处理工单。
+- Windows 1.4.0 NSIS 实际安装退出码 0，已安装 EXE FileVersion 为 1.4.0。全新隔离用户数据实测登记、助手草稿预填、设备、图片上报 `AJ20261007-69E3F8A0`、个人记录、两步演练、关闭重开和历史恢复，控制台错误 0。
+- Android 1.4.0 release APK 在 API 36 / Android 16 模拟器卸载旧版后全新安装；包名 `com.anjuyunshu.judge`、versionCode 5、versionName 1.4.0、minSdk 24、targetSdk 36。助手草稿、系统 Photo Picker、服务器上报 `AJ20261007-2130CE43`、演练及强制停止重开恢复全部通过，控制台错误 0。
+- Android v2/v3 签名有效，证书 SHA-256 为 `225CE809425D1911115E84C923E149E34B4A01A40491BE79A2043F6372398601`。APK SHA-256 `135B0C630D08F95A6A9698F215EC9AE01D6064929FDD8B338814D37CABAC0131`，大小 10,619,555 bytes；Windows 安装包 SHA-256 `0E94D3CC9600F932B781364B3B2DB9D71837475942B9C108A3285903E8112A0D`，大小 126,795,899 bytes。
+- 受控下载区已发布 1.4.0；服务器端校验两项 SHA-256，未授权 401、授权索引 200、两个安装包分段请求 206。旧 1.3.0 已移到站点外归档；Caddy 配置、数据库/附件、备份 timer、树莓派服务和其他站点未覆盖。
+
+---
+
 # 网页成员版合并验证（2026-09-29）
 
 - 合并来源为根目录 `安居云枢网页端(2).zip`，SHA-256 `96DF6B1D906FDBE48103862241C4AAA5FEE73FF32274AADAA4402B9C0D07A129`；合并前网页完整备份在 `artifacts/member-web-merge-20260929/premerge-current-web/`。

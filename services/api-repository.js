@@ -261,4 +261,6 @@ module.exports = {
   },
   complete: (id, body) => savedDrill(id, "complete", body),
   abort: (id, body) => savedDrill(id, "abort", body),
+  residentRadar: () => get("/agent/resident-radar"),
+  residentAssist: (body) => post("/agent/resident-assist", body),
 };

@@ -7,7 +7,7 @@
 | 项目 | 位置 |
 | --- | --- |
 | systemd 服务 | `anju-cloud-pivot.service` |
-| 当前代码 | `/opt/anju-cloud-pivot/current` → `/opt/anju-cloud-pivot/releases/20260930-mobile-v12` |
+| 当前代码 | `/opt/anju-cloud-pivot/current` → `/opt/anju-cloud-pivot/releases/20261007-assistant-v14` |
 | 网页静态目录 | release 内 `site` → `安居云枢网页端(1)/textcursor` |
 | 数据库和附件 | `/var/lib/anju-cloud-pivot/` |
 | 服务端配置 | `/etc/anju-cloud-pivot/anju.env`（`root:anju`，权限 `640`） |
@@ -32,13 +32,13 @@ ssh raspberrypi-via-aliyun "systemctl status anju-camera-agent --no-pager"
 
 联调账号为 `property-demo`。密码在服务器上随机生成，不写入仓库或网页；服务器管理员可执行 `cat /etc/anju-cloud-pivot/staff-password` 查看。公开域名使用 `PUBLIC_DEMO=true`，居民开发登录被拒绝、网页不显示默认口令、物业会话 Cookie 带 `Secure`。演示数据和操作不得当作真实告警或住户资料。不要把此环境的演示数据库切换为正式业务库。
 
-评委下载页不在公开首页展示，路径为 `/judge-downloads/`，用户名 `reviewer`。当前提供补齐住户登记流程的 Windows/Android 1.3.0，服务器端 SHA-256 校验通过；旧安装包移到站点外 `/srv/anju-cloud-pivot-downloads/archive/`，不再由下载 URL 提供。密码随机生成且不写入仓库，可由服务器管理员执行 `sudo cat /etc/anju-cloud-pivot/judge-download-password` 获取，并通过与链接不同的渠道发给评委。Caddy 对该路径设置 Basic Auth、`Cache-Control: private, no-store` 和 `X-Robots-Tag: noindex, nofollow`。1.3.0 实测未授权返回 401、授权索引返回 200、两个安装包分段请求返回 206。评审结束后删除下载文件、轮换密码或移除该路由。
+评委下载页不在公开首页展示，路径为 `/judge-downloads/`，用户名 `reviewer`。当前提供带居民安全助手的 Windows/Android 1.4.0，服务器端 SHA-256 校验通过；旧 1.3.0 安装包移到站点外 `/srv/anju-cloud-pivot-downloads/archive/`，不再由下载 URL 提供。密码随机生成且不写入仓库，可由服务器管理员执行 `sudo cat /etc/anju-cloud-pivot/judge-download-password` 获取，并通过与链接不同的渠道发给评委。Caddy 对该路径设置 Basic Auth、`Cache-Control: private, no-store` 和 `X-Robots-Tag: noindex, nofollow`。1.4.0 实测未授权返回 401、授权索引返回 200、两个安装包分段请求返回 206。评审结束后删除下载文件、轮换密码或移除该路由。
 
 备份脚本 `/usr/local/sbin/anju-cloud-pivot-backup` 使用 SQLite `VACUUM INTO` 生成一致数据库副本，再归档附件并写入 SHA-256/`COMPLETE` 标记；首个实际备份位于 `/var/backups/anju-cloud-pivot/20260929T183113Z`。自动备份不等于恢复演练，正式运营前仍应在隔离目录执行定期恢复测试。
 
 ## 后续更新与恢复
 
-当前后端 release 仍为 `/opt/anju-cloud-pivot/releases/20260930-mobile-v12`；1.3.0 只更新共用客户端和受控安装包，不需要数据库迁移或切换后端 release。数据库、附件、服务器其他站点、树莓派服务和 `/var/lib/anju-cloud-pivot/` 均未覆盖。后续后端更新应先在本地运行 `npm run backend:build` 与 `npm run backend:test`，用新的版本号建 `/opt/anju-cloud-pivot/releases/<版本号>`；不要复制本地 `.env`、`server/data` 或 `node_modules`。
+当前后端 release 为 `/opt/anju-cloud-pivot/releases/20261007-assistant-v14`；上一版 `/opt/anju-cloud-pivot/releases/20260930-mobile-v12` 保留为回退点。本轮没有数据库结构迁移，数据库、附件、服务器其他站点、树莓派服务和 `/var/lib/anju-cloud-pivot/` 均未覆盖。外部模型密钥当前未配置，居民和物业智能体使用明确标注的本地安全规则；需要启用兼容模型时只在服务器 `anju.env` 配置，禁止写入客户端或 Git。
 
 回退时仅切换 `current` 软链接并重启 `anju-cloud-pivot`，不要改动 Caddy 中其他站点。例如将 `<上一个可用版本>` 替换为实际目录：
 

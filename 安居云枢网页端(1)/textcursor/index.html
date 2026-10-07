@@ -34,6 +34,8 @@
         <a href="inspection.html">巡查台账</a>
         <a href="knowledge.html">处置预案</a>
         <a href="report.html">隐患工单</a>
+        <a href="agent.html">处置智能体</a>
+        <a href="login.html">物业登录</a>
         <a class="nav-cta" href="emergency.html">紧急处置</a>
       </nav>
     </div>
@@ -284,6 +286,24 @@
   <div class="urge-toast" id="urge-toast" hidden role="alert"></div>
 
   <a class="float-call float-alarm" href="emergency.html" aria-label="紧急报警">紧急报警</a>
+  <aside class="agent-dock" id="agent-dock">
+    <button class="agent-toggle" id="agent-toggle" type="button" aria-expanded="false" aria-controls="agent-panel">处置智能体</button>
+    <section class="agent-panel" id="agent-panel" hidden>
+      <header>
+        <strong>值班处置智能体</strong>
+        <small id="agent-status">正在检查登录</small>
+        <a class="agent-page-link" href="agent.html">完整页面</a>
+      </header>
+      <div class="agent-log" id="agent-log"></div>
+      <form class="agent-form" id="agent-form">
+        <label class="visually-hidden" for="agent-input">对智能体说</label>
+        <input id="agent-input" name="q" maxlength="200" value="请查看待办工单并给出处置建议" placeholder="询问摄像头状态、待办工单或起草处置说明" />
+        <button class="btn btn-primary" type="submit">发送</button>
+      </form>
+    </section>
+  </aside>
+  <script src="api.js"></script>
   <script src="site.js"></script>
+  <script src="agent.js"></script>
 </body>
 </html>

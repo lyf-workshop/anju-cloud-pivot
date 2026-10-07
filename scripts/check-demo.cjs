@@ -53,6 +53,7 @@ global.wx = {
     if (o.success) o.success({ confirm: true });
   },
   showToast() {},
+  nextTick: (fn) => fn(),
   setNavigationBarTitle() {},
   stopPullDownRefresh() {},
   setClipboardData: (o) => o.success && o.success(),
@@ -108,7 +109,7 @@ async function main() {
   assert.equal(app.pages[0], "pages/login/login");
   assert.deepEqual(
     app.tabBar.list.map((t) => t.text),
-    ["首页", "隐患", "楼栋", "我的"],
+    ["首页", "隐患", "助手", "楼栋", "我的"],
   );
   const login = page("login");
   await settle();
@@ -152,6 +153,14 @@ async function main() {
   hazards.filter({ currentTarget: { dataset: { id: "processing" } } });
   await settle();
   assert.ok(hazards.data.items.every((r) => r.status === "processing"));
+  const assist = page("assist");
+  assist.onShow();
+  assist.onDraft({ detail: { value: "走廊堆了纸箱挡住路" } });
+  assist.send();
+  await new Promise((resolve) => setTimeout(resolve, 800));
+  await settle();
+  assert.equal(assist.data.messages.at(-1).card.riskLevel, "high");
+  assert.equal(assist.data.messages.at(-1).card.reportDraft.type, "obstruction");
   const report = page("report");
   report.location({ detail: data.defaultSelection });
   report.input(event("location", "6层楼梯间"));
@@ -255,13 +264,13 @@ async function main() {
   const evidence = {
     at: new Date().toISOString(),
     result: "passed",
-    productPagesChecked: 22,
+    productPagesChecked: 23,
     networkCalls,
     phoneCalls,
     checks: [
       "consent, local login and two-step household registration",
       "all product page controllers and handlers",
-      "four tab routes",
+      "five tab routes, including resident safety assistant",
       "local filters",
       "selected photo preview",
       "new report/result/detail consistency",
@@ -278,7 +287,7 @@ async function main() {
     JSON.stringify(evidence, null, 2) + "\n",
   );
   console.log(
-    "Local showcase smoke passed: 22 product pages; 0 network requests; 0 phone calls.",
+    "Local showcase smoke passed: 23 product pages; 0 network requests; 0 phone calls.",
   );
 }
 main().catch((e) => {

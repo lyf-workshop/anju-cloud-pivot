@@ -295,4 +295,10 @@ module.exports = {
       completedSteps: items.reduce((n, d) => n + d.completedSteps.length, 0),
     };
   },
+  async residentRadar() {
+    return require("./resident-assist-scripted").radar(store.get().user);
+  },
+  async residentAssist(body) {
+    return require("./resident-assist-scripted").assist(body);
+  },
 };

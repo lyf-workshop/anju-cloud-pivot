@@ -3,7 +3,15 @@ const fs = require("node:fs"),
   vm = require("node:vm"),
   assert = require("node:assert/strict");
 const app = JSON.parse(fs.readFileSync("app.json", "utf8"));
-assert.equal(app.tabBar.list.length, 4);
+assert.equal(app.tabBar.list.length, 5);
+assert.ok(
+  app.pages.includes("pages/assist/assist"),
+  "Resident assistant page must be registered",
+);
+assert.ok(
+  app.tabBar.list.some((item) => item.pagePath === "pages/assist/assist"),
+  "Resident assistant must be reachable from the primary tab bar",
+);
 for (const page of app.pages)
   for (const ext of [".json", ".wxml", ".wxss", ".js"])
     assert.ok(fs.existsSync(page + ext), "Missing " + page + ext);
@@ -66,6 +74,15 @@ for (const dir of [
   "mock",
 ])
   walk(dir);
+for (const file of [
+  "apps/resident/src/assistant.js",
+  "apps/resident/src/main.js",
+  "apps/resident/src/views.js",
+]) {
+  assert.ok(fs.existsSync(file), "Missing shared-app assistant source " + file);
+  const source = fs.readFileSync(file, "utf8");
+  assert.match(source, /assist/i, "Shared app lost assistant integration in " + file);
+}
 console.log(
   "Client static checks passed: " +
     app.pages.length +

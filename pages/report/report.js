@@ -52,6 +52,25 @@ define({
     locationText: "",
   },
   onLoad(q) {
+    const assistDraft =
+      q.from === "assist"
+        ? wx.getStorageSync(session.privateKey("assist-draft"))
+        : null;
+    if (assistDraft && assistDraft.description) {
+      const preferred = { ...selection.get() };
+      this.setData({
+        preferred,
+        "form.floorId": preferred.floorId || "",
+        "form.type": assistDraft.type || "other",
+        "form.location": assistDraft.location || "",
+        "form.description": assistDraft.description,
+        "form.hazardName": assistDraft.hazardName || "",
+        hazardName: assistDraft.hazardName || "",
+      });
+      if (connected) this.setData({ "form.idempotencyKey": fmt.uid() });
+      this.location({ detail: preferred });
+      return;
+    }
     if (connected) {
       const draft = wx.getStorageSync(session.privateKey("report-draft"));
       if (draft && !q.deviceId) {

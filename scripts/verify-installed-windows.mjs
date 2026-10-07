@@ -30,6 +30,7 @@ async function launch() {
 
 let first = await launch();
 let directEntryObserved = false;
+let reportNumber = "";
 try {
   const direct = first.page.getByRole("button", { name: "直接体验" });
   directEntryObserved = (await direct.count()) === 1;
@@ -45,6 +46,15 @@ try {
   }
   await first.page.getByRole("heading", { name: /把安全/ }).waitFor();
 
+  await first.page.locator('.sidebar button[data-route="assist"]').click();
+  await first.page.getByRole("button", { name: "走廊堆了纸箱" }).click();
+  await first.page.getByText(/疏散通道可能被占用/).waitFor();
+  await first.page.getByRole("button", { name: "去上报" }).click();
+  assert.match(
+    await first.page.locator('textarea[name="description"]').inputValue(),
+    /疏散通道/,
+  );
+
   await first.page.locator('.sidebar button[data-route="building"]').click();
   await first.page.getByRole("button", { name: /查看本层感知设备/ }).click();
   await first.page.getByText("走廊烟雾传感器").waitFor();
@@ -59,12 +69,12 @@ try {
   await first.page.getByRole("img", { name: "现场图片 1" }).waitFor();
   await first.page.getByRole("button", { name: "提交演示上报" }).click();
   await first.page.getByRole("heading", { name: "模拟上报成功" }).waitFor();
-  const visibleNumber = await first.page.getByText(/^AJ\d{8}-[A-F0-9]{8}$/).textContent();
-  assert.match(visibleNumber || "", /^AJ\d{8}-[A-F0-9]{8}$/);
+  reportNumber = (await first.page.getByText(/^AJ\d{8}-[A-F0-9]{8}$/).textContent()) || "";
+  assert.match(reportNumber, /^AJ\d{8}-[A-F0-9]{8}$/);
 
   await first.page.getByRole("button", { name: "查看我的全部上报" }).click();
   await first.page.getByRole("heading", { name: "我的上报" }).waitFor();
-  assert.ok(await first.page.getByText(visibleNumber).count());
+  await first.page.getByText(reportNumber).waitFor();
 
   await first.page.locator('.sidebar button[data-route="building"]').click();
   await first.page.getByRole("button", { name: "模拟演练" }).click();
@@ -87,7 +97,7 @@ try {
   await reopened.page.locator('.sidebar button[data-route="me"]').click();
   await reopened.page.getByRole("button", { name: /我的上报/ }).click();
   await reopened.page.getByRole("heading", { name: "我的上报" }).waitFor();
-  assert.ok(await reopened.page.getByText(/AJ\d{8}-[A-F0-9]{8}/).count());
+  await reopened.page.getByText(reportNumber).waitFor();
   await reopened.page.locator('.sidebar button[data-route="me"]').click();
   await reopened.page.getByRole("button", { name: /演练记录/ }).click();
   await reopened.page.getByRole("heading", { name: "演练记录", level: 1 }).waitFor();
@@ -104,7 +114,9 @@ console.log(JSON.stringify({
   directEntryObserved,
   onboardingCompleted: directEntryObserved,
   deviceView: true,
+  assistantDraftPrefill: true,
   imageUploadAndReport: true,
+  reportPersisted: reportNumber,
   twoStepDrill: true,
   sessionRestoredAfterRelaunch: true,
   screenshot,

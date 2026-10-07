@@ -298,7 +298,7 @@ h1, h2, p { overflow-wrap: anywhere; }
   .topbar-demo { position: absolute; right: 14px; bottom: 18px; }
   .content { min-height: calc(100vh - 58px); padding: 0 0 26px; }
   .page { padding: 20px 18px 28px; }
-  .bottom-nav { position: fixed; inset: auto 0 0; z-index: 30; display: grid; grid-template-columns: repeat(4,1fr); min-height: calc(66px + env(safe-area-inset-bottom)); padding: 4px 3px env(safe-area-inset-bottom); background: rgba(255,255,255,.98); box-shadow: 0 -7px 24px rgba(36,56,63,.08); }
+  .bottom-nav { position: fixed; inset: auto 0 0; z-index: 30; display: grid; grid-template-columns: repeat(5,1fr); min-height: calc(66px + env(safe-area-inset-bottom)); padding: 4px 3px env(safe-area-inset-bottom); background: rgba(255,255,255,.98); box-shadow: 0 -7px 24px rgba(36,56,63,.08); }
   .bottom-nav .nav-item { justify-content: center; flex-direction: column; gap: 2px; min-height: 58px; padding: 3px; color: #8495a6; font-size: 11px; text-align:center; }
   .bottom-nav .nav-item.active { color: var(--red); background: transparent; }
   .bottom-nav .nav-item .line-icon { width: 25px; height: 25px; filter: none; opacity: 1; }
@@ -322,6 +322,83 @@ h1, h2, p { overflow-wrap: anywhere; }
 @media (max-width: 370px) {
   .page { padding-left: 14px; padding-right: 14px; }
   .home-sheet,.me-sheet{padding-left:14px;padding-right:14px}.home-cover{padding-left:14px;padding-right:14px}.tower-cube{width:180px}.cube-top{width:180px}.cube-side{left:90px;transform:rotateY(90deg) translateZ(90px)}.tower-actions{grid-template-columns:84px 1fr}.entry-icon{display:none}.hazard-categories button{padding:8px 11px}
+}
+
+/* 三端共用的居民安全助手。服务端不可用时会明确显示本地安全建议。 */
+.resident-assist-page { width: min(920px, 100%); }
+.assist-hero { padding: 25px 28px 20px; color: white; background: linear-gradient(145deg, #0b5cab, #1678c9 58%, #50a3dd); border-radius: 24px; box-shadow: 0 16px 38px rgba(11,92,171,.22); }
+.assist-hero small { color: #cde8fb; font-weight: 700; letter-spacing: .08em; }
+.assist-hero h1 { margin: 7px 0 5px; font-size: clamp(25px,4vw,36px); }
+.assist-hero p { margin: 0; color: #e7f5ff; }
+.assist-role-switch { display: grid; grid-template-columns: repeat(3,1fr); gap: 9px; margin-top: 20px; }
+.assist-role-switch button { display: grid; gap: 2px; min-height: 60px; padding: 9px 12px; color: #e4f3ff; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.16); border-radius: 14px; }
+.assist-role-switch button.active { color: #0b5cab; background: white; box-shadow: 0 8px 20px rgba(3,46,88,.16); }
+.assist-role-switch strong { font-size: 15px; }
+.assist-role-switch span { font-size: 11px; opacity: .8; }
+.assist-radar { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 14px; margin: 16px 0 10px; padding: 16px 18px; color: white; background: #143f68; border-radius: 18px; }
+.assist-radar.offline { background: #586a79; }
+.assist-radar-mark { display: grid; place-items: center; width: 47px; height: 47px; background: rgba(255,255,255,.13); border-radius: 14px; }
+.assist-radar-mark .line-icon { width: 28px; height: 28px; }
+.assist-radar div { display: grid; gap: 3px; min-width: 0; }
+.assist-radar small { color: #bad8ee; font-size: 11px; }
+.assist-radar strong { font-size: 15px; }
+.assist-radar p { margin: 0; color: #d8e9f5; font-size: 12px; line-height: 1.55; }
+.assist-radar em { padding: 5px 9px; color: #d9edfb; background: rgba(255,255,255,.12); border-radius: 999px; font-size: 10px; font-style: normal; white-space: nowrap; }
+.assist-emergency-tip { margin: 10px 0 18px; padding: 10px 13px; color: #8b3d2e; background: #fff0eb; border-radius: 12px; font-size: 12px; text-align: center; }
+.assist-message-list { display: grid; gap: 16px; }
+.assist-message { display: flex; align-items: flex-start; gap: 10px; }
+.assist-message.user { flex-direction: row-reverse; }
+.assist-avatar { display: grid; place-items: center; flex: 0 0 auto; width: 38px; height: 38px; color: white; background: var(--blue); border-radius: 12px; font-weight: 800; }
+.assist-message.user .assist-avatar { background: var(--green); }
+.assist-message > div { width: min(680px,calc(100% - 48px)); }
+.assist-message.user > div { display: flex; justify-content: flex-end; }
+.assist-message > div > p { width: fit-content; max-width: 100%; margin: 0; padding: 12px 14px; background: white; border-radius: 5px 16px 16px; box-shadow: 0 5px 18px rgba(11,92,171,.08); line-height: 1.6; }
+.assist-message.user > div > p { color: white; background: var(--blue); border-radius: 16px 5px 16px 16px; }
+.assist-typing { color: var(--muted); }
+.assist-action-card { margin-top: 9px; overflow: hidden; background: white; border: 1px solid #dce7ef; border-radius: 18px; box-shadow: var(--shadow); }
+.assist-action-card > header { display: flex; align-items: center; gap: 10px; padding: 14px 16px; background: #edf6fc; }
+.assist-action-card > header span { padding: 4px 9px; color: var(--blue); background: white; border-radius: 999px; font-size: 10px; font-weight: 800; }
+.assist-action-card.risk-high > header,.assist-action-card.risk-emergency > header { background: #fff0eb; }
+.assist-action-card.risk-high > header span,.assist-action-card.risk-emergency > header span { color: #a73c2a; }
+.assist-action-card section { padding: 13px 16px; border-top: 1px solid #edf1f5; }
+.assist-action-card h3 { margin: 0 0 8px; color: #47647c; font-size: 11px; text-transform: uppercase; }
+.assist-action-card ul,.assist-action-card ol { display: grid; gap: 7px; margin: 0; padding-left: 20px; }
+.assist-action-card li { line-height: 1.55; }
+.assist-action-card li b,.assist-action-card li span { display: block; }
+.assist-action-card li span { color: var(--muted); font-size: 12px; }
+.assist-question-list,.assist-action-card footer { display: flex; flex-wrap: wrap; gap: 8px; }
+.assist-question-list button { padding: 7px 10px; color: var(--blue); background: #edf6fc; border-radius: 999px; font-size: 11px; }
+.assist-avoid { color: #8b3d2e; background: #fff8f5; }
+.assist-avoid p { margin: 4px 0; font-size: 12px; }
+.assist-action-card footer { padding: 13px 16px 16px; border-top: 1px solid #edf1f5; }
+.assist-action-card footer button { min-height: 40px; padding: 8px 14px; font-size: 12px; }
+.assist-composer-dock { position: sticky; bottom: 8px; z-index: 12; margin-top: 20px; padding: 12px; background: rgba(255,255,255,.96); border: 1px solid #e0e8ee; border-radius: 18px; box-shadow: 0 12px 32px rgba(22,64,96,.16); backdrop-filter: blur(12px); }
+.assist-quick-list { display: flex; gap: 7px; margin-bottom: 9px; overflow-x: auto; scrollbar-width: none; }
+.assist-quick-list button { flex: 0 0 auto; padding: 7px 11px; color: var(--blue); background: #edf6fc; border-radius: 999px; font-size: 11px; }
+#assist-form { display: flex; gap: 9px; }
+#assist-form input { flex: 1; min-width: 0; min-height: 48px; padding: 11px 13px; background: #f2f7fa; border: 1px solid #dce6ed; border-radius: 13px; }
+#assist-form button { min-width: 88px; min-height: 48px; padding: 10px 16px; }
+
+@media (max-width: 760px) {
+  .bottom-nav .nav-main { justify-content: flex-end; }
+  .bottom-nav .nav-main .line-icon { width: 49px; height: 49px; margin-top: -27px; padding: 13px; filter: brightness(0) invert(1); background: linear-gradient(180deg,#2a88e0,#0b5cab); border: 5px solid white; border-radius: 50%; box-shadow: 0 7px 17px rgba(11,92,171,.32); }
+  .bottom-nav .nav-main span { color: var(--blue); font-weight: 700; }
+  .assist-hero { padding: 20px 16px 17px; border-radius: 19px; }
+  .assist-role-switch { gap: 6px; margin-top: 16px; }
+  .assist-role-switch button { min-height: 54px; padding: 7px 5px; }
+  .assist-radar { grid-template-columns: auto 1fr; padding: 13px; }
+  .assist-radar > em { grid-column: 2; justify-self: start; }
+  .assist-message > div { width: calc(100% - 45px); }
+  .assist-action-card section { padding: 11px 13px; }
+  .assist-composer-dock { bottom: calc(68px + env(safe-area-inset-bottom)); margin-left: -4px; margin-right: -4px; padding: 9px; border-radius: 16px; }
+  #assist-form button { min-width: 68px; }
+}
+
+@media (max-width: 370px) {
+  .bottom-nav .nav-item { font-size: 9px; }
+  .bottom-nav .nav-main .line-icon { width: 45px; height: 45px; margin-top: -23px; padding: 12px; }
+  .assist-role-switch span { display: none; }
+  .assist-radar-mark { width: 40px; height: 40px; }
 }
 
 /* Android 手机画布：360–430dp，密度与触控尺寸均按真机调整 */

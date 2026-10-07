@@ -8,13 +8,13 @@ stamp="$(date -u +%Y%m%dT%H%M%SZ)"
 
 install -d -o root -g caddy -m 0750 /srv/anju-cloud-pivot-downloads "$download_root"
 install -d -o root -g root -m 0700 /srv/anju-cloud-pivot-downloads/archive
-for previous in Anju-CloudPivot-Windows-1.2.0-Setup.exe Anju-CloudPivot-Android-1.2.0.apk; do
+for previous in Anju-CloudPivot-Windows-1.3.0-Setup.exe Anju-CloudPivot-Android-1.3.0.apk Anju-CloudPivot-Windows-1.2.0-Setup.exe Anju-CloudPivot-Android-1.2.0.apk; do
   if [[ -f "$download_root/$previous" ]]; then
     mv "$download_root/$previous" "/srv/anju-cloud-pivot-downloads/archive/${stamp}-${previous}"
   fi
 done
-install -o root -g caddy -m 0640 /tmp/Anju-CloudPivot-Windows-1.3.0-Setup.exe "$download_root/"
-install -o root -g caddy -m 0640 /tmp/Anju-CloudPivot-Android-1.3.0.apk "$download_root/"
+install -o root -g caddy -m 0640 /tmp/Anju-CloudPivot-Windows-1.4.0-Setup.exe "$download_root/"
+install -o root -g caddy -m 0640 /tmp/Anju-CloudPivot-Android-1.4.0.apk "$download_root/"
 install -o root -g caddy -m 0640 /tmp/anju-judge-download-index.html "$download_root/index.html"
 install -o root -g caddy -m 0640 /tmp/anju-judge-SHA256SUMS.txt "$download_root/SHA256SUMS.txt"
 
@@ -55,8 +55,8 @@ systemctl reload caddy
 
 unauthorized_status="$(curl -sS -o /dev/null -w '%{http_code}' https://xn--9kqy92aeqav77a.com/judge-downloads/)"
 authorized_status="$(curl -sS -u "reviewer:$password" -o /dev/null -w '%{http_code}' https://xn--9kqy92aeqav77a.com/judge-downloads/)"
-windows_status="$(curl -sS -u "reviewer:$password" -r 0-0 -o /dev/null -w '%{http_code}' https://xn--9kqy92aeqav77a.com/judge-downloads/Anju-CloudPivot-Windows-1.3.0-Setup.exe)"
-android_status="$(curl -sS -u "reviewer:$password" -r 0-0 -o /dev/null -w '%{http_code}' https://xn--9kqy92aeqav77a.com/judge-downloads/Anju-CloudPivot-Android-1.3.0.apk)"
+windows_status="$(curl -sS -u "reviewer:$password" -r 0-0 -o /dev/null -w '%{http_code}' https://xn--9kqy92aeqav77a.com/judge-downloads/Anju-CloudPivot-Windows-1.4.0-Setup.exe)"
+android_status="$(curl -sS -u "reviewer:$password" -r 0-0 -o /dev/null -w '%{http_code}' https://xn--9kqy92aeqav77a.com/judge-downloads/Anju-CloudPivot-Android-1.4.0.apk)"
 
 printf 'caddy_backup=%s\n' "$backup_path"
 printf 'unauthorized_status=%s\n' "$unauthorized_status"
