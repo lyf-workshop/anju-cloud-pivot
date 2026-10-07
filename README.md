@@ -14,7 +14,7 @@
 - 评委一页说明：[docs/judge-guide.md](docs/judge-guide.md)
 - 发布边界：[docs/release-notes.md](docs/release-notes.md)
 
-服务器当前 release 为 `/opt/anju-cloud-pivot/releases/20261007-assistant-v14`，systemd、Caddy HTTPS、SQLite 持久化、每日备份与受控下载均独立配置。匿名会话默认 90 天有效；服务端按安装键映射私有用户，客户端只保存随机安装键和会话令牌，不包含共享管理员密钥。1.4.0 已合并队友智能体、保留住户登记流程，并通过 Windows 安装版和 Android 16 安装 APK 的完整闭环，详见 [验证记录](docs/verification.md)。
+服务器当前 release 为 `/opt/anju-cloud-pivot/releases/20261007-web-clarity-v15`，systemd、Caddy HTTPS、SQLite 持久化、每日备份与受控下载均独立配置。匿名会话默认 90 天有效；服务端按安装键映射私有用户，客户端只保存随机安装键和会话令牌，不包含共享管理员密钥。1.4.0 已合并队友智能体、保留住户登记流程，并通过 Windows 安装版和 Android 16 安装 APK 的完整闭环，详见 [验证记录](docs/verification.md)。
 
 居民小程序与物业接口联调共用 Fastify / TypeScript / SQLite 后端。物业网页现以小组成员提供的 `安居云枢网页端(2).zip` 为默认界面，包含值班台、制度责任、数字孪生、人员台账、巡查台账、处置预案、隐患工单和紧急处置；成员版 Mock 交互继续保留，树莓派实时画面、物业登录和接口联调工作台由现有兼容层接入。小程序、本地数据库和现有接口继续保留。
 
